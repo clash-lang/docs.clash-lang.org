@@ -1,0 +1,11 @@
+[book]
+authors = ["The Clash Developers"]
+language = "en"
+src = "src"
+title = "Clash Compiler User Guide"
+
+[build]
+build-dir = "../public/compiler-userguide"
+
+[output.html]
+site-url = "/compiler-userguide/"

@@ -1,6 +1,6 @@
-# Clash Language User Guide
+# Clash Compiler Language User Guide
 
-Welcome to the Clash Language User Guide, the official documentation of
+Welcome to the Clash Compiler User Guide, the official documentation of
 the [Clash Compiler](https://clash-lang.org). Clash is an open-source
 functional hardware description language (HDL) that borrows syntax and
 semantics from the [Haskell](https://www.haskell.org) programming
