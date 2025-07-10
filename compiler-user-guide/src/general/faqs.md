@@ -25,7 +25,7 @@
   Clash does therefore not offer what is generally understood as "high level synthesis".
   Compared to the big three hardware description languages, *VHDL*, *Verilog*, and *SystemVerilog*, Clash arguably *is* high-level.
   It offers many of the powerful abstractions that modern software programming languages offer.
-  In fact, it inherits many of the software's industry bleeding-edge features by virtue of basing its implemenation on Haskell.
+  In fact, it inherits many of the software industry's bleeding-edge features by virtue of basing its implementation on Haskell.
 
 ## Clash Support
 
@@ -38,7 +38,7 @@
 
 - **Q**: Will Clash work with my EDA tools?
 
-  **A**: In general, Clash should work well with Xilinx and Intel FPAGs and their EDA tools -- as development typically focuses on these vendors.
+  **A**: In general, Clash should work well with Xilinx and Intel FPAGs and their EDA tools &mdash; as development typically focuses on these vendors.
   Clash has also been successfully used on Microsemi (formerly Actel) SmartFusion 2 and Lattice Semiconductor iCE40 FPGAs, and some basic IP for these exist.
 
   For most toolchains, the default primitives supplied by Clash should work with minimal effort.
@@ -60,17 +60,17 @@
   Clash can be used for ASIC designs, however the RTL produced by Clash may not be immediately suitable as it is largely platform agnostic.
   While this is not a problem for FPGAs, it can make developing ASICs more complicated as many ASIC vendors have different proprietary tool flows, with limited information available about their workings.
 
-  If you are using Clash to develop for ASIC, and need assitance with getting your toolchain to work, you can contact [QBayLogic Clash support](https://qbaylogic.com/clash-support.html) for assistance.
+  If you are using Clash to develop for ASIC, and need assistance with getting your toolchain to work, you can contact [QBayLogic Clash support](https://qbaylogic.com/clash-support.html) for assistance.
 
 ## Clash and Haskell
 
-- **Q**: Is Clash its own programming language, or is it "Haskell"?
+- **Q**: Is Clash its own programming language, or is it Haskell?
 
   **A**: Clash is a programming language in its own right, complete with its own executable and standard library.
   Clash is also related to the Haskell programming language, and may be thought of as a dialect of Haskell for developing hardware.
   While the surface syntax and typing rules are the same, the semantics change as code progresses through the compilation pipeline.
 
-  Do to the shared behavior in the early stages of the compiler, components from GHC (the most common Haskell compiler) are reused in the Clash compiler.
+  Due to the shared behavior in the early stages of the compiler, components from GHC (the most common Haskell compiler) are reused in the Clash compiler.
   This is how Clash achieves such high interoperability with existing Haskell projects.
 
 ------------------------------------------------------------------------
@@ -108,7 +108,7 @@
 
 ------------------------------------------------------------------------
 
-- **Q**: What's the difference between Clash and "Lava"?
+- **Q**: What's the difference between Clash and Lava?
 
   **A**: Lava dialects (including the modern variant [Blarney](https://github.com/mn416/blarney)) are all embedded domain specific languages (EDSLs) inside Haskell.
   On top of that they use a so-called *deep* embedding to be able to transform a circuit description into a netlist (to subsequently output that as a VHDL/Verilog file).
@@ -119,15 +119,15 @@
   > 2. Clash allows the use of regular Haskell syntax to model the concept of 'choice' at the object-level (the functionality of the program): if-expressions, guards, case, etc.
   > 3. Clash allows programmers to use native Haskell pattern matching.
 
-Basically, with Clash you can use regular Haskell to describe the behavior of the circuit, most importantly all of it's choice-constructs (case-expressions, guards, etc.).
-With an EDSL you are "limited" by the constructs of the DSL, making your circuit descriptions look less like regular Haskell functions.
+  Basically, with Clash you can use regular Haskell to describe the behavior of the circuit, most importantly all of it's choice-constructs (case-expressions, guards, etc.).
+  With an EDSL you are "limited" by the constructs of the DSL, making your circuit descriptions look less like regular Haskell functions.
 
 ------------------------------------------------------------------------
 
 - **Q**: What's the difference between Clash and Chisel/Spinal/Migen/Hardcaml?
 
-  **A**: The biggest difference between these toolchains and Clash is that Clash exists as a Haskell derivative, with a full synthesizing compiler to RTL --while Chisel/Spinal/Migen/Hardcaml exists as an embedding of hardware semantics inside Scala/Scala/Python/OCaml.
-  Aside from the "host language" differences, this means that Chisel/Spinal/Migen/Hardcaml are conceptually closer to something like *Lava/Blarney* than Clash.
+  **A**: The biggest difference between these toolchains and Clash is that Clash exists as a Haskell derivative, with a full synthesizing compiler to RTL &mdash; while Chisel/Spinal/Migen/Hardcaml exists as an embedding of hardware semantics inside Scala/Scala/Python/OCaml.
+  Aside from the "host language" differences, this means that Chisel/Spinal/Migen/Hardcaml are conceptually closer to something like Lava/Blarney than to Clash.
   So within these languages you can only use the host language constructs to structure and compose the constructs of the EDSL, and you can't use host language constructs to describe the behavior of the circuit; i.e. you cannot use the host language's regular if-expression to model the concept of choice, but you have to use e.g. Chisel's *when*-function.
 
   Aside from the above, there is also a varying degree of *native* simulation and interactivity.

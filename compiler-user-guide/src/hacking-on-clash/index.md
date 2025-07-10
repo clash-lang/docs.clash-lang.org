@@ -4,12 +4,12 @@
 
 Hacking on Clash requires more dependencies than simply running Clash.
 The test suite requires having a tool available to synthesize any backend being tested.
-This means you need
+This means you need:
 
 - [ghdl](https://github.com/ghdl/ghdl) installed to test *VHDL*
 - [iverilog](https://github.com/steveicarus/iverilog) installed to test *Verilog*
-- [ModelSim](https://fpgasoftware.intel.com/?product=modelsim_ae#tabs-2) installed to test *System Verilog*
-- [SymbiYosys](https://github.com/YosysHQ/SymbiYosys) and [Z3](https://github.com/Z3Prover/z3) installed to test *Verilog* and *System Verilog*
+- [ModelSim](https://fpgasoftware.intel.com/?product=modelsim_ae#tabs-2) installed to test *SystemVerilog*
+- [SymbiYosys](https://github.com/YosysHQ/SymbiYosys) and [Z3](https://github.com/Z3Prover/z3) installed to test *Verilog* and *SystemVerilog*
 
 ## Get Clash from source
 
@@ -78,7 +78,7 @@ Primarily, this consists of
 
 `clash-ghc`
 
-> The front-end of the compiler, using parts of the GHC front-end.
+> The frontend of the compiler, using parts of the GHC frontend.
 > This provides the ability to load modules, translate GHC Core to Clash Core, and implements the `clash` and `clashi` executables.
 >
 > A lot of the code in this library is separated by the version of GHC it works with.
@@ -86,7 +86,7 @@ Primarily, this consists of
 
 `clash-lib`
 
-> The back-end of the compiler, exposed as a library.
+> The backend of the compiler, exposed as a library.
 > This is the largest library in the project, and includes the various ASTs (e.g. Core, Netlist), normalization, code generation, and primitives / black boxes.
 
 `clash-prelude`
@@ -94,7 +94,7 @@ Primarily, this consists of
 > The standard library for Clash as a language.
 > This includes anything that is used to develop hardware in Clash, such as Signals, Clocks and combinators for common forms of state machine.
 >
-> The `clash-prelude` library also re-exports parts of the Haskell `base` library, allowing circuit designs to re-use common functions and definitions.
+> The `clash-prelude` library also re-exports parts of the Haskell `base` library, allowing circuit designs to reuse common functions and definitions.
 
 The repository also contains other libraries.
 These either provide additional functionality which is not required, or are not yet production-ready.
@@ -119,7 +119,7 @@ These are
 
 `clash-term`
 
-> A development tool for analysing how the normalizer in `clash-lib` affects the core of a particular design.
+> A development tool for analyzing how the normalizer in `clash-lib` affects the core of a particular design.
 > It allows the result of each different optimizer pass to be seen for debugging purposes.
 
 `clash-lib-hedgehog`

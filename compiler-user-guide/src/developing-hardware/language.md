@@ -1,6 +1,6 @@
 # Clash as a Language
 
-As Clash reuses parts of the GHC compiler for its front-end, the syntax and semantics should be familiar to Haskell programmers.
+As Clash reuses parts of the GHC compiler for its frontend, the syntax and semantics should be familiar to Haskell programmers.
 For people unfamiliar with Haskell, there are many resources to learn the language, such as
 
 - [Learn You a Haskell](http://learnyouahaskell.com/chapters)
