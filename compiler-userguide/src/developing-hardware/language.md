@@ -1,17 +1,14 @@
 # Clash as a Language
 
-As Clash reuses parts of the GHC compiler for its front-end, the syntax
-and semantics should be familiar to Haskell programmers. For people
-unfamiliar with Haskell, there are many resources to learn the language,
-such as
+As Clash reuses parts of the GHC compiler for its front-end, the syntax and semantics should be familiar to Haskell programmers.
+For people unfamiliar with Haskell, there are many resources to learn the language, such as
 
 - [Learn You a Haskell](http://learnyouahaskell.com/chapters)
 - [Real World Haskell](http://book.realworldhaskell.org/read/)
 - [The Haskell Wikibook](https://en.wikibooks.org/wiki/Haskell)
 
-Clash does make some use of more advanced features of GHC Haskell, which
-are exposed by GHC as language extensions. The extensions used by Clash
-are
+Clash does make some use of more advanced features of GHC Haskell, which are exposed by GHC as language extensions.
+The extensions used by Clash are
 
 - [BinaryLiterals](https://downloads.haskell.org/~ghc/9.0.1/docs/html/users_guide/exts/binary_literals.html)
 - [ConstraintKinds](https://downloads.haskell.org/~ghc/9.0.1/docs/html/users_guide/exts/constraint_kind.html)
@@ -48,20 +45,17 @@ Warning
 
 </div>
 
-Since GHC 8.6, the `StarIsType` extension is defined. This extension is
-explicitly turned off by Clash, meaning `Data.Kind.Type` must be used to
-refer to Haskell types.
+Since GHC 8.6, the `StarIsType` extension is defined.
+This extension is explicitly turned off by Clash, meaning `Data.Kind.Type` must be used to refer to Haskell types.
 
 </div>
 
-Clash also enables some GHC plugins by default which improve the type
-inference for type level numbers. The plugins enabled by default are
+Clash also enables some GHC plugins by default which improve the type inference for type level numbers.
+The plugins enabled by default are
 
 - [ghc-typelits-extra](https://hackage.haskell.org/package/ghc-typelits-extra)
 - [ghc-typelits-knownnat](https://hackage.haskell.org/package/ghc-typelits-knownnat)
 - [ghc-typelits-natnormalise](https://hackage.haskell.org/package/ghc-typelits-natnormalise)
 
-Users are free to control the language extensions and GHC options with
-the normal `OPTIONS_GHC` and `LANGUAGE` pragmas in source files. For
-more information, see the [GHC User's
-Guide](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/).
+Users are free to control the language extensions and GHC options with the normal `OPTIONS_GHC` and `LANGUAGE` pragmas in source files.
+For more information, see the [GHC User's Guide](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/).
