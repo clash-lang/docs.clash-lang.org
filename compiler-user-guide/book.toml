@@ -5,7 +5,7 @@ src = "src"
 title = "Clash Compiler User Guide"
 
 [build]
-build-dir = "../public/compiler-userguide"
+build-dir = "../public/compiler-user-guide"
 
 [output.html]
-site-url = "/compiler-userguide/"
+site-url = "/compiler-user-guide/"

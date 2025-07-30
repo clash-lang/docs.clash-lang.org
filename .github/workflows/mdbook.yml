@@ -42,7 +42,7 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build Compiler User Guide with mdBook
         run: mdbook build
-        working-directory: ./compiler-userguide
+        working-directory: ./compiler-user-guide
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
