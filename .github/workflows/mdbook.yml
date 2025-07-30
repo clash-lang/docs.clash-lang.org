@@ -46,7 +46,7 @@ jobs:
       
       - name: Add Index Page
         run: |
-          mkdir public
+          mkdir -p public
           cp index.html ./public/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
