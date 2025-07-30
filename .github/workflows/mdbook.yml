@@ -43,6 +43,11 @@ jobs:
       - name: Build Compiler User Guide with mdBook
         run: mdbook build
         working-directory: ./compiler-user-guide
+      
+      - name: Add Index Page
+        run: |
+          mkdir public
+          cp index.html ./public/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
