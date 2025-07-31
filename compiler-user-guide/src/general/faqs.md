@@ -70,7 +70,7 @@
   Clash is also related to the Haskell programming language, and may be thought of as a dialect of Haskell for developing hardware.
   While the surface syntax and typing rules are the same, the semantics change as code progresses through the compilation pipeline.
 
-  Do to the shared behavior in the early stages of the compiler, components from GHC (the most common Haskell compiler) are reused in the Clash compiler.
+  Due to the shared behavior in the early stages of the compiler, components from GHC (the most common Haskell compiler) are reused in the Clash compiler.
   This is how Clash achieves such high interoperability with existing Haskell projects.
 
 ------------------------------------------------------------------------

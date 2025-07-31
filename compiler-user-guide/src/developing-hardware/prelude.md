@@ -102,7 +102,7 @@ Practically speaking, the only difference is that this machine also has an input
 </div>
 
 It is also possible to define a [Moore machine](https://en.wikipedia.org/wiki/Moore_machine) using the `moore` function in the Clash prelude.
-This differs to the Mealy machine by providing output based on the previous state (as oppoesd to the newly calculated state), and is specified by
+This differs to the Mealy machine by providing output based on the previous state (as opposed to the newly calculated state), and is specified by
 
 - A transfer function of type `state -> input -> state`
 - An output function of type `state -> output`
