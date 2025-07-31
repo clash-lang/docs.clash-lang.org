@@ -6,26 +6,26 @@
 It is used for creating hardware designs, typically for running on *field programmable gate arrays* (FPGAs) or *application-specific integrated circuits* (ASICs).
 
 Clash is both a compiler, and a set of libraries for circuit design, that transform high level Haskell descriptions of synchronous, sequential logic into low-level [VHDL](https://en.wikipedia.org/wiki/VHDL), [Verilog](https://en.wikipedia.org/wiki/Verilog), or [SystemVerilog](https://en.wikipedia.org/wiki/SystemVerilog).
-It provides a unique approach to design of sequential circuits, but with a high amount of abstraction power that blurs the line between strictly behavioral or structural synthesis approaches.
+It provides a unique approach to design of sequential circuits, with a high amount of abstraction power that blurs the line between strictly behavioral and structural synthesis approaches.
 
 Clash aims to modernize the hardware development experience, making it easier to quickly and correctly develop complex circuit designs.
 This is achieved by making Clash:
 
 **Expressive**
 
-Clash uses the Haskell type system to its full potential -- including modern extensions and techniques -- to being a high level of type safety and expressiveness to hardware design.
+Clash uses the Haskell type system to its full potential &mdash; including modern extensions and techniques &mdash; to bring a high level of type safety and expressiveness to hardware design.
 
 This expressive typing makes it easier to develop safe, maintainable hardware.
 Combinational and sequential logic is separated by type, and global safety invariants such as separating incompatible clock domains are enforced in the type system.
 
 **Intuitive**
 
-Clash makes it easy to express circuit designs in an intuitive manner, allowing high level structural components to be easily connected in designs.
+Clash makes it easy to express circuit designs in an intuitive manner, allowing high level structural components to be connected easily in designs.
 Moreover, unlike most "high level synthesis" tools, this extends to precise control over register placement and pipelining.
 
 **Interactive**
 
-Unlike traditional HDL tools, Clash has a fully interactive read-eval-print loop (REPL), allowing circuits to be interactively designed and tested.
+Unlike traditional HDL tools, Clash has a fully interactive [read-eval-print loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) (REPL), allowing circuits to be interactively designed and tested.
 
 **Performant**
 
@@ -40,26 +40,28 @@ This allows meaningful optimizations to be performed on the entire design.
 
 Additional primitives and black boxes can be added to Clash in the language of your choice, allowing you to use your own vendor or IP library within projects.
 
-Clash allows seamless interoperability with libraries written in Haskell, including `mtl`, `lens` and `QuickCheck`.
+Clash allows seamless interoperability with libraries written in Haskell, including `mtl`, `lens` and `hedgehog`.
 This makes it even easier to quickly prototype complex designs.
 
 ## Intended Audience
 
 Clash is ideal for developers from different backgrounds, although the main intended audiences are
 
-Hardware Engineers  
-You are a hardware engineer, used to using tools like [VHDL](https://en.wikipedia.org/wiki/VHDL) and [Verilog](https://en.wikipedia.org/wiki/Verilog) to implement circuit designs.
-Clash offers the familar mixed simulation / synthesis capabilities of these tools, while providing a langauge with powerful abstractions.
+**Hardware Engineers**
 
-Haskell Programmers  
+You are a hardware engineer, used to using tools like [VHDL](https://en.wikipedia.org/wiki/VHDL) and [Verilog](https://en.wikipedia.org/wiki/Verilog) to implement circuit designs.
+Clash offers the familiar mixed simulation/synthesis capabilities of these tools, while providing a language with powerful abstractions.
+
+**Haskell Programmers**
+
 You are a [Haskell](https://www.haskell.org) programmer, looking to start developing hardware.
-Clash offers the ability to start prototyping and simulating designs in a familiar environment -- lowering the learning curve significantly.
+Clash offers the ability to start prototyping and simulating designs in a familiar environment &mdash; lowering the learning curve significantly.
 
 ## Maturity and Support
 
 Clash is a continually evolving tool, having been actively developed since 2009.
 With the release of Clash 1.0 there has been an increased focus on maintaining API stability between releases, meaning circuit designs written in Clash should continue to work between minor releases.
-Today, the Clash Compiler is actively developed by QBayLogic B.V. and volunteers.
+Today, the Clash Compiler is actively developed by QBayLogic B.V., volunteers and students.
 
 Several companies and enthusiasts are already using Clash to develop circuit designs, ranging from small designs on hobbyist boards to larger designs on modern FPGA and ASIC architectures.
 

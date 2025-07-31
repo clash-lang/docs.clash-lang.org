@@ -2,7 +2,7 @@
 
 ## Basic Types
 
-The Clash prelude includes many different numeric types, which are used to safely define other types / functions.
+The Clash prelude includes many different numeric types, which are used to safely define other types/functions.
 These include, but may not be limited to
 
 - Type level natural numbers (`Nat`), which allow numbers to be used in types.
@@ -20,7 +20,7 @@ These include, but may not be limited to
 
 Another commonly used type is `BitVector n`.
 This provides a fixed size vector of `Bit` values which can be indexed, and used to perform *unsigned integer arithmetic*.
-Any type that can be marshalled to / from a `BitVector n` implements the `BitPack` class, which defines the conversion.
+Any type that can be marshaled to/from a `BitVector n` implements the `BitPack` class, which defines the conversion.
 
 <div class="note">
 
@@ -57,24 +57,24 @@ It is recommended that users use the `(:>)` pattern by default, and only use `Co
 
 ## Synthesis Domains
 
-Synchronous circuits have a synthesis domain, which determines the behaviour of things which can affect signals in the domain.
+Synchronous circuits have a synthesis domain, which determines the behavior of things which can affect signals in the domain.
 Domains consist of
 
 - a name, which uniquely refers to the domain
 - the clock period in ps
 - the active edge of the clock
 - whether resets are synchronous (edge-sensitive) or not
-- whether the initial (power up) behaviour is defined
+- whether the initial (power up) behavior is defined
 - whether resets are high or low polarity
 
 The prelude provides some common domains, namely `XilinxSystem` and `IntelSystem` for the standard configurations of each vendor.
-There is also a generic domain, `System`, which can be used for vendor-agnostic purposes (i.e. writing a generic test bench).
+There is also a generic domain, `System`, which can be used for vendor-agnostic purposes (e.g., writing a generic test bench).
 It is possible to define new synthesis domains for custom hardware using the `createDomain` function, which also defines the necessary instances for domains.
 
 A value in a synchronous circuit is wrapped in the `Signal dom a` type, which specifies the synthesis domain and the type of value.
-Any function which needs access to a domain can use the constraints `HasDomain` (to find it's domain) or `KnownDomain` (to extract configuration).
+Any function which needs access to a domain can use the constraint `KnownDomain` to extract configuration.
 
-The default API exposed by the prelude is implicit with regards to clocks, reset lines and enable lines -- as these can be determined at compile time.
+The default API exposed by the prelude is implicit with regards to clocks, reset lines and enable lines, as these can be determined at compile time.
 However, if they are needed the `Clash.Explicit` module contains explicit versions of the API which expose these directly in function arguments.
 It is also possible to use functions like `exposeClockResetEnable` to turn an implicitly defined function to an explicitly defined function.
 
@@ -84,7 +84,7 @@ The Clash prelude contains combinators for two classical finite state machines w
 The first of these is `mealy`, which encodes a [Mealy machine](https://en.wikipedia.org/wiki/Mealy_machine).
 This is a machine specified by
 
-- A transfer function of type `state -> input -> (state, output)`
+- A transition function of type `state -> input -> (state, output)`
 - An initial state
 - An input signal which can change at each cycle
 
@@ -96,20 +96,20 @@ Note
 
 </div>
 
-The Mealy machine is similar to the State monad, which Haskell programmers may already be familar with.
+The Mealy machine is similar to the `State` monad, which Haskell programmers may already be familiar with.
 Practically speaking, the only difference is that this machine also has an input signal which is changed externally to the definition of the machine.
 
 </div>
 
 It is also possible to define a [Moore machine](https://en.wikipedia.org/wiki/Moore_machine) using the `moore` function in the Clash prelude.
-This differs to the Mealy machine by providing output based on the previous state (as oppoesd to the newly calculated state), and is specified by
+This differs from the Mealy machine by providing output based on the previous state (as opposed to the newly calculated state), and is specified by
 
-- A transfer function of type `state -> input -> state`
+- A transition function of type `state -> input -> state`
 - An output function of type `state -> output`
 - An initial state
 - An input signal which can change at each cycle
 
-Sometimes, there may be multiple inputs / outputs needed for a machine.
+Sometimes, there may be multiple inputs/outputs needed for a machine.
 As machines only input and output a single signal, there is a way to combine and separate multiple signals.
 The `Bundle` class specifies how to convert between some type which is a signal of a product, and some type which is a product of signals, e.g.
 
@@ -124,7 +124,7 @@ The `Bundle` class is already defined for many types, including tuples (up to 62
 ## RAM and ROM
 
 The Clash prelude provides the ability to work with synchronous and asynchronous ROM, asynchronous RAM and synchronous Block RAM.
-The simplest of these are ROM, which only allow indexing into a `Vec n a` of elements.
+The simplest of these are ROMs, which only allow indexing into a `Vec n a` of elements.
 ROM is defined using the functions in `Clash.Prelude.ROM`.
 
 RAM is more complex, as it allows both reading and writing.
@@ -145,7 +145,7 @@ There are also many utility functions for working with exceptions, such as
 
 - `errorX`, which throws an `XException`
 - `isX` and `hasX`, which check for `XExceptions` when evaluating
-- `maybeIsX` and `maybeHasX`, which discard inforamtion about exceptions
+- `maybeIsX` and `maybeHasX`, which discard information about exceptions
 
 There are also implementations of typical classes in Haskell which have been changed to work with undefined values.
 Currently these are
@@ -154,5 +154,5 @@ Currently these are
   When an undefined value is encountered an "X" is printed.
   `Show` can still be used, but will throw an exception if an undefined value is encountered.
 - `NFDataX`, which works like the `NFData` class in the `deepseq` library.
-  This allows evaluating values to normal form in code when undefined may be present.
-  `NFData` can still be used, but will bubble up exceptions if undefined is encountered.
+  This allows evaluating values to normal form in code when `XException` may be present.
+  `NFData` can still be used, but will bubble up exceptions if `XException` is encountered.

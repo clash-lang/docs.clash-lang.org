@@ -1,24 +1,24 @@
 # Clash Compiler Flags
 
---vhdl  
+`--vhdl`  
 Use the VHDL backend for code generation.
 This currently emits VHDL 1993 source which can be consumed by other tools.
 
---verilog  
+`--verilog`  
 Use the Verilog backend for code generation.
 This currently emits Verilog 2001 source which can be consumed by other tools.
 
---systemverilog  
+`--systemverilog`  
 Use the SystemVerilog backend for code generation.
 This currently emits SystemVerilog 2012 source which can be consumed by other tools.
 
--fclash-debug  
+`-fclash-debug`  
 Set the debugging mode for the compiler, exposing additional output.
 The available options are
 
 - `DebugNone` to show no debug messages
 - `DebugSilent` to test invariants and error if any are violated.
-  This is implicitly enabled by any debug flag
+  This is implicitly enabled by any debug flag.
 - `DebugFinal` to show expressions after they have been completely normalized
 - `DebugCount` to count how often each transformation is applied
 - `DebugName` to show the names of transformations as they are applied
@@ -38,41 +38,36 @@ Note
 
 This flag exists for backwards compatibility.
 It is now possible to set debugging flags individually with
-<span class="title-ref">-fclash-debug-invariants</span>,
-<span class="title-ref">-fclash-debug-info</span> and
-<span class="title-ref">-fclash-debug-count-transformations</span>.
+<span class="title-ref">`-fclash-debug-invariants`</span>,
+<span class="title-ref">`-fclash-debug-info`</span> and
+<span class="title-ref">`-fclash-debug-count-transformations`</span>.
 
 </div>
 
--fclash-debug-invariants  
-Check invariants while debugging and print warnings / errors which may be useful, such as alterting when unexpected changes occur or when a transformation introduces free variables / shadowing.
+`-fclash-debug-invariants`  
+Check invariants while debugging and print warnings/errors which may be useful, such as alerting when unexpected changes occur or when a transformation introduces free variables / shadowing.
 
--fclash-debug-info  
+`-fclash-debug-info`  
 Specify the information to show about individual transformations while debugging.
 From least to most information, these are
 
 - `None` to show no information
-
 - `FinalTerm` to show the final result of normalization
-
 - `AppliedName` to show the names of applied transformations
-
 - `AppliedTerm` to show the result of applied transformations
-
-- `TryName` to show the names of attempted transforamtions, as well as the result of any transformations which are applied
-
+- `TryName` to show the names of attempted transformations, as well as the result of any transformations which are applied
 - `TryTerm` to show the names and results of all transformations attempted whether they were applied or not
 
-  **Default:** `None`
+**Default:** `None`
 
--fclash-debug-count-transformations  
+`-fclash-debug-count-transformations`  
 Count the transformations that are applied and print a summary at the end of the normalization phase.
 
--fclash-debug-history\[=FILENAME\]  
+`-fclash-debug-history[=FILENAME]`  
 Saves all applied rewrites into `FILENAME`, for later analysis with the clash-term tool.
 When no filename is given it defaults to `history.dat`.
 
--fclash-debug-transformations  
+`-fclash-debug-transformations`  
 List the transformations that are to be debugged.
 This is given as a comma-separated list of transformations, e.g.
 
@@ -80,27 +75,27 @@ This is given as a comma-separated list of transformations, e.g.
 clash -fclash-debug-transformations inlineNonRep,topLet,appProp
 ```
 
-**Default:** \[\]
+**Default:** `[]`
 
--fclash-debug-transformations-from=N  
+`-fclash-debug-transformations-from=N`  
 Only print debug output from applied transformation `N` and onwards.
 
 ``` bash
 clash -fclash-debug-transformations-from=21570
 ```
 
-**Default:** 0
+**Default:** `0`
 
--fclash-debug-transformations-limit=N  
+`-fclash-debug-transformations-limit=N`  
 Only print debug output for `N` applied transformations.
 
 ``` bash
 clash -fclash-debug-transformations-limit=12
 ```
 
-**Default:** MAX_INT
+**Default:** `MAX_INT`
 
--fclash-hdldir  
+`-fclash-hdldir`  
 Specify the directory that generated HDL is written into.
 For example
 
@@ -112,13 +107,13 @@ will create a directory `build/hdl`
 
 **Default:** Either `vhdl`, `verilog`, or `systemverilog` depending on the synthesis target.
 
--fclash-hdlsyn  
+`-fclash-hdlsyn`  
 Specify the HDL synthesis tool which will be used.
-Available options are `Vivado`, `Quartus` and `Other`, but some synonyms for these exist (`Xilinx` and `ISE` are synonyms for `Vivado`, `Altera` and `Intel` are synyonyms for `Quartus`).
+Available options are `Vivado`, `Quartus` and `Other`, but some synonyms for these exist (`Xilinx` and `ISE` are synonyms for `Vivado`, `Altera` and `Intel` are synonyms for `Quartus`).
 
 **Default:** `Other`
 
--fclash-no-cache  
+`-fclash-no-cache`  
 Don't reuse previously generated output from Clash, instead generating HDL from a clean state.
 While this leads to longer builds, it can be useful in development.
 
@@ -136,20 +131,20 @@ Previously this flag was called `-fclash-nocache`, however this is now deprecate
 
 **Default:** Cache generated HDL
 
--fclash-no-check-inaccessible-idirs  
+`-fclash-no-check-inaccessible-idirs`  
 Check that all include directories (containing primitives) exist when running Clash.
 If any directory does not exist, an error is thrown.
 
 **Default:** Check directories
 
--fclash-clear  
+`-fclash-clear`  
 Remove HDL directories before writing to them (if cache can't be used).
 By default, Clash will only write to non-empty directories if it can prove all files in it are generated by a previous run.
 This option applies to directories of the various top entities, i.e., the subdirectories made in the directory passed in with `-fclash-hdldir`.
 
 **Default:** Clean before build
 
--fclash-no-prim-warn  
+`-fclash-no-prim-warn`  
 Disable warnings for primitives that are annotated with `warnAlways`.
 This means warnings from annotations like
 
@@ -161,56 +156,56 @@ will not be shown when compiling.
 
 **Default:** Show warnings
 
--fclash-spec-limit  
+`-fclash-spec-limit`  
 Change the number of times a function can undergo specialization.
 
 **Default:** 20
 
--fclash-inline-limit  
+`-fclash-inline-limit`  
 Change the number of times a function `f` can undergo inlining inside some other function `g`.
 This prevents the size of `g` growing dramatically.
 
 **Default:** 20
 
--fclash-inline-function-limit  
+`-fclash-inline-function-limit`  
 Set the threshold for function size.
-Below this threshold functions are always inlined (if it is not recursive).
+Below this threshold a function is always inlined (if it is not recursive).
 
 **Default:** 15
 
--fclash-inline-constant-limit  
+`-fclash-inline-constant-limit`  
 Set the threshold for constant size.
 Below this threshold constants are always inlined.
 A value of 0 inlines all constants.
 
 **Default:** 0
 
--fclash-evaluator-fuel-limit  
+`-fclash-evaluator-fuel-limit`  
 Set the threshold for unfolding potentially non-terminating bindings in the evaluator.
 A value of 0 only unfolds terminating bindings.
 
 **Default:** 20
 
--fclash-intwidth  
+`-fclash-intwidth`  
 Set the bit width for the `Int/Word/Integer` types in the generated HDL.
 Clash simulation is not affected, and neither are `BitPack` instances.
 The only allowed values are 32 or 64.
 
 **Default:** Machine word size (`WORD_SIZE_IN_BITS`)
 
--fclash-error-extra  
+`-fclash-error-extra`  
 Print additional information with compiler errors if it as available.
 If there is extra information and this flag is not enabled, a message will be printed suggesting this flag.
 
 **Default:** False
 
--fclash-float-support  
+`-fclash-float-support`  
 Enable support for floating point numbers.
 If this is disabled, Clash will not attempt to convert Float and Double values for hardware.
 
 **Default:** False
 
--fclash-component-prefix  
+`-fclash-component-prefix`  
 Prefix the names of generated HDl components with a string.
 For example a component `foo` would be called `xcorp_foo` if run with
 
@@ -220,37 +215,37 @@ clash -fclash-component-prefix "xcorp"
 
 **Default:** ""
 
--fclash-old-inline-strategy  
+`-fclash-old-inline-strategy`  
 The new inlining strategy for Clash inlines all functions which are not marked with `NOINLINE` or a synthesize attribute.
 The old inlining strategy differed, attempting only to inline functions which were deemed "cheap".
 The old inlining strategy may be quicker in practice for some circuits.
 
 **Default:** False
 
--fclash-no-escaped-identifiers  
+`-fclash-no-escaped-identifiers`  
 Disable extended identifiers, as used in some HDLs like VHDL to allow more flexibility with names.
 Clash will only generate basic identifiers if this is used.
 
 **Default:** Escaped identifiers are allowed
 
--fclash-lower-case-basic-identifiers  
+`-fclash-lower-case-basic-identifiers`  
 Clash will only generate lower case basic identifiers if this is used.
 This affects places where the various HDLs only allow basic identifiers to be used, most notably module and file names.
 
 **Default:** Disabled
 
--fclash-compile-ultra  
+`-fclash-compile-ultra`  
 Aggressively run the normalizer, potentially gaining much better runtime performance at the expense of compile time.
 
 **Default:** False
 
--fclash-force-undefined{,0,1}  
+`-fclash-force-undefined{,0,1}`  
 Set the value to use when an undefined value is inserted into generated HDL.
 This flag can be suffixed with either 0 or 1 to force use of that bit, or left without a suffix to use a HDL-specific default (e.g. `x` in Verilog).
 
 **Default:** Disabled
 
--fclash-aggressive-x-optimization  
+`-fclash-aggressive-x-optimization`  
 Remove all undefined branches from case expressions, replacing them with another defined value in the expression.
 If only one branch is defined, the case expression is elided completely.
 If no branches are defined the entire expression is replaced with a call to `errorX`.
@@ -259,25 +254,25 @@ If no branches are defined the entire expression is replaced with a call to `err
 
 **Default:** False
 
--fclash-aggressive-x-optimization-blackboxes  
+`-fclash-aggressive-x-optimization-blackboxes`  
 Allow blackboxes to detect undefined values and change their behavior accordingly.
 For example, if `register` is used in combination with an undefined reset value, it will leave out the reset logic entirely.
 This flag is enabled when using `-fclash-aggressive-x-optimization`.
 
 **Default:** False
 
--fclash-edalize  
+`-fclash-edalize`  
 Generate metadata for use with [Edalize](https://github.com/olofk/edalize).
 This generates edam.py files in all top entities with the configuration for building that entity.
-Users still need to edit this file to specify the EDA tool to use, and if necessary the device to target (for Quartus, Vivado etc.)
+Users still need to edit this file to specify the EDA tool to use, and if necessary the device to target (for Quartus, Vivado etc.).
 
 **Default:** False
 
--main-is  
-When using one of `--vhdl`, `--verilog`, or `--systemverilog`, this flag refers to synthesis target.
+`-main-is`  
+When using one of `--vhdl`, `--verilog`, or `--systemverilog`, this flag refers to the synthesis target.
 For example, running Clash with `clash My.Module -main-is top --vhdl` would synthesize `My.Module.top`.
 
--fclash-timescale-precision  
+`-fclash-timescale-precision`  
 Sets the second part of Verilog's `timescale 100fs/100fs`.
 E.g., setting this flag to `1fs` would make Clash generate Verilog files with `timescale 100fs/1fs` as their header.
 
