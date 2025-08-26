@@ -1,9 +1,3 @@
 # Release Notes
 
-## Clash 1.0.1
-
-<https://github.com/clash-lang/clash-compiler/releases/tag/v1.0.1>
-
-## Clash 1.0.0
-
-<https://github.com/clash-lang/clash-compiler/releases/tag/v1.0.0>
+Up to date release notes of the clash compiler can be found on the [Github releases page](https://github.com/clash-lang/clash-compiler/releases).
