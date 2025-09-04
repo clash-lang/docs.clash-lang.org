@@ -2,17 +2,14 @@
 
 Clash is a functional hardware description language that borrows both its syntax and semantics from the functional programming language Haskell.
 It provides a familiar structural design approach to both combination and synchronous sequential circuits.
-The Clash compiler transforms these high-level descriptions to low-level synthesizable VHDL, Verilog, or SystemVerilog.
 
-Features of Clash:
+Features of the Clash language:
 
   * Strongly typed, but with a very high degree of type inference, enabling both safe and fast prototyping using concise descriptions.
   * Interactive REPL: load your designs in an interpreter and easily test all your component without needing to setup a test bench.
-  * Compile your designs for fast simulation.
   * Higher-order functions, in combination with type inference, result in designs that are fully parametric by default.
   * Synchronous sequential circuit design based on streams of values, called `Signal`s, lead to natural descriptions of feedback loops.
   * Multiple clock domains, with type safe clock domain crossing.
-  * Template language for introducing new VHDL/(System)Verilog primitives.
 
 Although we say that Clash borrows the semantics of Haskell, that statement should be taken with a grain of salt.
 What we mean to say is that the Clash compiler views a circuit description as *structural* description.
@@ -34,3 +31,7 @@ Over time, you will get a better feeling for the consequences of taking a *struc
 What is always important to remember is that every applied functions results in an instantiated component, and also that the compiler will *never* infer / invent more logic than what is specified in the circuit description.
 
 With that out of the way, let us continue with installing Clash and building our first circuit.
+
+## Installing Clash
+
+For installation instructions, see [clash-lang.org/install/](https://clash-lang.org/install/)
