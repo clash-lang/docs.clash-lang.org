@@ -1,0 +1,345 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Prelude - Clash Compiler User Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Clash Compiler User Guide</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="clash-prelude"><a class="header" href="#clash-prelude">Clash Prelude</a></h1>
+<h2 id="basic-types"><a class="header" href="#basic-types">Basic Types</a></h2>
+<p>The Clash prelude includes many different numeric types, which are used to safely define other types/functions.
+These include, but may not be limited to</p>
+<ul>
+<li>
+<p>Type level natural numbers (<code>Nat</code>), which allow numbers to be used in types.
+Conceptually, this is similar to <em>const generics</em> in <em>C++</em>.</p>
+<p>It is possible to have term level values which refer to a type level number.
+This is called <code>SNat n</code> (for <em>singleton natural number</em>).
+These are defined up to 1024 with the prefix "d" (e.g. <code>d256</code>).</p>
+</li>
+<li>
+<p><code>Unsigned n</code> and <code>Signed n</code> numbers with an arbitrary width (given as a type level natural number).
+These allow fixed-width arithmetic to be used on arbitrary numbers.</p>
+</li>
+<li>
+<p><code>Index n</code> provides natural numbers up to an arbitrary value (given as a type level natural number).
+These allow indexing into fixed width structures like <code>Vec n a</code>.</p>
+</li>
+</ul>
+<p>Another commonly used type is <code>BitVector n</code>.
+This provides a fixed size vector of <code>Bit</code> values which can be indexed, and used to perform <em>unsigned integer arithmetic</em>.
+Any type that can be marshaled to/from a <code>BitVector n</code> implements the <code>BitPack</code> class, which defines the conversion.</p>
+<div class="note">
+<div class="title">
+<p>Note</p>
+</div>
+<p>It is also possible to derive instances of <code>BitPack</code> using <code>Generic</code>, by writing <code>deriving (Generic, BitPack)</code> in the type definition.
+This automatically determines how to do the conversion at compile-time.</p>
+</div>
+<p>More generally, there is a <code>Vec n a</code> type which allows collections of arbitrary values to be used.
+These vectors are tagged with their length, to prevent out of bounds access at compile-time.</p>
+<div class="warning">
+<div class="title">
+<p>Warning</p>
+</div>
+<p>The <code>Vec n a</code> type exports pattern synonyms for inserting at the left and right of a vector.
+The types of the <code>Cons</code> constructor and <code>(:&gt;)</code> pattern are slightly different, and may behave differently in practice.</p>
+<p>The <code>Cons</code> constructor has a more general type, allowing it to be used in some cases where the pattern cannot be used.
+However, this additional power comes at the cost of type inference.
+It is recommended that users use the <code>(:&gt;)</code> pattern by default, and only use <code>Cons</code> when necessary.</p>
+</div>
+<h2 id="synthesis-domains"><a class="header" href="#synthesis-domains">Synthesis Domains</a></h2>
+<p>Synchronous circuits have a synthesis domain, which determines the behavior of things which can affect signals in the domain.
+Domains consist of</p>
+<ul>
+<li>a name, which uniquely refers to the domain</li>
+<li>the clock period in ps</li>
+<li>the active edge of the clock</li>
+<li>whether resets are synchronous (edge-sensitive) or not</li>
+<li>whether the initial (power up) behavior is defined</li>
+<li>whether resets are high or low polarity</li>
+</ul>
+<p>The prelude provides some common domains, namely <code>XilinxSystem</code> and <code>IntelSystem</code> for the standard configurations of each vendor.
+There is also a generic domain, <code>System</code>, which can be used for vendor-agnostic purposes (e.g., writing a generic test bench).
+It is possible to define new synthesis domains for custom hardware using the <code>createDomain</code> function, which also defines the necessary instances for domains.</p>
+<p>A value in a synchronous circuit is wrapped in the <code>Signal dom a</code> type, which specifies the synthesis domain and the type of value.
+Any function which needs access to a domain can use the constraint <code>KnownDomain</code> to extract configuration.</p>
+<p>The default API exposed by the prelude is implicit with regards to clocks, reset lines and enable lines, as these can be determined at compile time.
+However, if they are needed the <code>Clash.Explicit</code> module contains explicit versions of the API which expose these directly in function arguments.
+It is also possible to use functions like <code>exposeClockResetEnable</code> to turn an implicitly defined function to an explicitly defined function.</p>
+<h2 id="state-machines"><a class="header" href="#state-machines">State Machines</a></h2>
+<p>The Clash prelude contains combinators for two classical finite state machines which can be used to define synchronous circuits.
+The first of these is <code>mealy</code>, which encodes a <a href="https://en.wikipedia.org/wiki/Mealy_machine">Mealy machine</a>.
+This is a machine specified by</p>
+<ul>
+<li>A transition function of type <code>state -&gt; input -&gt; (state, output)</code></li>
+<li>An initial state</li>
+<li>An input signal which can change at each cycle</li>
+</ul>
+<div class="note">
+<div class="title">
+<p>Note</p>
+</div>
+<p>The Mealy machine is similar to the <code>State</code> monad, which Haskell programmers may already be familiar with.
+Practically speaking, the only difference is that this machine also has an input signal which is changed externally to the definition of the machine.</p>
+</div>
+<p>It is also possible to define a <a href="https://en.wikipedia.org/wiki/Moore_machine">Moore machine</a> using the <code>moore</code> function in the Clash prelude.
+This differs from the Mealy machine by providing output based on the previous state (as opposed to the newly calculated state), and is specified by</p>
+<ul>
+<li>A transition function of type <code>state -&gt; input -&gt; state</code></li>
+<li>An output function of type <code>state -&gt; output</code></li>
+<li>An initial state</li>
+<li>An input signal which can change at each cycle</li>
+</ul>
+<p>Sometimes, there may be multiple inputs/outputs needed for a machine.
+As machines only input and output a single signal, there is a way to combine and separate multiple signals.
+The <code>Bundle</code> class specifies how to convert between some type which is a signal of a product, and some type which is a product of signals, e.g.</p>
+<pre><code class="language-haskell">bundle   :: (Signal dom a, Signal dom b) -&gt; Signal dom (a, b)
+unbundle :: Signal dom (a, b) -&gt; (Signal dom a, Signal dom b)
+</code></pre>
+<p>There are combinators which can automatically perform this bundling and unbundling for you as required, called <code>mealyB</code> and <code>mooreB</code>.
+The <code>Bundle</code> class is already defined for many types, including tuples (up to 62 elements), <code>Maybe a</code>, <code>Either a b</code> and <code>Vec n a</code>.</p>
+<h2 id="ram-and-rom"><a class="header" href="#ram-and-rom">RAM and ROM</a></h2>
+<p>The Clash prelude provides the ability to work with synchronous and asynchronous ROM, asynchronous RAM and synchronous Block RAM.
+The simplest of these are ROMs, which only allow indexing into a <code>Vec n a</code> of elements.
+ROM is defined using the functions in <code>Clash.Prelude.ROM</code>.</p>
+<p>RAM is more complex, as it allows both reading and writing.
+The function to define a RAM takes in a signal for the address to read, and a signal for an optional address to update (bundled with the new value).
+At each cycle it outputs the value of the memory address read in the previous cycle.
+Asynchronous RAM is defined in <code>Clash.Prelude.RAM</code>.</p>
+<p>An FPGA may include a block RAM, which is a larger memory structure and more suitable for some applications.
+Block RAM also has a synchronous read port, allowing memory access to be synchronized to a clock.
+Block RAM is used the same way as async RAM, allowing the two to be compared quickly.
+Block RAM is defined in <code>Clash.Prelude.BlockRam</code>.</p>
+<h2 id="undefined-values"><a class="header" href="#undefined-values">Undefined Values</a></h2>
+<p>When working with hardware designs, there are times when undefined values may be encountered in simulation.
+Clash provides a custom exception type, <code>XException</code>, for cases when an undefined value is encountered.
+There are also many utility functions for working with exceptions, such as</p>
+<ul>
+<li><code>errorX</code>, which throws an <code>XException</code></li>
+<li><code>isX</code> and <code>hasX</code>, which check for <code>XExceptions</code> when evaluating</li>
+<li><code>maybeIsX</code> and <code>maybeHasX</code>, which discard information about exceptions</li>
+</ul>
+<p>There are also implementations of typical classes in Haskell which have been changed to work with undefined values.
+Currently these are</p>
+<ul>
+<li><code>ShowX</code>, which works like the <code>Show</code> class in Haskell.
+When an undefined value is encountered an "X" is printed.
+<code>Show</code> can still be used, but will throw an exception if an undefined value is encountered.</li>
+<li><code>NFDataX</code>, which works like the <code>NFData</code> class in the <code>deepseq</code> library.
+This allows evaluating values to normal form in code when <code>XException</code> may be present.
+<code>NFData</code> can still be used, but will bubble up exceptions if <code>XException</code> is encountered.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../developing-hardware/language.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../developing-hardware/flags.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../developing-hardware/language.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../developing-hardware/flags.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
