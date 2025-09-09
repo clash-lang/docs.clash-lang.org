@@ -12,4 +12,5 @@
     - [Language](./developing-hardware/language.md)
     - [Prelude](./developing-hardware/prelude.md)
     - [Flags](./developing-hardware/flags.md)
+    - [User-defined primitives](./developing-hardware/primitives.md)
 - [Hacking on Clash](./hacking-on-clash/index.md)
