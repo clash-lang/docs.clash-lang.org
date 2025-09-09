@@ -1,0 +1,55 @@
+name: "mdBook Preview"
+
+# Run on pull requests
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Needed for deploying to GitHub Pages and for posting a PR comment
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      MDBOOK_VERSION: 0.4.51
+    if: github.repository_owner == 'clash-lang' # don't run from forks
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install mdBook
+        run: |
+          curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -y | sh
+          rustup update
+          cargo install --version ${MDBOOK_VERSION} mdbook
+
+      - name: Build Compiler User Guide with mdBook
+        run: mdbook build
+        working-directory: ./compiler-user-guide
+
+      - name: Add Index Page
+        run: |
+          mkdir -p public
+          cp index.html ./public/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public # The directory mdbook builds to
+          # Deploy to a subdirectory like "pr-123"
+          destination_dir: ./pr-${{ github.event.pull_request.number }}
+          # Keep other PR previews by not cleaning the destination_dir
+          keep_files: true
+
+      # Post a comment on the PR with the link to the preview
+      - name: Post Preview Link Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          # Construct the URL for the preview
+          message: |
+            Thank you for your PR! A preview of your changes is live at
+            **[https://docs.clash-lang.org/pr-${{ github.event.pull_request.number }}/](https://docs.clash-lang.org/pr-${{ github.event.pull_request.number }}/)**

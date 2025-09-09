@@ -1,0 +1,37 @@
+name: "mdBook Preview Cleanup"
+
+# Run only when a pull request is closed (merged or not)
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup-preview:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'clash-lang' # don't run from forks
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: "gh-pages"
+
+      - name: Remove PR Preview Directory
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          echo "Removing directory ./pr-${PR_NUMBER}"
+          rm -rf ./pr-${PR_NUMBER}
+
+      - name: Commit and Push Deletion
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ # Publish the whole branch after deletion
+          # The user who will commit the deletion
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_message: "Cleanup: Remove preview for PR #${{ github.event.pull_request.number }}"
+          force_orphan: false # Set to true if you want a clean history, but false is safer here
+          allow_empty_commit: true
