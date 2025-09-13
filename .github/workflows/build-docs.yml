@@ -43,6 +43,9 @@ jobs:
       - name: Build Compiler User Guide with mdBook
         run: mdbook build
         working-directory: ./compiler-user-guide
+      - name: Build Tutorial with mdBook
+        run: mdbook build
+        working-directory: ./tutorial
 
       - name: Add Index Page
         run: |
@@ -53,5 +56,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public/compiler-user-guide
-          destination_dir: ./compiler-user-guide
+          publish_dir: ./public
+          destination_dir: .
