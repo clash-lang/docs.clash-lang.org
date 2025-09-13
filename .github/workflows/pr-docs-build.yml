@@ -30,6 +30,10 @@ jobs:
         run: mdbook build
         working-directory: ./compiler-user-guide
 
+      - name: Build Tutorial with mdBook
+        run: mdbook build
+        working-directory: ./tutorial
+
       - name: Add Index Page
         run: |
           mkdir -p public
