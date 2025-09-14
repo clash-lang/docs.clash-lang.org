@@ -48,10 +48,12 @@ jobs:
         run: |
           mkdir -p public
           cp index.html ./public/index.html
+          cp CNAME ./public/CNAME
 
-      - name: Deploy Compiler User Guide to GitHub Pages
+      - name: Deploy website to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public/compiler-user-guide
-          destination_dir: ./compiler-user-guide
+          publish_dir: ./public
+          # Keep PR previews by not cleaning the destination_dir
+          keep_files: true
