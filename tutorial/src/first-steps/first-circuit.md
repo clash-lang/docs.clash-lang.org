@@ -99,7 +99,7 @@ All (sequential) components in the circuit are synchronized to this global *cloc
 For the rest of this tutorial, and probably at any moment where you will be working with Clash, you should probably not actively think about `Signal`s as infinite lists of samples, but just as values that are manipulated by sequential circuits.
 To make this even easier, it actually not possible to manipulate the underlying representation directly: you can only modify `Signal` values through a set of primitives such as the `register` function above.
 
-Now, let us get back to the functionality of the `register` function: it is a simple [latch](https://en.wikipedia.org/wiki/Flip-flop_\(electronics\)) that only changes state at the tick of the global *clock*, and it has an initial value `a` which is its output at time 0.
+Now, let us get back to the functionality of the `register` function: it is a simple [flip-flop](https://en.wikipedia.org/wiki/Flip-flop_\(electronics\)) that only changes state at the tick of the global *clock*, and it has an initial value `a` which is its output at time 0.
 We can further examine the `register` function by taking a look at the first 4 samples of the `register` functions applied to a constant signal with the value 8:
 
 ```haskell

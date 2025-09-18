@@ -1,13 +1,7 @@
 # Working with this tutorial
 
 This tutorial can be followed best whilst having the Clash interpreter running at the same time.
-If you followed the installation instructions based on [Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install), you can start the Clash compiler in interpretive mode by:
-
-```
-stack exec --resolver lts-19 --package clash-ghc -- clashi
-```
-
-If instead you followed the [instructions](https://clash-lang.org/install/linux/) to setup a starter project with Stack, you can also run `clashi` inside such a project.
+If you followed the [instructions](https://clash-lang.org/install/) to setup a starter project with Stack, you can also run `clashi` inside such a project.
 Change to the directory of the project, and invoke
 
 ```
@@ -18,6 +12,12 @@ If you instead set up the starter project with GHC and Cabal, change to the dire
 
 ```
 > cabal run -- clashi
+```
+
+If you instead followed the instructions under *Run Clash on its own*, you can start the Clash compiler in interpretive mode by:
+
+```
+stack exec --resolver lts-23.15 --package clash-ghc -- clashi
 ```
 
 For those familiar with Haskell/GHC, this is indeed just `GHCi`, with three added commands (`:vhdl`, `:verilog`, and `:systemverilog`).

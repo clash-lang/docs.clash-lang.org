@@ -56,8 +56,7 @@ Where the first argument of `mealy` is our `macT` function, and the second argum
 We can see it is functioning correctly in our interpreter:
 
 ``` haskell
->>> import qualified Data.List as L
->>> L.take 4 $ simulate @System mac [(1,1),(2,2),(3,3),(4,4)]
+>>> simulateN @System 4 mac [(1,1),(2,2),(3,3),(4,4)]
 [0,1,5,14]
 ```
 

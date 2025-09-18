@@ -9,8 +9,8 @@ There are multiple reasons as to why you might want to create a so-called *test 
 For these purposes, you can have the Clash compiler generate a *test bench*.
 In order for the Clash compiler to do this you need to do one of the following:
 
-- Create a function called *testBench* in the root module.
-- Annotate your *topEntity* function (or function with a [Synthesize](Clash-Tutorial.html#g:12) annotation) with a `TestBench` annotation.
+- Create a function called `testBench` in the root module.
+- Annotate your test bench function with a `TestBench` annotation.
 
 For example, you can test the earlier defined *topEntity* by:
 
