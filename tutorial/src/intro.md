@@ -17,7 +17,7 @@ Features of Clash:
 Although we say that Clash borrows the semantics of Haskell, that statement should be taken with a grain of salt.
 What we mean to say is that the Clash compiler views a circuit description as *structural* description.
 This means, in an academic handwavy way, that every function denotes a component and every function application denotes an instantiation of said component.
-Now, this has consequences on how we view *recursively* defined functions: structurally, a recursively defined function would denote an *infinitely* deep / structured component, something that cannot be turned into an actual circuit (See also [Limitations of Clash](#limitations)).
+Now, this has consequences on how we view *recursively* defined functions: structurally, a recursively defined function would denote an *infinitely* deep / structured component, something that cannot be turned into an actual circuit.
 
 On the other hand, Haskell's by-default non-strict evaluation works very well for the simulation of the feedback loops, which are ubiquitous in digital circuits.
 That is, when we take our structural view to circuit descriptions, value-recursion corresponds directly to a feedback loop:

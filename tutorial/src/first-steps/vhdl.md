@@ -46,7 +46,7 @@ It must meet the following restrictions in order for the Clash compiler to work:
 
 -   It must be completely monomorphic
 -   It must be completely first-order
--   Although not strictly necessary, it is recommended to *expose* `Hidden` clock and reset arguments, as it makes user-controlled [name assignment](Clash-Tutorial.html#annotations) in the generated HDL easier to do.
+-   Although not strictly necessary, it is recommended to *expose* `Hidden` clock and reset arguments, as it makes user-controlled name assignment in the generated HDL easier to do.
 
 Our `topEntity` meets those restrictions, and so we can convert it successfully to VHDL by executing the `:vhdl` command in the interpreter.
 This will create a directory called `vhdl`, which contains a directory called `MAC`, which ultimately contains all the generated VHDL files.

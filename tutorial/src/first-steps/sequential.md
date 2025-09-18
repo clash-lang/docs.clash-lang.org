@@ -2,7 +2,6 @@
 
 The `register` function is our primary sequential building block to capture *state*.
 It is used internally by one of the `Clash.Prelude` function that we will use to describe our MAC circuit.
-Note that the following paragraphs will only show one of many ways to specify a sequential circuit, in the section [Alternative specifications](#mac6) we will show a couple more.
 
 A principled way to describe a sequential circuit is to use one of the classic machine models, within the Clash prelude library offer standard function to support the [Mealy machine](http://en.wikipedia.org/wiki/Mealy_machine).
 To improve sharing, we will combine the transition function and output function into one.
