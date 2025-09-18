@@ -33,7 +33,7 @@ We can now finally start describing the logic of our circuit, starting with just
 ma acc (x, y) = acc + x * y
 ```
 
-The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we'll later see).
+The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we will later see).
 We usually refer to circuits as *functions*, similar to programming languages such as C, Python, or Haskell.
 In this case, the function we just defined is called `ma`.
 Its first argument is `acc`, its second is `(x, y)` - a composite type called a tuple.
@@ -57,10 +57,10 @@ ma :: Num a => a -> (a, a) -> a
 
 You should read this as follows:
 
- * **`ma ::`**, `ma` is of type..
+ * **`ma ::`**, `ma` is of type&hellip;
 
 * **`Num a`**, there is some type called `a` that is a `Num`.
-    Examples of instances of `Num` are `Int`, `Signed 16`, `Index 32`, and `Float`.
+    Examples of instances of `Num` are `Int`, `Signed 16`, `Index 32`, or `Float`.
 
  * **`a`**, `ma`'s first argument is of type `a`
 
@@ -73,7 +73,7 @@ The only condition we imposed is that `a` should be a `Num`ber type.
 In Clash this means it should support the operations `Prelude.+`, `Prelude.-`, `Prelude.*`, and some others.
 Indeed, this is why Clash adds the constraint in the first place: the definition of `ma` uses `+` and `*`.
 Whenever a function works over multiple types, we call it *polymorphic* ("poly" meaning "many", "morphic" meaning "forms").
-While powerful, its not clear how Clash should synthesize this as numbers come in a great variety in (bit)sizes.
+While powerful, it is not clear how Clash should synthesize this as numbers come in a great variety of (bit)sizes.
 We will later see how to use this function in a *monomorphic* manner.
 
 Talking about *types* also brings us to one of the most important parts of this tutorial: *types* and *synchronous sequential logic*.
@@ -94,10 +94,10 @@ register i s = ...
 Where we see that the second argument and the result are not just of the *polymorphic* `a` type, but of the type: `Signal dom a`.
 All (synchronous) sequential circuits work on values of type `Signal dom a`.
 Combinational circuits always work on values of, well, not of type `Signal dom a`.
-A `Signal` is an (infinite) list of samples, where the samples correspond to the values of the `Signal` at discrete, consecutive, ticks of the *clock*.
+A `Signal` is an (infinite) list of samples, where the samples correspond to the values of the `Signal` at discrete, consecutive ticks of the *clock*.
 All (sequential) components in the circuit are synchronized to this global *clock*.
 For the rest of this tutorial, and probably at any moment where you will be working with Clash, you should probably not actively think about `Signal`s as infinite lists of samples, but just as values that are manipulated by sequential circuits.
-To make this even easier, it actually not possible to manipulate the underlying representation directly: you can only modify `Signal` values through a set of primitives such as the `register` function above.
+To make this even easier, it is actually not possible to manipulate the underlying representation directly: you can only modify `Signal` values through a set of primitives such as the `register` function above.
 
 Now, let us get back to the functionality of the `register` function: it is a simple [flip-flop](https://en.wikipedia.org/wiki/Flip-flop_\(electronics\)) that only changes state at the tick of the global *clock*, and it has an initial value `a` which is its output at time 0.
 We can further examine the `register` function by taking a look at the first 4 samples of the `register` functions applied to a constant signal with the value 8:

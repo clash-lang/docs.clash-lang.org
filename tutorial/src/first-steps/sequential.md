@@ -1,9 +1,10 @@
 # Sequential circuit
 
 The `register` function is our primary sequential building block to capture *state*.
-It is used internally by one of the `Clash.Prelude` function that we will use to describe our MAC circuit.
+It is used internally by one of the `Clash.Prelude` functions that we will use to describe our MAC circuit.
 
-A principled way to describe a sequential circuit is to use one of the classic machine models, within the Clash prelude library offer standard function to support the [Mealy machine](http://en.wikipedia.org/wiki/Mealy_machine).
+A principled way to describe a sequential circuit is to use one of the classic machine models.
+Within the Clash prelude library we offer a standard function to support the [Mealy machine](http://en.wikipedia.org/wiki/Mealy_machine).
 To improve sharing, we will combine the transition function and output function into one.
 This gives rise to the following Mealy specification of the MAC circuit:
 
@@ -14,7 +15,7 @@ macT acc (x, y) = (acc', o)
   o = acc
 ```
 
-Note that the `where` clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could've also written:
+Note that the `where` clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could have also written:
 
 ``` haskell
 macT acc inp = (ma acc inp, acc)
@@ -34,7 +35,7 @@ When we examine the type of `macT` we see that is still completely combinational
 macT :: Num a => a -> (a, a) -> (a, a)
 ```
 
-The `Clash.Prelude` library contains a function that creates a sequential circuit from a combinational circuit that has the same Mealy machine type / shape of `macT`:
+The `Clash.Prelude` library contains a function that creates a sequential circuit from a combinational circuit that has the same Mealy machine type/shape of `macT`:
 
 ``` haskell
 mealy ::

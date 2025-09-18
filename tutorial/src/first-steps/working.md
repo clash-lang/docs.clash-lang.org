@@ -5,13 +5,13 @@ If you followed the [instructions](https://clash-lang.org/install/) to setup a s
 Change to the directory of the project, and invoke
 
 ```
-> stack run -- clashi
+stack run -- clashi
 ```
 
 If you instead set up the starter project with GHC and Cabal, change to the directory of the project and invoke
 
 ```
-> cabal run -- clashi
+cabal run -- clashi
 ```
 
 If you instead followed the instructions under *Run Clash on its own*, you can start the Clash compiler in interpretive mode by:

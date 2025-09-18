@@ -18,5 +18,5 @@ Note
 The Clash Compiler and the Clash Language Tutorial are open-source efforts developed by QBayLogic B.V. and other volunteers.
 The Clash Team always appreciates feedback and contributions to the project to help improve the development experience.
 
-If you don't understand something, or think something is missing or incorrect in the documentation you can open an issue or pull request in the [GitHub repository](https://github.com/clash-lang/docs.clash-lang.org).
+If you do not understand something, or think something is missing or incorrect in the documentation you can open an issue or pull request in the [GitHub repository](https://github.com/clash-lang/docs.clash-lang.org).
 </div>

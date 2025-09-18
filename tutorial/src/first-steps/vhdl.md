@@ -50,4 +50,4 @@ It must meet the following restrictions in order for the Clash compiler to work:
 
 Our `topEntity` meets those restrictions, and so we can convert it successfully to VHDL by executing the `:vhdl` command in the interpreter.
 This will create a directory called `vhdl`, which contains a directory called `MAC`, which ultimately contains all the generated VHDL files.
-You can now load these files into your favourite VHDL synthesis tool, marking `topentity.vhdl` as the file containing the top level entity.
+You can now load these files into your favorite VHDL synthesis tool, marking `topentity.vhdl` as the file containing the top level entity.
