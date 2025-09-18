@@ -166,33 +166,33 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>Clash is a functional hardware description language that borrows both its syntax and semantics from the functional programming language Haskell.
-It provides a familiar structural design approach to both combination and synchronous sequential circuits.
-The Clash compiler transforms these high-level descriptions to low-level synthesizable VHDL, Verilog, or SystemVerilog.</p>
-<p>Features of Clash:</p>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p>Clash is a functional hardware description language that borrows both its syntax and semantics from the functional programming language Haskell.
+It provides a familiar structural design approach to both combinational and synchronous sequential circuits.</p>
+<p>Features of the Clash language:</p>
 <ul>
 <li>Strongly typed, but with a very high degree of type inference, enabling both safe and fast prototyping using concise descriptions.</li>
-<li>Interactive REPL: load your designs in an interpreter and easily test all your component without needing to setup a test bench.</li>
-<li>Compile your designs for fast simulation.</li>
+<li>Interactive <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">REPL</a>: load your designs in an interpreter and easily test all your components without needing to set up a test bench.</li>
 <li>Higher-order functions, in combination with type inference, result in designs that are fully parametric by default.</li>
-<li>Synchronous sequential circuit design based on streams of values, called <code>Signal</code>s, lead to natural descriptions of feedback loops.</li>
-<li>Multiple clock domains, with type safe clock domain crossing.</li>
-<li>Template language for introducing new VHDL/(System)Verilog primitives.</li>
+<li>Synchronous sequential circuit design based on streams of values, called <code>Signal</code>s, leads to natural descriptions of feedback loops.</li>
+<li>Multiple clock domains, with type-safe clock domain crossing.</li>
 </ul>
 <p>Although we say that Clash borrows the semantics of Haskell, that statement should be taken with a grain of salt.
-What we mean to say is that the Clash compiler views a circuit description as <em>structural</em> description.
-This means, in an academic handwavy way, that every function denotes a component and every function application denotes an instantiation of said component.
-Now, this has consequences on how we view <em>recursively</em> defined functions: structurally, a recursively defined function would denote an <em>infinitely</em> deep / structured component, something that cannot be turned into an actual circuit (See also <a href="#limitations">Limitations of Clash</a>).</p>
-<p>On the other hand, Haskell's by-default non-strict evaluation works very well for the simulation of the feedback loops, which are ubiquitous in digital circuits.
-That is, when we take our structural view to circuit descriptions, value-recursion corresponds directly to a feedback loop:</p>
+What we mean to say is that the Clash compiler views a circuit description as a <em>structural</em> description.
+This means, in an academically handwavy way, that every function denotes a component and every function application denotes an instantiation of said component.
+Now, this has consequences on how we view <em>recursively</em> defined functions: structurally, a recursively defined function would denote an <em>infinitely</em> deeply structured component, something that cannot be turned into an actual circuit.</p>
+<p>On the other hand, Haskell's by-default non-strict evaluation works very well for the simulation of feedback loops, which are ubiquitous in digital circuits.
+That is, when we take a structural view on circuit descriptions, value recursion corresponds directly to a feedback loop:</p>
 <pre><code class="language-haskell">counter = s
-  where
-    s = register 0 (s + 1)
+ where
+  s = register 0 (s + 1)
 </code></pre>
-<p>The above definition, which uses value-recursion, <em>can</em> be synthesized to a circuit by the Clash compiler.</p>
+<p>The above definition, which uses value recursion, <em>can</em> be synthesized to a circuit by the Clash compiler.</p>
 <p>Over time, you will get a better feeling for the consequences of taking a <em>structural</em> view on circuit descriptions.
-What is always important to remember is that every applied functions results in an instantiated component, and also that the compiler will <em>never</em> infer / invent more logic than what is specified in the circuit description.</p>
+What is always important to remember is that every applied function results in an instantiated component, and also that the compiler will <em>never</em> infer/invent more logic than what is specified in the circuit description.</p>
 <p>With that out of the way, let us continue with installing Clash and building our first circuit.</p>
+<h2 id="installing-clash"><a class="header" href="#installing-clash">Installing Clash</a></h2>
+<p>For installation instructions, see <a href="https://clash-lang.org/install/">clash-lang.org/install/</a></p>
 
                     </main>
 

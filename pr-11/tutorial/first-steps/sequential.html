@@ -168,15 +168,15 @@
                     <main>
                         <h1 id="sequential-circuit"><a class="header" href="#sequential-circuit">Sequential circuit</a></h1>
 <p>The <code>register</code> function is our primary sequential building block to capture <em>state</em>.
-It is used internally by one of the <code>Clash.Prelude</code> function that we will use to describe our MAC circuit.
-Note that the following paragraphs will only show one of many ways to specify a sequential circuit, in the section <a href="#mac6">Alternative specifications</a> we will show a couple more.</p>
-<p>A principled way to describe a sequential circuit is to use one of the classic machine models, within the Clash prelude library offer standard function to support the <a href="http://en.wikipedia.org/wiki/Mealy_machine">Mealy machine</a>.
+It is used internally by one of the <code>Clash.Prelude</code> functions that we will use to describe our MAC circuit.</p>
+<p>A principled way to describe a sequential circuit is to use one of the classic machine models.
+Within the Clash prelude library we offer a standard function to support the <a href="http://en.wikipedia.org/wiki/Mealy_machine">Mealy machine</a>.
 To improve sharing, we will combine the transition function and output function into one.
 This gives rise to the following Mealy specification of the MAC circuit:</p>
 <pre><code class="language-haskell">macT acc (x, y) = (acc', o)
-  where
-    acc' = ma acc (x, y)
-    o    = acc
+ where
+  acc' = ma acc (x, y)
+  o = acc
 </code></pre>
 <p>Note that the <code>where</code> clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could've also written:</p>
 <pre><code class="language-haskell">macT acc inp = (ma acc inp, acc)
@@ -192,12 +192,12 @@ This gives rise to the following Mealy specification of the MAC circuit:</p>
 <pre><code class="language-haskell">&gt;&gt;&gt; :t macT
 macT :: Num a =&gt; a -&gt; (a, a) -&gt; (a, a)
 </code></pre>
-<p>The <code>Clash.Prelude</code> library contains a function that creates a sequential circuit from a combinational circuit that has the same Mealy machine type / shape of <code>macT</code>:</p>
-<pre><code class="language-haskell">mealy
-  :: (HiddenClockResetEnable dom, NFDataX s)
-  =&gt; (s -&gt; i -&gt; (s,o))
-  -&gt; s
-  -&gt; (Signal dom i -&gt; Signal dom o)
+<p>The <code>Clash.Prelude</code> library contains a function that creates a sequential circuit from a combinational circuit that has the same Mealy machine type/shape of <code>macT</code>:</p>
+<pre><code class="language-haskell">mealy ::
+  (HiddenClockResetEnable dom, NFDataX s) =&gt;
+  (s -&gt; i -&gt; (s, o)) -&gt;
+  s -&gt;
+  (Signal dom i -&gt; Signal dom o)
 mealy f initS = ...
 </code></pre>
 <p>The complete sequential MAC circuit can now be specified as:</p>
@@ -205,13 +205,11 @@ mealy f initS = ...
 </code></pre>
 <p>Where the first argument of <code>mealy</code> is our <code>macT</code> function, and the second argument is the initial state, in this case 0.
 We can see it is functioning correctly in our interpreter:</p>
-<pre><code class="language-haskell">&gt;&gt;&gt; import qualified Data.List as L
-&gt;&gt;&gt; L.take 4 $ simulate @System mac [(1,1),(2,2),(3,3),(4,4)]
+<pre><code class="language-haskell">&gt;&gt;&gt; simulateN @System 4 mac [(1,1),(2,2),(3,3),(4,4)]
 [0,1,5,14]
 </code></pre>
 <p>Where we simulate our sequential circuit over a list of input samples and take the first 4 output samples.
-We have now completed our first sequential circuit and have made an initial confirmation that it is working as expected.
--}</p>
+We have now completed our first sequential circuit and have made an initial confirmation that it is working as expected.</p>
 
                     </main>
 

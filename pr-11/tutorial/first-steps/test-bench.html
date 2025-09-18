@@ -170,35 +170,40 @@
 <p>There are multiple reasons as to why you might want to create a so-called <em>test bench</em> for the generated HDL:</p>
 <ul>
 <li>You want to compare post-synthesis / post-place&amp;route behavior to that of the behavior of the original generated HDL.</li>
-<li>Need representative stimuli for your dynamic power calculations.</li>
-<li>Verify that the HDL output of the Clash compiler has the same behavior as the Haskell / Clash specification.</li>
+<li>You need representative stimuli for your dynamic power calculations.</li>
+<li>You want to verify that the HDL output of the Clash compiler has the same behavior as the Haskell/Clash specification.</li>
 </ul>
 <p>For these purposes, you can have the Clash compiler generate a <em>test bench</em>.
 In order for the Clash compiler to do this you need to do one of the following:</p>
 <ul>
-<li>Create a function called <em>testBench</em> in the root module.</li>
-<li>Annotate your <em>topEntity</em> function (or function with a <a href="Clash-Tutorial.html#g:12">Synthesize</a> annotation) with a <code>TestBench</code> annotation.</li>
+<li>Create a function called <code>testBench</code> in the root module.</li>
+<li>Annotate your test bench function with a <code>TestBench</code> annotation.</li>
 </ul>
 <p>For example, you can test the earlier defined <em>topEntity</em> by:</p>
 <pre><code class="language-haskell">import Clash.Explicit.Testbench
 
-topEntity
-  :: Clock System
-  -&gt; Reset System
-  -&gt; Enable System
-  -&gt; Signal System (Signed 9, Signed 9)
-  -&gt; Signal System (Signed 9)
+topEntity ::
+  Clock System -&gt;
+  Reset System -&gt;
+  Enable System -&gt;
+  Signal System (Signed 9, Signed 9) -&gt;
+  Signal System (Signed 9)
 topEntity = exposeClockResetEnable mac
 
 testBench :: Signal System Bool
 testBench = done
-  where
-    testInput    = stimuliGenerator clk rst $(listToVecTH [(1,1) :: (Signed 9,Signed 9),(2,2),(3,3),(4,4)])
-    expectOutput = outputVerifier clk rst $(listToVecTH [0 :: Signed 9,1,5,14,14,14,14])
-    done         = expectOutput (topEntity clk rst en testInput)
-    en           = enableGen
-    clk          = tbSystemClockGen (not &lt;$&gt; done)
-    rst          = systemResetGen
+ where
+  testInput =
+    stimuliGenerator
+      clk
+      rst
+      $(listToVecTH [(1, 1) :: (Signed 9, Signed 9), (2, 2), (3, 3), (4, 4)])
+  expectOutput =
+    outputVerifier clk rst $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
+  done = expectOutput (topEntity clk rst en testInput)
+  en = enableGen
+  clk = tbSystemClockGen (not &lt;$&gt; done)
+  rst = systemResetGen
 </code></pre>
 <p>This will create a stimulus generator that creates the same inputs as we used earlier for the simulation of the circuit, and creates an output verifier that compares against the results we got from our earlier simulation.
 We can even simulate the behavior of the <em>testBench</em>:</p>
@@ -216,13 +221,13 @@ expected value: 14, not equal to actual value: 62
 </code></pre>
 <p>We can see that for the first 4 samples, everything is working as expected, after which warnings are being reported.
 The reason is that <code>stimuliGenerator</code> will keep on producing the last sample, (4,4), while the <code>outputVerifier'</code> will keep on expecting the last sample, 14.
-In the VHDL testbench these errors won't show, as the global clock will be stopped after 4 ticks.</p>
+In the VHDL test bench these errors won't show, as the global clock will be stopped after 4 ticks.</p>
 <p>You should now again run <code>:vhdl</code> in the interpreter; this time the compiler will take a bit longer to generate all the circuits.
-Inside the <code>./vhdl/MAC</code> directory you will now also find a <em>testbench</em> subdirectory containing all the <code>vhdl</code> files for the <em>test bench</em>.</p>
-<p>After compilation is finished you load all the files in your favourite VHDL simulation tool.
+Inside the <code>./vhdl/MAC</code> directory you will now also find a <code>testbench</code> subdirectory containing all the <code>vhdl</code> files for the <em>test bench</em>.</p>
+<p>After compilation is finished you load all the files in your favorite VHDL simulation tool.
 Once all files are loaded into the VHDL simulator, run the simulation on the <code>testbench</code> entity.
 On questasim / modelsim: doing a <code>run -all</code> will finish once the output verifier will assert its output to <code>true</code>.
-The generated testbench, modulo the clock signal generator(s), is completely synthesizable.
+The generated test bench, modulo the clock signal generator(s), is completely synthesizable.
 This means that if you want to test your circuit on an FPGA, you will only have to replace the clock signal generator(s) by actual clock sources, such as an onboard PLL.</p>
 
                     </main>

@@ -168,15 +168,15 @@
                     <main>
                         <h1 id="working-with-this-tutorial"><a class="header" href="#working-with-this-tutorial">Working with this tutorial</a></h1>
 <p>This tutorial can be followed best whilst having the Clash interpreter running at the same time.
-If you followed the installation instructions based on <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Stack</a>, you can start the Clash compiler in interpretive mode by:</p>
-<pre><code>stack exec --resolver lts-19 --package clash-ghc -- clashi
-</code></pre>
-<p>If instead you followed the <a href="https://clash-lang.org/install/linux/">instructions</a> to setup a starter project with Stack, you can also run <code>clashi</code> inside such a project.
+If you followed the <a href="https://clash-lang.org/install/">instructions</a> to setup a starter project with Stack, you can also run <code>clashi</code> inside such a project.
 Change to the directory of the project, and invoke</p>
-<pre><code>&gt; stack run -- clashi
+<pre><code>stack run -- clashi
 </code></pre>
 <p>If you instead set up the starter project with GHC and Cabal, change to the directory of the project and invoke</p>
-<pre><code>&gt; cabal run -- clashi
+<pre><code>cabal run -- clashi
+</code></pre>
+<p>If you instead followed the instructions under <em>Run Clash on its own</em>, you can start the Clash compiler in interpretive mode by:</p>
+<pre><code>stack exec --resolver lts-23.15 --package clash-ghc -- clashi
 </code></pre>
 <p>For those familiar with Haskell/GHC, this is indeed just <code>GHCi</code>, with three added commands (<code>:vhdl</code>, <code>:verilog</code>, and <code>:systemverilog</code>).
 You can load files into the interpreter using the <code>:l &lt;FILENAME&gt;</code> command.

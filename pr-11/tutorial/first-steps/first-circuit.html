@@ -212,7 +212,7 @@ ma :: Num a =&gt; a -&gt; (a, a) -&gt; a
 <p>You should read this as follows:</p>
 <ul>
 <li>
-<p><strong><code>ma ::</code></strong>, <code>ma</code> is of type..</p>
+<p><strong><code>ma ::</code></strong>, <code>ma</code> is of type…</p>
 </li>
 <li>
 <p><strong><code>Num a</code></strong>, there is some type called <code>a</code> that is a <code>Num</code>.
@@ -233,27 +233,28 @@ The only condition we imposed is that <code>a</code> should be a <code>Num</code
 In Clash this means it should support the operations <code>Prelude.+</code>, <code>Prelude.-</code>, <code>Prelude.*</code>, and some others.
 Indeed, this is why Clash adds the constraint in the first place: the definition of <code>ma</code> uses <code>+</code> and <code>*</code>.
 Whenever a function works over multiple types, we call it <em>polymorphic</em> ("poly" meaning "many", "morphic" meaning "forms").
-While powerful, its not clear how Clash should synthesize this as numbers come in a great variety in (bit)sizes.
+While powerful, its not clear how Clash should synthesize this as numbers come in a great variety of (bit)sizes.
 We will later see how to use this function in a <em>monomorphic</em> manner.</p>
 <p>Talking about <em>types</em> also brings us to one of the most important parts of this tutorial: <em>types</em> and <em>synchronous sequential logic</em>.
 Especially how we can always determine, through the types of a specification, if it describes combinational logic or (synchronous) sequential logic.
 We do this by examining the definition of one of the sequential primitives, the <code>register</code> function:</p>
-<pre><code class="language-haskell">register
-  :: ( HiddenClockResetEnable dom
-     , NFDataX a )
-  =&gt; a
-  -&gt; Signal dom a
-  -&gt; Signal dom a
+<pre><code class="language-haskell">register ::
+  ( HiddenClockResetEnable dom
+  , NFDataX a
+  ) =&gt;
+  a -&gt;
+  Signal dom a -&gt;
+  Signal dom a
 register i s = ...
 </code></pre>
 <p>Where we see that the second argument and the result are not just of the <em>polymorphic</em> <code>a</code> type, but of the type: <code>Signal dom a</code>.
 All (synchronous) sequential circuits work on values of type <code>Signal dom a</code>.
 Combinational circuits always work on values of, well, not of type <code>Signal dom a</code>.
-A <code>Signal</code> is an (infinite) list of samples, where the samples correspond to the values of the <code>Signal</code> at discrete, consecutive, ticks of the <em>clock</em>.
+A <code>Signal</code> is an (infinite) list of samples, where the samples correspond to the values of the <code>Signal</code> at discrete, consecutive ticks of the <em>clock</em>.
 All (sequential) components in the circuit are synchronized to this global <em>clock</em>.
 For the rest of this tutorial, and probably at any moment where you will be working with Clash, you should probably not actively think about <code>Signal</code>s as infinite lists of samples, but just as values that are manipulated by sequential circuits.
-To make this even easier, it actually not possible to manipulate the underlying representation directly: you can only modify <code>Signal</code> values through a set of primitives such as the <code>register</code> function above.</p>
-<p>Now, let us get back to the functionality of the <code>register</code> function: it is a simple <a href="https://en.wikipedia.org/wiki/Flip-flop_(electronics)">latch</a> that only changes state at the tick of the global <em>clock</em>, and it has an initial value <code>a</code> which is its output at time 0.
+To make this even easier, it is actually not possible to manipulate the underlying representation directly: you can only modify <code>Signal</code> values through a set of primitives such as the <code>register</code> function above.</p>
+<p>Now, let us get back to the functionality of the <code>register</code> function: it is a simple <a href="https://en.wikipedia.org/wiki/Flip-flop_(electronics)">flip-flop</a> that only changes state at the tick of the global <em>clock</em>, and it has an initial value <code>a</code> which is its output at time 0.
 We can further examine the <code>register</code> function by taking a look at the first 4 samples of the <code>register</code> functions applied to a constant signal with the value 8:</p>
 <pre><code class="language-haskell">&gt;&gt;&gt; sampleN @System 4 (register 0 (pure (8 :: Signed 8)))
 [0,0,8,8]
