@@ -179,7 +179,7 @@ You can also use the search function in the top left corner.</p>
 </div>
 <p>The Clash Compiler and the Clash Language Tutorial are open-source efforts developed by QBayLogic B.V. and other volunteers.
 The Clash Team always appreciates feedback and contributions to the project to help improve the development experience.</p>
-<p>If you don't understand something, or think something is missing or incorrect in the documentation you can open an issue or pull request in the <a href="https://github.com/clash-lang/docs.clash-lang.org">GitHub repository</a>.</p>
+<p>If you do not understand something, or think something is missing or incorrect in the documentation you can open an issue or pull request in the <a href="https://github.com/clash-lang/docs.clash-lang.org">GitHub repository</a>.</p>
 </div>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
 <p>Clash is a functional hardware description language that borrows both its syntax and semantics from the functional programming language Haskell.
@@ -272,7 +272,7 @@ Also make sure that the file name corresponds to the module name.</p>
 <p>We can now finally start describing the logic of our circuit, starting with just the multiplication and addition:</p>
 <pre><code class="language-haskell">ma acc (x, y) = acc + x * y
 </code></pre>
-<p>The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we'll later see).
+<p>The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we will later see).
 We usually refer to circuits as <em>functions</em>, similar to programming languages such as C, Python, or Haskell.
 In this case, the function we just defined is called <code>ma</code>.
 Its first argument is <code>acc</code>, its second is <code>(x, y)</code> - a composite type called a tuple.
@@ -312,7 +312,7 @@ The only condition we imposed is that <code>a</code> should be a <code>Num</code
 In Clash this means it should support the operations <code>Prelude.+</code>, <code>Prelude.-</code>, <code>Prelude.*</code>, and some others.
 Indeed, this is why Clash adds the constraint in the first place: the definition of <code>ma</code> uses <code>+</code> and <code>*</code>.
 Whenever a function works over multiple types, we call it <em>polymorphic</em> ("poly" meaning "many", "morphic" meaning "forms").
-While powerful, its not clear how Clash should synthesize this as numbers come in a great variety of (bit)sizes.
+While powerful, it is not clear how Clash should synthesize this as numbers come in a great variety of (bit)sizes.
 We will later see how to use this function in a <em>monomorphic</em> manner.</p>
 <p>Talking about <em>types</em> also brings us to one of the most important parts of this tutorial: <em>types</em> and <em>synchronous sequential logic</em>.
 Especially how we can always determine, through the types of a specification, if it describes combinational logic or (synchronous) sequential logic.
@@ -356,7 +356,7 @@ This gives rise to the following Mealy specification of the MAC circuit:</p>
   acc' = ma acc (x, y)
   o = acc
 </code></pre>
-<p>Note that the <code>where</code> clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could've also written:</p>
+<p>Note that the <code>where</code> clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could have also written:</p>
 <pre><code class="language-haskell">macT acc inp = (ma acc inp, acc)
 </code></pre>
 <p>Going back to the original specification we note the following:</p>
@@ -489,7 +489,7 @@ expected value: 14, not equal to actual value: 62
 </code></pre>
 <p>We can see that for the first 4 samples, everything is working as expected, after which warnings are being reported.
 The reason is that <code>stimuliGenerator</code> will keep on producing the last sample, (4,4), while the <code>outputVerifier'</code> will keep on expecting the last sample, 14.
-In the VHDL test bench these errors won't show, as the global clock will be stopped after 4 ticks.</p>
+In the VHDL test bench these errors will not show, as the global clock will be stopped after 4 ticks.</p>
 <p>You should now again run <code>:vhdl</code> in the interpreter; this time the compiler will take a bit longer to generate all the circuits.
 Inside the <code>./vhdl/MAC</code> directory you will now also find a <code>testbench</code> subdirectory containing all the <code>vhdl</code> files for the <em>test bench</em>.</p>
 <p>After compilation is finished you load all the files in your favorite VHDL simulation tool.

@@ -193,7 +193,7 @@ Also make sure that the file name corresponds to the module name.</p>
 <p>We can now finally start describing the logic of our circuit, starting with just the multiplication and addition:</p>
 <pre><code class="language-haskell">ma acc (x, y) = acc + x * y
 </code></pre>
-<p>The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we'll later see).
+<p>The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we will later see).
 We usually refer to circuits as <em>functions</em>, similar to programming languages such as C, Python, or Haskell.
 In this case, the function we just defined is called <code>ma</code>.
 Its first argument is <code>acc</code>, its second is <code>(x, y)</code> - a composite type called a tuple.
@@ -233,7 +233,7 @@ The only condition we imposed is that <code>a</code> should be a <code>Num</code
 In Clash this means it should support the operations <code>Prelude.+</code>, <code>Prelude.-</code>, <code>Prelude.*</code>, and some others.
 Indeed, this is why Clash adds the constraint in the first place: the definition of <code>ma</code> uses <code>+</code> and <code>*</code>.
 Whenever a function works over multiple types, we call it <em>polymorphic</em> ("poly" meaning "many", "morphic" meaning "forms").
-While powerful, its not clear how Clash should synthesize this as numbers come in a great variety of (bit)sizes.
+While powerful, it is not clear how Clash should synthesize this as numbers come in a great variety of (bit)sizes.
 We will later see how to use this function in a <em>monomorphic</em> manner.</p>
 <p>Talking about <em>types</em> also brings us to one of the most important parts of this tutorial: <em>types</em> and <em>synchronous sequential logic</em>.
 Especially how we can always determine, through the types of a specification, if it describes combinational logic or (synchronous) sequential logic.
