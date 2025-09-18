@@ -10,9 +10,9 @@ This gives rise to the following Mealy specification of the MAC circuit:
 
 ``` haskell
 macT acc (x, y) = (acc', o)
-  where
-    acc' = ma acc (x, y)
-    o    = acc
+ where
+  acc' = ma acc (x, y)
+  o = acc
 ```
 
 Note that the `where` clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could've also written:
@@ -38,11 +38,11 @@ macT :: Num a => a -> (a, a) -> (a, a)
 The `Clash.Prelude` library contains a function that creates a sequential circuit from a combinational circuit that has the same Mealy machine type / shape of `macT`:
 
 ``` haskell
-mealy
-  :: (HiddenClockResetEnable dom, NFDataX s)
-  => (s -> i -> (s,o))
-  -> s
-  -> (Signal dom i -> Signal dom o)
+mealy ::
+  (HiddenClockResetEnable dom, NFDataX s) =>
+  (s -> i -> (s, o)) ->
+  s ->
+  (Signal dom i -> Signal dom o)
 mealy f initS = ...
 ```
 

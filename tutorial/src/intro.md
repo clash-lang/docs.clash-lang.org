@@ -24,8 +24,8 @@ That is, when we take our structural view to circuit descriptions, value-recursi
 
 ``` haskell
 counter = s
-  where
-    s = register 0 (s + 1)
+ where
+  s = register 0 (s + 1)
 ```
 
 The above definition, which uses value-recursion, *can* be synthesized to a circuit by the Clash compiler.

@@ -17,23 +17,28 @@ For example, you can test the earlier defined *topEntity* by:
 ``` haskell
 import Clash.Explicit.Testbench
 
-topEntity
-  :: Clock System
-  -> Reset System
-  -> Enable System
-  -> Signal System (Signed 9, Signed 9)
-  -> Signal System (Signed 9)
+topEntity ::
+  Clock System ->
+  Reset System ->
+  Enable System ->
+  Signal System (Signed 9, Signed 9) ->
+  Signal System (Signed 9)
 topEntity = exposeClockResetEnable mac
 
 testBench :: Signal System Bool
 testBench = done
-  where
-    testInput    = stimuliGenerator clk rst $(listToVecTH [(1,1) :: (Signed 9,Signed 9),(2,2),(3,3),(4,4)])
-    expectOutput = outputVerifier clk rst $(listToVecTH [0 :: Signed 9,1,5,14,14,14,14])
-    done         = expectOutput (topEntity clk rst en testInput)
-    en           = enableGen
-    clk          = tbSystemClockGen (not <$> done)
-    rst          = systemResetGen
+ where
+  testInput =
+    stimuliGenerator
+      clk
+      rst
+      $(listToVecTH [(1, 1) :: (Signed 9, Signed 9), (2, 2), (3, 3), (4, 4)])
+  expectOutput =
+    outputVerifier clk rst $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
+  done = expectOutput (topEntity clk rst en testInput)
+  en = enableGen
+  clk = tbSystemClockGen (not <$> done)
+  rst = systemResetGen
 ```
 
 This will create a stimulus generator that creates the same inputs as we used earlier for the simulation of the circuit, and creates an output verifier that compares against the results we got from our earlier simulation.

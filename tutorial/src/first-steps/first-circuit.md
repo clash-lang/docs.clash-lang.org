@@ -81,12 +81,13 @@ Especially how we can always determine, through the types of a specification, if
 We do this by examining the definition of one of the sequential primitives, the `register` function:
 
 ``` haskell
-register
-  :: ( HiddenClockResetEnable dom
-     , NFDataX a )
-  => a
-  -> Signal dom a
-  -> Signal dom a
+register ::
+  ( HiddenClockResetEnable dom
+  , NFDataX a
+  ) =>
+  a ->
+  Signal dom a ->
+  Signal dom a
 register i s = ...
 ```
 

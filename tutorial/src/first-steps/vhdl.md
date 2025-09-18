@@ -6,12 +6,12 @@ In our case that means that we have to give it an explicit type annotation.
 It might not always be needed, you can always check the type with the `:t` command and see if the function is monomorphic:
 
 ``` haskell
-topEntity
-  :: Clock System
-  -> Reset System
-  -> Enable System
-  -> Signal System (Signed 9, Signed 9)
-  -> Signal System (Signed 9)
+topEntity ::
+  Clock System ->
+  Reset System ->
+  Enable System ->
+  Signal System (Signed 9, Signed 9) ->
+  Signal System (Signed 9)
 topEntity = exposeClockResetEnable mac
 ```
 
@@ -23,21 +23,21 @@ module MAC where
 
 import Clash.Prelude
 
-ma acc (x,y) = acc + x * y
+ma acc (x, y) = acc + x * y
 
-macT acc (x,y) = (acc',o)
-  where
-    acc' = ma acc (x,y)
-    o    = acc
+macT acc (x, y) = (acc', o)
+ where
+  acc' = ma acc (x, y)
+  o = acc
 
 mac xy = mealy macT 0 xy
 
-topEntity
-  :: Clock System
-  -> Reset System
-  -> Enable System
-  -> Signal System (Signed 9, Signed 9)
-  -> Signal System (Signed 9)
+topEntity ::
+  Clock System ->
+  Reset System ->
+  Enable System ->
+  Signal System (Signed 9, Signed 9) ->
+  Signal System (Signed 9)
 topEntity = exposeClockResetEnable mac
 ```
 
