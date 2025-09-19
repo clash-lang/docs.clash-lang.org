@@ -42,8 +42,6 @@ jobs:
           publish_dir: ./public # The directory mdbook builds to
           # Deploy to a subdirectory like "pr-123"
           destination_dir: ./pr-${{ github.event.pull_request.number }}
-          # Keep other PR previews by not cleaning the destination_dir
-          keep_files: true
 
       # Post a comment on the PR with the link to the preview
       - name: Post Preview Link Comment
