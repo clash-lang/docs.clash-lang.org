@@ -170,8 +170,7 @@
 <p>There are times when you already have an existing piece of IP, or there are times where you need the HDL to have a specific shape so that the HDL synthesis tool can infer a specific component.
 In these specific cases you can resort to defining your own HDL primitives. Actually, most of the primitives in Clash are specified in the same way as you will read about in this section.
 There are perhaps 10 (at most) functions which are truly hard-coded into the Clash compiler.
-You can take a look at the files in <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl</a> (or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog</a> for the Verilog primitives or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog</a> for the SystemVerilog primitives) if you want to know which functions are defined
-as "regular" primitives.
+You can take a look at the files in <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl</a> (or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog</a> for the Verilog primitives or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog</a> for the SystemVerilog primitives) if you want to know which functions are defined as "regular" primitives.
 The compiler looks for primitives in four locations:</p>
 <ul>
 <li>
@@ -203,7 +202,7 @@ The <code>Clash.Sized.Internal.Signed</code> module specifies multiplication as 
 (S a) *# (S b) = fromInteger_INLINE (a * b)
 {-# OPAQUE (*#) #-}
 </code></pre>
-<p>For which the VHDL /expression/ primitive is:</p>
+<p>For which the VHDL <em>expression</em> primitive is:</p>
 <pre><code class="language-yaml">BlackBox:
   name: Clash.Sized.Internal.Signed.*#
   kind: Expression
@@ -212,12 +211,12 @@ The <code>Clash.Sized.Internal.Signed</code> module specifies multiplication as 
 </code></pre>
 <p>The <code>name</code> of the primitive is the <em>fully qualified</em> name of the function you are creating the primitive for.
 Because we are creating an <em>expression</em> primitive the kind must be set to <code>Expression</code>.
-As the name suggest, it is a VHDL /template/, meaning that the compiler must fill in the holes heralded by the tilde (~).
+As the name suggest, it is a VHDL <em>template</em>, meaning that the compiler must fill in the holes heralded by the tilde (~).
 Here:</p>
 <ul>
-<li><code>~ARG[1]</code> denotes the second argument given to the <code>(*#)</code> function, which     corresponds to the LHS of the (<code>*</code>) operator.</li>
-<li><code>~ARG[2]</code> denotes the third argument given to the <code>(*#)</code> function, which     corresponds to the RHS of the (<code>*</code>) operator.</li>
-<li><code>~LIT[0]</code> denotes the first argument given to the <code>(*#)</code> function, withthe extra condition that it must be a <code>LIT</code>eral.
+<li><code>~ARG[1]</code> denotes the second argument given to the <code>(*#)</code> function, which corresponds to the LHS of the (<code>*</code>) operator.</li>
+<li><code>~ARG[2]</code> denotes the third argument given to the <code>(*#)</code> function, which corresponds to the RHS of the (<code>*</code>) operator.</li>
+<li><code>~LIT[0]</code> denotes the first argument given to the <code>(*#)</code> function, with the extra condition that it must be a <code>LIT</code>eral.
 If for some reason this first argument does not turn out to be a literal then the compiler will raise an error.
 This first arguments corresponds to the <code>KnownNat n</code> class constraint.</li>
 </ul>
@@ -347,27 +346,26 @@ blockRam# (Clock _) gen content rd wen =
 Because we are creating a <em>declaration</em> primitive the <em>kind</em> must be set to <code>Declaration</code>.
 Instead of discussing what the individual template holes mean in the above context, we will instead just give a general listing of the available template holes:</p>
 <ul>
-<li><code>~RESULT</code>: Signal to which the result of a primitive must be assigned
-to. NB: Only used in a <em>declaration</em> primitive.</li>
+<li><code>~RESULT</code>: Signal to which the result of a primitive must be assigned to.
+NB: Only used in a <em>declaration</em> primitive.</li>
 <li><code>~ARG[N]</code>: <code>(N+1)</code>'th argument to the function.</li>
-<li><code>~CONST[N]</code>: <code>(N+1)</code>'th argument to the function. Like <code>~ARG</code>, but Clash will try to reduce this to a literal, even if it would otherwise consider it too expensive.
+<li><code>~CONST[N]</code>: <code>(N+1)</code>'th argument to the function.
+Like <code>~ARG</code>, but Clash will try to reduce this to a literal, even if it would otherwise consider it too expensive.
 And if Clash fails to reduce this argument to a literal it will produce an error.</li>
-<li><code>~LIT[N]</code>: <code>(N+1)</code>'th argument to the function. Like <code>~CONST~</code> but values are   rendered as a bare literals, without any size or type annotations.
+<li><code>~LIT[N]</code>: <code>(N+1)</code>'th argument to the function.
+Like <code>~CONST</code> but values are rendered as a bare literals, without any size or type annotations.
 This only works for numeric types, and not for BitVector.</li>
 <li><code>~TYP[N]</code>: VHDL type of the <code>(N+1)</code>'th argument.</li>
 <li><code>~TYPO</code>: VHDL type of the result.</li>
-<li><code>~TYPM[N]</code>: VHDL type_name_ of the <code>(N+1)</code>'th argument; used in <em>type qualification</em>.</li>
-<li><code>~TYPMO</code>: VHDL type_name_ of the result; used in <em>type qualification</em>.</li>
+<li><code>~TYPM[N]</code>: VHDL type<em>name</em> of the <code>(N+1)</code>'th argument; used in <em>type qualification</em>.</li>
+<li><code>~TYPMO</code>: VHDL type<em>name</em> of the result; used in <em>type qualification</em>.</li>
 <li><code>~ERROR[N]</code>: Error value for the VHDL type of the <code>(N+1)</code>'th argument.</li>
 <li><code>~ERRORO</code>: Error value for the VHDL type of the result.</li>
-<li><code>~GENSYM[&lt;NAME&gt;][N]</code>: Create a unique name, trying to stay as close to
-the given <code>&lt;NAME&gt;</code> as possible. This unique symbol can be referred to in
-other places using <code>~SYM[N]</code>.</li>
+<li><code>~GENSYM[&lt;NAME&gt;][N]</code>: Create a unique name, trying to stay as close to the given <code>&lt;NAME&gt;</code> as possible.
+This unique symbol can be referred to in other places using <code>~SYM[N]</code>.</li>
 <li><code>~SYM[N]</code>: a reference to the unique symbol created by <code>~GENSYM[&lt;NAME&gt;][N]</code>.</li>
-<li><code>~SIGD[&lt;HOLE&gt;][N]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name
-of the signal, and the type of the <code>(N+1)</code>'th argument.</li>
-<li><code>~SIGDO[&lt;HOLE&gt;]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name
-of the signal, and the type of the result.</li>
+<li><code>~SIGD[&lt;HOLE&gt;][N]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name of the signal, and the type of the <code>(N+1)</code>'th argument.</li>
+<li><code>~SIGDO[&lt;HOLE&gt;]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name of the signal, and the type of the result.</li>
 <li><code>~TYPEL[&lt;HOLE&gt;]</code>: The element type of the vector type represented by <code>&lt;HOLE&gt;</code>.
 The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <code>~TYPO</code>, or <code>~TYPEL[&lt;HOLE&gt;]</code>.</li>
 <li><code>~COMPNAME</code>: The name of the component in which the primitive is instantiated.</li>
@@ -376,12 +374,9 @@ The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <
 The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <code>~TYPO</code>, or <code>~TYPEL[&lt;HOLE&gt;]</code>.</li>
 <li><code>~SIZE[&lt;HOLE&gt;]</code>: The number of bits needed to encode the type represented by <code>&lt;HOLE&gt;</code>.
 The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <code>~TYPO</code>, or <code>~TYPEL[&lt;HOLE&gt;]</code>.</li>
-<li><code>~IF &lt;CONDITION&gt; ~THEN &lt;THEN&gt; ~ELSE &lt;ELSE&gt; ~FI</code>: renders the <code>&lt;ELSE&gt;</code>
-part when <code>&lt;CONDITION&gt;</code> evaluates to <em>0</em>, and renders the <code>&lt;THEN&gt;</code> in all
-other cases.
+<li><code>~IF &lt;CONDITION&gt; ~THEN &lt;THEN&gt; ~ELSE &lt;ELSE&gt; ~FI</code>: renders the <code>&lt;ELSE&gt;</code> part when <code>&lt;CONDITION&gt;</code> evaluates to <em>0</em>, and renders the <code>&lt;THEN&gt;</code> in all other cases.
 Valid <code>&lt;CONDITION&gt;</code>s are <code>~LENGTH[&lt;HOLE&gt;]</code>, <code>~SIZE[&lt;HOLE&gt;]</code>, <code>~CMPLE[&lt;HOLE1&gt;][&lt;HOLE2&gt;]</code>, <code>~DEPTH[&lt;HOLE&gt;]</code>, <code>~VIVADO</code>, <code>~IW64</code>, <code>~ISLIT[N]</code>, <code>~ISVAR[N]</code>, <code>~ISACTIVEENABLE[N]</code>, <code>~ISSYNC[N]</code>, and <code>~AND[&lt;HOLE1&gt;,&lt;HOLE2&gt;,..]</code>.</li>
-<li><code>~VIVADO</code>: <em>1</em> when Clash compiler is invoked with the <code>-fclash-xilinx</code> or
-<code>-fclash-vivado</code> flag.
+<li><code>~VIVADO</code>: <em>1</em> when Clash compiler is invoked with the <code>-fclash-hdlsyn Vivado</code> (or <code>Xilinx</code> or <code>ISE</code>) flag.
 To be used with in an <code>~IF .. ~THEN .. ~ELSE .. ~FI</code> statement.</li>
 <li><code>~CMPLE[&lt;HOLE1&gt;][&lt;HOLE2&gt;]</code>: <em>1</em> when <code>&lt;HOLE1&gt; &lt;= &lt;HOLE2&gt;</code>, otherwise <em>0</em></li>
 <li><code>~IW64</code>: <em>1</em> when <code>Int</code>/<code>Word</code>/<code>Integer</code> types are represented with 64 bits in HDL.
@@ -401,19 +396,17 @@ Note that this means different things for different HDLs.
 In (System)Verilog only <code>Bit</code> and <code>Bool</code> are considered scalar.
 In VHDL, in addition to those two, enumeration types and integers are considered scalar.</li>
 <li><code>~TAG[N]</code>: Name of given domain.
-Errors when called on an argument which is not a 'KnownDomain', 'Reset', or 'Clock'.</li>
+Errors when called on an argument which is not a <code>KnownDomain</code>, <code>Reset</code>, or <code>Clock</code>.</li>
 <li><code>~PERIOD[N]</code>: Clock period of given domain.
-Errors when called on an argument which is not a 'Clock', 'Reset', 'KnownDomain' or 'KnownConf'.</li>
-<li><code>~ISACTIVEENABLE[N]</code>: Is the <code>(N+1)</code>'th argument a an Enable line <strong>not</strong> set to a constant True.
-Can be used instead of deprecated (and removed) template tag</li>
+Errors when called on an argument which is not a <code>Clock</code>, <code>Reset</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
+<li><code>~ISACTIVEENABLE[N]</code>: Is the <code>(N+1)</code>'th argument an Enable line <strong>not</strong> set to a constant True.</li>
 <li><code>~ISSYNC[N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument have synchronous resets.
-Errors when called on an argument which is not a 'Reset', 'Clock', 'Enable', 'KnownDomain' or 'KnownConf'.</li>
+Errors when called on an argument which is not a <code>Reset</code>, <code>Clock</code>, <code>Enable</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
 <li><code>~ISINITDEFINED[N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument have defined initial values.
-Errors when called on an argument which is not a 'Clock', 'Reset', 'Enable', 'KnownDomain' or 'KnownConf'.</li>
-<li><code>~ACTIVEEDGE[edge][N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument respond to
-<em>edge</em>.
-<em>edge</em> must be one of 'Falling' or 'Rising'.
-Errors when called on an argument which is not a 'Clock', 'Reset', 'Enable', 'KnownDomain' or 'KnownConf'.</li>
+Errors when called on an argument which is not a <code>Clock</code>, <code>Reset</code>, <code>Enable</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
+<li><code>~ACTIVEEDGE[edge][N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument respond to <em>edge</em>.
+<em>edge</em> must be one of <code>Falling</code> or <code>Rising</code>.
+Errors when called on an argument which is not a <code>Clock</code>, <code>Reset</code>, <code>Enable</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
 <li><code>~AND[&lt;HOLE1&gt;,&lt;HOLE2&gt;,..]</code>: Logically <em>and</em> the conditions in the <code>&lt;HOLE&gt;</code>'s</li>
 <li><code>~VAR[&lt;NAME&gt;][N]</code>: Like <code>~ARG[N]</code> but binds the argument to a variable named NAME.
 The <code>&lt;NAME&gt;</code> can be left blank, then Clash will come up with a (unique) name.</li>
@@ -552,7 +545,7 @@ If you still want to simulate your design in Haskell, you will have to describe,
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../hacking-on-clash/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../developing-hardware/limitations.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -566,7 +559,7 @@ If you still want to simulate your design in Haskell, you will have to describe,
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../hacking-on-clash/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../developing-hardware/limitations.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

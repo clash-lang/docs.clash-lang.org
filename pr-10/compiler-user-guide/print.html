@@ -790,8 +790,7 @@ E.g., setting this flag to <code>1fs</code> would make Clash generate Verilog fi
 <p>There are times when you already have an existing piece of IP, or there are times where you need the HDL to have a specific shape so that the HDL synthesis tool can infer a specific component.
 In these specific cases you can resort to defining your own HDL primitives. Actually, most of the primitives in Clash are specified in the same way as you will read about in this section.
 There are perhaps 10 (at most) functions which are truly hard-coded into the Clash compiler.
-You can take a look at the files in <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl</a> (or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog</a> for the Verilog primitives or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog</a> for the SystemVerilog primitives) if you want to know which functions are defined
-as "regular" primitives.
+You can take a look at the files in <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl</a> (or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog</a> for the Verilog primitives or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog</a> for the SystemVerilog primitives) if you want to know which functions are defined as "regular" primitives.
 The compiler looks for primitives in four locations:</p>
 <ul>
 <li>
@@ -823,7 +822,7 @@ The <code>Clash.Sized.Internal.Signed</code> module specifies multiplication as 
 (S a) *# (S b) = fromInteger_INLINE (a * b)
 {-# OPAQUE (*#) #-}
 </code></pre>
-<p>For which the VHDL /expression/ primitive is:</p>
+<p>For which the VHDL <em>expression</em> primitive is:</p>
 <pre><code class="language-yaml">BlackBox:
   name: Clash.Sized.Internal.Signed.*#
   kind: Expression
@@ -832,12 +831,12 @@ The <code>Clash.Sized.Internal.Signed</code> module specifies multiplication as 
 </code></pre>
 <p>The <code>name</code> of the primitive is the <em>fully qualified</em> name of the function you are creating the primitive for.
 Because we are creating an <em>expression</em> primitive the kind must be set to <code>Expression</code>.
-As the name suggest, it is a VHDL /template/, meaning that the compiler must fill in the holes heralded by the tilde (~).
+As the name suggest, it is a VHDL <em>template</em>, meaning that the compiler must fill in the holes heralded by the tilde (~).
 Here:</p>
 <ul>
-<li><code>~ARG[1]</code> denotes the second argument given to the <code>(*#)</code> function, which     corresponds to the LHS of the (<code>*</code>) operator.</li>
-<li><code>~ARG[2]</code> denotes the third argument given to the <code>(*#)</code> function, which     corresponds to the RHS of the (<code>*</code>) operator.</li>
-<li><code>~LIT[0]</code> denotes the first argument given to the <code>(*#)</code> function, withthe extra condition that it must be a <code>LIT</code>eral.
+<li><code>~ARG[1]</code> denotes the second argument given to the <code>(*#)</code> function, which corresponds to the LHS of the (<code>*</code>) operator.</li>
+<li><code>~ARG[2]</code> denotes the third argument given to the <code>(*#)</code> function, which corresponds to the RHS of the (<code>*</code>) operator.</li>
+<li><code>~LIT[0]</code> denotes the first argument given to the <code>(*#)</code> function, with the extra condition that it must be a <code>LIT</code>eral.
 If for some reason this first argument does not turn out to be a literal then the compiler will raise an error.
 This first arguments corresponds to the <code>KnownNat n</code> class constraint.</li>
 </ul>
@@ -967,27 +966,26 @@ blockRam# (Clock _) gen content rd wen =
 Because we are creating a <em>declaration</em> primitive the <em>kind</em> must be set to <code>Declaration</code>.
 Instead of discussing what the individual template holes mean in the above context, we will instead just give a general listing of the available template holes:</p>
 <ul>
-<li><code>~RESULT</code>: Signal to which the result of a primitive must be assigned
-to. NB: Only used in a <em>declaration</em> primitive.</li>
+<li><code>~RESULT</code>: Signal to which the result of a primitive must be assigned to.
+NB: Only used in a <em>declaration</em> primitive.</li>
 <li><code>~ARG[N]</code>: <code>(N+1)</code>'th argument to the function.</li>
-<li><code>~CONST[N]</code>: <code>(N+1)</code>'th argument to the function. Like <code>~ARG</code>, but Clash will try to reduce this to a literal, even if it would otherwise consider it too expensive.
+<li><code>~CONST[N]</code>: <code>(N+1)</code>'th argument to the function.
+Like <code>~ARG</code>, but Clash will try to reduce this to a literal, even if it would otherwise consider it too expensive.
 And if Clash fails to reduce this argument to a literal it will produce an error.</li>
-<li><code>~LIT[N]</code>: <code>(N+1)</code>'th argument to the function. Like <code>~CONST~</code> but values are   rendered as a bare literals, without any size or type annotations.
+<li><code>~LIT[N]</code>: <code>(N+1)</code>'th argument to the function.
+Like <code>~CONST</code> but values are rendered as a bare literals, without any size or type annotations.
 This only works for numeric types, and not for BitVector.</li>
 <li><code>~TYP[N]</code>: VHDL type of the <code>(N+1)</code>'th argument.</li>
 <li><code>~TYPO</code>: VHDL type of the result.</li>
-<li><code>~TYPM[N]</code>: VHDL type_name_ of the <code>(N+1)</code>'th argument; used in <em>type qualification</em>.</li>
-<li><code>~TYPMO</code>: VHDL type_name_ of the result; used in <em>type qualification</em>.</li>
+<li><code>~TYPM[N]</code>: VHDL type<em>name</em> of the <code>(N+1)</code>'th argument; used in <em>type qualification</em>.</li>
+<li><code>~TYPMO</code>: VHDL type<em>name</em> of the result; used in <em>type qualification</em>.</li>
 <li><code>~ERROR[N]</code>: Error value for the VHDL type of the <code>(N+1)</code>'th argument.</li>
 <li><code>~ERRORO</code>: Error value for the VHDL type of the result.</li>
-<li><code>~GENSYM[&lt;NAME&gt;][N]</code>: Create a unique name, trying to stay as close to
-the given <code>&lt;NAME&gt;</code> as possible. This unique symbol can be referred to in
-other places using <code>~SYM[N]</code>.</li>
+<li><code>~GENSYM[&lt;NAME&gt;][N]</code>: Create a unique name, trying to stay as close to the given <code>&lt;NAME&gt;</code> as possible.
+This unique symbol can be referred to in other places using <code>~SYM[N]</code>.</li>
 <li><code>~SYM[N]</code>: a reference to the unique symbol created by <code>~GENSYM[&lt;NAME&gt;][N]</code>.</li>
-<li><code>~SIGD[&lt;HOLE&gt;][N]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name
-of the signal, and the type of the <code>(N+1)</code>'th argument.</li>
-<li><code>~SIGDO[&lt;HOLE&gt;]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name
-of the signal, and the type of the result.</li>
+<li><code>~SIGD[&lt;HOLE&gt;][N]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name of the signal, and the type of the <code>(N+1)</code>'th argument.</li>
+<li><code>~SIGDO[&lt;HOLE&gt;]</code>: Create a signal declaration, using <code>&lt;HOLE&gt;</code> as the name of the signal, and the type of the result.</li>
 <li><code>~TYPEL[&lt;HOLE&gt;]</code>: The element type of the vector type represented by <code>&lt;HOLE&gt;</code>.
 The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <code>~TYPO</code>, or <code>~TYPEL[&lt;HOLE&gt;]</code>.</li>
 <li><code>~COMPNAME</code>: The name of the component in which the primitive is instantiated.</li>
@@ -996,12 +994,9 @@ The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <
 The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <code>~TYPO</code>, or <code>~TYPEL[&lt;HOLE&gt;]</code>.</li>
 <li><code>~SIZE[&lt;HOLE&gt;]</code>: The number of bits needed to encode the type represented by <code>&lt;HOLE&gt;</code>.
 The content of <code>&lt;HOLE&gt;</code> must either be: <code>~TYP[N]</code>, <code>~TYPO</code>, or <code>~TYPEL[&lt;HOLE&gt;]</code>.</li>
-<li><code>~IF &lt;CONDITION&gt; ~THEN &lt;THEN&gt; ~ELSE &lt;ELSE&gt; ~FI</code>: renders the <code>&lt;ELSE&gt;</code>
-part when <code>&lt;CONDITION&gt;</code> evaluates to <em>0</em>, and renders the <code>&lt;THEN&gt;</code> in all
-other cases.
+<li><code>~IF &lt;CONDITION&gt; ~THEN &lt;THEN&gt; ~ELSE &lt;ELSE&gt; ~FI</code>: renders the <code>&lt;ELSE&gt;</code> part when <code>&lt;CONDITION&gt;</code> evaluates to <em>0</em>, and renders the <code>&lt;THEN&gt;</code> in all other cases.
 Valid <code>&lt;CONDITION&gt;</code>s are <code>~LENGTH[&lt;HOLE&gt;]</code>, <code>~SIZE[&lt;HOLE&gt;]</code>, <code>~CMPLE[&lt;HOLE1&gt;][&lt;HOLE2&gt;]</code>, <code>~DEPTH[&lt;HOLE&gt;]</code>, <code>~VIVADO</code>, <code>~IW64</code>, <code>~ISLIT[N]</code>, <code>~ISVAR[N]</code>, <code>~ISACTIVEENABLE[N]</code>, <code>~ISSYNC[N]</code>, and <code>~AND[&lt;HOLE1&gt;,&lt;HOLE2&gt;,..]</code>.</li>
-<li><code>~VIVADO</code>: <em>1</em> when Clash compiler is invoked with the <code>-fclash-xilinx</code> or
-<code>-fclash-vivado</code> flag.
+<li><code>~VIVADO</code>: <em>1</em> when Clash compiler is invoked with the <code>-fclash-hdlsyn Vivado</code> (or <code>Xilinx</code> or <code>ISE</code>) flag.
 To be used with in an <code>~IF .. ~THEN .. ~ELSE .. ~FI</code> statement.</li>
 <li><code>~CMPLE[&lt;HOLE1&gt;][&lt;HOLE2&gt;]</code>: <em>1</em> when <code>&lt;HOLE1&gt; &lt;= &lt;HOLE2&gt;</code>, otherwise <em>0</em></li>
 <li><code>~IW64</code>: <em>1</em> when <code>Int</code>/<code>Word</code>/<code>Integer</code> types are represented with 64 bits in HDL.
@@ -1021,19 +1016,17 @@ Note that this means different things for different HDLs.
 In (System)Verilog only <code>Bit</code> and <code>Bool</code> are considered scalar.
 In VHDL, in addition to those two, enumeration types and integers are considered scalar.</li>
 <li><code>~TAG[N]</code>: Name of given domain.
-Errors when called on an argument which is not a 'KnownDomain', 'Reset', or 'Clock'.</li>
+Errors when called on an argument which is not a <code>KnownDomain</code>, <code>Reset</code>, or <code>Clock</code>.</li>
 <li><code>~PERIOD[N]</code>: Clock period of given domain.
-Errors when called on an argument which is not a 'Clock', 'Reset', 'KnownDomain' or 'KnownConf'.</li>
-<li><code>~ISACTIVEENABLE[N]</code>: Is the <code>(N+1)</code>'th argument a an Enable line <strong>not</strong> set to a constant True.
-Can be used instead of deprecated (and removed) template tag</li>
+Errors when called on an argument which is not a <code>Clock</code>, <code>Reset</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
+<li><code>~ISACTIVEENABLE[N]</code>: Is the <code>(N+1)</code>'th argument an Enable line <strong>not</strong> set to a constant True.</li>
 <li><code>~ISSYNC[N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument have synchronous resets.
-Errors when called on an argument which is not a 'Reset', 'Clock', 'Enable', 'KnownDomain' or 'KnownConf'.</li>
+Errors when called on an argument which is not a <code>Reset</code>, <code>Clock</code>, <code>Enable</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
 <li><code>~ISINITDEFINED[N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument have defined initial values.
-Errors when called on an argument which is not a 'Clock', 'Reset', 'Enable', 'KnownDomain' or 'KnownConf'.</li>
-<li><code>~ACTIVEEDGE[edge][N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument respond to
-<em>edge</em>.
-<em>edge</em> must be one of 'Falling' or 'Rising'.
-Errors when called on an argument which is not a 'Clock', 'Reset', 'Enable', 'KnownDomain' or 'KnownConf'.</li>
+Errors when called on an argument which is not a <code>Clock</code>, <code>Reset</code>, <code>Enable</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
+<li><code>~ACTIVEEDGE[edge][N]</code>: Does synthesis domain at the <code>(N+1)</code>'th argument respond to <em>edge</em>.
+<em>edge</em> must be one of <code>Falling</code> or <code>Rising</code>.
+Errors when called on an argument which is not a <code>Clock</code>, <code>Reset</code>, <code>Enable</code>, <code>KnownDomain</code> or <code>KnownConf</code>.</li>
 <li><code>~AND[&lt;HOLE1&gt;,&lt;HOLE2&gt;,..]</code>: Logically <em>and</em> the conditions in the <code>&lt;HOLE&gt;</code>'s</li>
 <li><code>~VAR[&lt;NAME&gt;][N]</code>: Like <code>~ARG[N]</code> but binds the argument to a variable named NAME.
 The <code>&lt;NAME&gt;</code> can be left blank, then Clash will come up with a (unique) name.</li>
@@ -1163,6 +1156,168 @@ If you still want to simulate your design in Haskell, you will have to describe,
     assign ~RESULT = ~FROMBV[~SYM[2]][~TYP[9]];
     // blockRam end
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="limitations-of-the-compiler"><a class="header" href="#limitations-of-the-compiler">Limitations of the compiler</a></h1>
+<p>Here is a list of Haskell features for which the Clash compiler has only <em>limited</em> support (for now):</p>
+<ul>
+<li>
+<p><strong>Recursively defined functions</strong></p>
+<p>At first hand, it seems rather bad that a compiler for a functional language cannot synthesize recursively defined functions to circuits.
+However, when viewing your functions as a <em>structural</em> specification of a circuit, this <em>feature</em> of the Clash compiler makes sense.
+Also, only certain types of recursion are considered non-synthesizable; recursively defined values are for example synthesizable: they are (often) synthesized to feedback loops.</p>
+<p>Let us distinguish between three variants of recursion:</p>
+<ul>
+<li>
+<p><strong>Dynamic data-dependent recursion</strong></p>
+<p>As demonstrated in this definition of a function that calculates the n'th Fibbonacci number:</p>
+<pre><code class="language-haskell">fibR 0 = 0
+fibR 1 = 1
+fibR n = fibR (n-1) + fibR (n-2)
+</code></pre>
+<p>To get the first 10 numbers, we do the following:</p>
+<pre><code>&gt;&gt;&gt; import qualified Data.List as L
+&gt;&gt;&gt; L.map fibR [0..9]
+[0,1,1,2,3,5,8,13,21,34]
+</code></pre>
+<p>The <code>fibR</code> function is not synthesizable by the Clash compiler, because, when we take a <em>structural</em> view, <code>fibR</code> describes an infinitely deep structure.</p>
+<p>In principal, descriptions like the above could be synthesized to a circuit, but it would have to be a <em>sequential</em> circuit.
+Where the most general synthesis would then require a stack.
+Such a synthesis approach is also known as <em>behavioral</em> synthesis, something which the Clash compiler simply does not do.
+One reason that Clash does not do this is because it does not fit the paradigm that only functions working on values of type <code>Signal</code> result in sequential circuits, and all other (non higher-order) functions result in combinational circuits.
+This paradigm gives the designer the most straightforward mapping from the original Haskell description to generated circuit, and thus the greatest control over the eventual size of the circuit and longest propagation delay.</p>
+</li>
+<li>
+<p><strong>Value-recursion</strong></p>
+<p>As demonstrated in this definition of a function that calculates the n'th Fibbonaci number on the n'th clock cycle:</p>
+<pre><code class="language-haskell">fibS :: SystemClockResetEnable =&gt; Signal System (Unsigned 64)
+fibS = r
+    where r = register 0 r + register 0 (register 1 r)
+</code></pre>
+<p>To get the first 10 numbers, we do the following:</p>
+<pre><code>&gt;&gt;&gt; sampleN @System 11 fibS
+[0,0,1,1,2,3,5,8,13,21,34]
+</code></pre>
+<p>Unlike the <code>fibR</code> function, the above <code>fibS</code> function <em>is</em> synthesizable by the Clash compiler.
+Where the recursively defined (non-function) value <em>r</em> is synthesized to a feedback loop containing three registers and one adder.</p>
+<p>Note that not all recursively defined values result in a feedback loop.
+An example that uses recursively defined values which does not result in a feedback loop is the following function that performs one iteration of bubble sort:</p>
+<pre><code class="language-haskell">sortVL xs = map fst sorted :&lt; (snd (last sorted))
+  where
+    lefts  = head xs :&gt; map snd (init sorted)
+    rights = tail xs
+    sorted = zipWith compareSwapL (lazyV lefts) rights
+</code></pre>
+<p>Where we can clearly see that <code>lefts</code> and <code>sorted</code> are defined in terms of each other. Also the above <code>sortV</code> function <em>is</em> synthesizable.</p>
+</li>
+<li>
+<p><strong>Static/Structure-dependent recursion</strong></p>
+<p>Static, or, structure-dependent recursion is a rather <em>vague</em> concept.
+What we mean by this concept are recursive definitions where a user can sensibly imagine that the recursive definition can be completely unfolded (all recursion is eliminated) at compile-time in a finite amount of time.</p>
+<p>Such definitions would e.g. be:</p>
+<pre><code class="language-haskell">mapV :: (a -&gt; b) -&gt; Vec n a -&gt; Vec n b
+mapV _ Nil         = Nil
+mapV f (Cons x xs) = Cons (f x) (mapV f xs)
+
+topEntity :: Vec 4 Int -&gt; Vec 4 Int
+topEntity = mapV (+1)
+</code></pre>
+<p>Where one can imagine that a compiler can unroll the definition of <code>mapV</code> four times, knowing that the <code>topEntity</code> function applies <code>mapV</code> to a <code>Vec</code> of length 4.
+Sadly, the compile-time evaluation mechanisms in the Clash compiler are very poor, and a user-defined function such as the <code>mapV</code> function defined above, is <em>currently</em> not synthesizable.
+We <em>do</em> plan to add support for this in the future.
+In the mean time, this poor support for user-defined recursive functions is amortized by the fact that the Clash compiler has built-in support for the higher-order functions defined in <code>Clash.Sized.Vector</code>.
+Most regular design patterns often encountered in circuit design are captured by the higher-order functions in <code>Clash.Sized.Vector</code>.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Recursive datatypes</strong></p>
+<p>The Clash compiler needs to be able to determine a bit-size for any value that will be represented in the eventual circuit.
+More specifically, we need to know the maximum number of bits needed to represent a value.
+While this is trivial for values of the elementary types, sum types, and product types, putting a fixed upper bound on recursive types is not (always) feasible.
+This means that the ubiquitous list type is unsupported!
+The only recursive types that are currently supported by the Clash compiler is the <code>Vec</code>tor and <code>RTree</code> types, for which the compiler has hard-coded knowledge.</p>
+<p>For "easy" <code>Vec</code>tor literals you should use Template Haskell splices and the <code>listToVecTH</code> <em>meta</em>-function that as we have seen earlier in this tutorial.</p>
+</li>
+<li>
+<p><strong>GADTs</strong></p>
+<p>Clash has experimental support for GADTs. Similar to recursive types, Clash can't determine bit-sizes of GADTs.
+Notable exceptions to this rule are <code>Vec</code> and <code>RTree</code>.
+You can still use your own GADTs, as long as they can be removed through static analysis.
+For example, the following case will be optimized away and is therefore fine to use:</p>
+<pre><code class="language-haskell">x =
+  case resetKind @System of
+    SAsynchronous -&gt; 'a'
+    SSynchronous -&gt; 'b'
+</code></pre>
+</li>
+<li>
+<p><strong>Floating point types</strong></p>
+<p>There is no support for the <code>Float</code> and <code>Double</code> types, if you need numbers with a <em>fractional</em> part you can use the <code>Fixed</code> point type.</p>
+<p>As to why there is no support for these floating point types:</p>
+<ol>
+<li>
+<p>In order to achieve reasonable operating frequencies, arithmetic circuits for floating point data types must be pipelined.</p>
+</li>
+<li>
+<p>Haskell's primitive arithmetic operators on floating point data types, such as <code>plusFloat#</code></p>
+<pre><code class="language-haskell">plusFloat# :: Float# -&gt; Float# -&gt; Float#
+</code></pre>
+<p>which underlie <code>Float</code>'s <code>Num</code> instance, must be implemented as purely combinational circuits according to their type.
+Remember, sequential circuits operate on values of type "<code>Signal dom a</code>".</p>
+</li>
+</ol>
+<p>Although it is possible to implement purely combinational (not pipelined) arithmetic circuits for floating point data types, the circuit would be unreasonable slow.
+So, without synthesis possibilities for the basic arithmetic operations, there is no point in supporting the floating point  data types.</p>
+</li>
+<li>
+<p><strong>Haskell primitive types</strong></p>
+<p>Only the following primitive Haskell types are supported:</p>
+<ul>
+<li><code>Integer</code></li>
+<li><code>Int</code></li>
+<li><code>Int8</code></li>
+<li><code>Int16</code></li>
+<li><code>Int32</code></li>
+<li><code>Int64</code> (not available when compiling with <code>-fclash-intwidth=32</code> on a 64-bit machine)</li>
+<li><code>Word</code></li>
+<li><code>Word8</code></li>
+<li><code>Word16</code></li>
+<li><code>Word32</code></li>
+<li><code>Word64</code> (not available when compiling with <code>-fclash-intwidth=32</code> on a 64-bit machine)</li>
+<li><code>Char</code></li>
+</ul>
+<p>There are several aspects of which you should take note:</p>
+<ul>
+<li>
+<p>'Int' and 'Word' are represented by the same number of bits as is native for the architecture of the computer on which the Clash compiler is executed.
+This means that if you are working on a 64-bit machine, 'Int' and 'Word' will be 64-bit.
+This might be problematic when you are working in a team, and one designer has a 32-bit machine, and the other has a 64-bit machine.
+In general, you should be avoiding 'Int' in such cases, but as a band-aid solution, you can force the Clash compiler to use a specific bit-width for <code>Int</code> and <code>Word</code> using the <code>-fclash-intwidth=N</code> flag, where <em>N</em> must either be <em>32</em> or <em>64</em>.</p>
+</li>
+<li>
+<p>When you use the <code>-fclash-intwidth=32</code> flag on a <em>64-bit</em> machine, the 'Word64' and 'Int64' types <em>cannot</em> be translated. This restriction does <em>not</em> apply to the other three combinations of <code>-fclash-intwidth</code> flag and machine type.</p>
+</li>
+<li>
+<p>The translation of 'Integer' is not meaning-preserving. 'Integer' in Haskell is an arbitrary precision integer, something that cannot be represented in a statically known number of bits.
+In the Clash compiler, we chose to represent 'Integer' by the same number of bits as we do for <code>Int</code> and <code>Word</code>.
+As you have read in a previous bullet point, this number of bits is either 32 or 64, depending on the architecture of the machine the Clash compiler is running on, or the setting of the <code>-fclash-intwidth</code> flag.</p>
+<p>Consequently, you should use <code>Integer</code> with due diligence; be especially careful when using <code>fromIntegral</code> as it does a conversion via 'Integer'. For example:</p>
+<pre><code class="language-haskell">signedToUnsigned :: Signed 128 -&gt; Unsigned 128
+signedToUnsigned = fromIntegral
+</code></pre>
+<p>can either lose the top 64 or 96 bits depending on whether 'Integer' is represented by 64 or 32 bits.
+Instead, when doing such conversions, you should use 'bitCoerce':</p>
+<pre><code class="language-haskell">signedToUnsigned :: Signed 128 -&gt; Unsigned 128
+signedToUnsigned = bitCoerce
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Side-effects: 'IO', 'ST', etc.</strong></p>
+<p>There is no support for side-effecting computations such as those in the 'IO' or 'ST' monad.
+There is also no support for Haskell's <a href="http://www.haskell.org/haskellwiki/Foreign_Function_Interface">FFI</a>.</p>
+</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hacking-on-the-clash-compiler"><a class="header" href="#hacking-on-the-clash-compiler">Hacking on the Clash Compiler</a></h1>
 <h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
 <p>Hacking on Clash requires more dependencies than simply running Clash.
