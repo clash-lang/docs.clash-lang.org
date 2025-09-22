@@ -13,4 +13,5 @@
     - [Prelude](./developing-hardware/prelude.md)
     - [Flags](./developing-hardware/flags.md)
     - [User-defined primitives](./developing-hardware/primitives.md)
+    - [Limitations of the compiler](./developing-hardware/limitations.md)
 - [Hacking on Clash](./hacking-on-clash/index.md)
