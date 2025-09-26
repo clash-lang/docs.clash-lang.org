@@ -189,7 +189,7 @@ fibR n = fibR (n-1) + fibR (n-2)
 [0,1,1,2,3,5,8,13,21,34]
 </code></pre>
 <p>The <code>fibR</code> function is not synthesizable by the Clash compiler, because, when we take a <em>structural</em> view, <code>fibR</code> describes an infinitely deep structure.</p>
-<p>In principal, descriptions like the above could be synthesized to a circuit, but it would have to be a <em>sequential</em> circuit.
+<p>In principle, descriptions like the above could be synthesized to a circuit, but it would have to be a <em>sequential</em> circuit.
 Where the most general synthesis would then require a stack.
 Such a synthesis approach is also known as <em>behavioral</em> synthesis, something which the Clash compiler simply does not do.
 One reason that Clash does not do this is because it does not fit the paradigm that only functions working on values of type <code>Signal</code> result in sequential circuits, and all other (non higher-order) functions result in combinational circuits.
@@ -210,13 +210,16 @@ fibS = r
 Where the recursively defined (non-function) value <em>r</em> is synthesized to a feedback loop containing three registers and one adder.</p>
 <p>Note that not all recursively defined values result in a feedback loop.
 An example that uses recursively defined values which does not result in a feedback loop is the following function that performs one iteration of bubble sort:</p>
-<pre><code class="language-haskell">sortVL xs = map fst sorted :&lt; (snd (last sorted))
+<pre><code class="language-haskell">sortV xs = map fst sorted :&lt; (snd (last sorted))
   where
     lefts  = head xs :&gt; map snd (init sorted)
     rights = tail xs
-    sorted = zipWith compareSwapL (lazyV lefts) rights
+    sorted = zipWith compareAndSwap (lazyV lefts) rights
+
+compareAndSwap a b = if a &lt; b then (a,b) else (b,a)
 </code></pre>
-<p>Where we can clearly see that <code>lefts</code> and <code>sorted</code> are defined in terms of each other. Also the above <code>sortV</code> function <em>is</em> synthesizable.</p>
+<p>Where we can clearly see that <code>lefts</code> and <code>sorted</code> are defined in terms of each other.
+Also the above <code>sortV</code> function <em>is</em> synthesizable.</p>
 </li>
 <li>
 <p><strong>Static/Structure-dependent recursion</strong></p>
@@ -245,11 +248,12 @@ More specifically, we need to know the maximum number of bits needed to represen
 While this is trivial for values of the elementary types, sum types, and product types, putting a fixed upper bound on recursive types is not (always) feasible.
 This means that the ubiquitous list type is unsupported!
 The only recursive types that are currently supported by the Clash compiler is the <code>Vec</code>tor and <code>RTree</code> types, for which the compiler has hard-coded knowledge.</p>
-<p>For "easy" <code>Vec</code>tor literals you should use Template Haskell splices and the <code>listToVecTH</code> <em>meta</em>-function that as we have seen earlier in this tutorial.</p>
+<p>For "easy" <code>Vec</code>tor literals you should use Template Haskell splices and the <code>listToVecTH</code> <em>meta</em>-function.</p>
 </li>
 <li>
 <p><strong>GADTs</strong></p>
-<p>Clash has experimental support for GADTs. Similar to recursive types, Clash can't determine bit-sizes of GADTs.
+<p>Clash has experimental support for GADTs.
+Similar to recursive types, Clash cannot determine bit-sizes of GADTs.
 Notable exceptions to this rule are <code>Vec</code> and <code>RTree</code>.
 You can still use your own GADTs, as long as they can be removed through static analysis.
 For example, the following case will be optimized away and is therefore fine to use:</p>
@@ -272,11 +276,11 @@ For example, the following case will be optimized away and is therefore fine to 
 <pre><code class="language-haskell">plusFloat# :: Float# -&gt; Float# -&gt; Float#
 </code></pre>
 <p>which underlie <code>Float</code>'s <code>Num</code> instance, must be implemented as purely combinational circuits according to their type.
-Remember, sequential circuits operate on values of type "<code>Signal dom a</code>".</p>
+Remember, sequential circuits operate on values of type <code>Signal dom a</code>.</p>
 </li>
 </ol>
 <p>Although it is possible to implement purely combinational (not pipelined) arithmetic circuits for floating point data types, the circuit would be unreasonable slow.
-So, without synthesis possibilities for the basic arithmetic operations, there is no point in supporting the floating point  data types.</p>
+So, without synthesis possibilities for the basic arithmetic operations, there is no point in supporting the floating point data types.</p>
 </li>
 <li>
 <p><strong>Haskell primitive types</strong></p>
@@ -298,8 +302,8 @@ So, without synthesis possibilities for the basic arithmetic operations, there i
 <p>There are several aspects of which you should take note:</p>
 <ul>
 <li>
-<p>'Int' and 'Word' are represented by the same number of bits as is native for the architecture of the computer on which the Clash compiler is executed.
-This means that if you are working on a 64-bit machine, 'Int' and 'Word' will be 64-bit.
+<p><code>Int</code> and <code>Word</code> are represented by the same number of bits as is native for the architecture of the computer on which the Clash compiler is executed.
+This means that if you are working on a 64-bit machine, <code>Int</code> and <code>Word</code> will be 64-bit.
 This might be problematic when you are working in a team, and one designer has a 32-bit machine, and the other has a 64-bit machine.
 In general, you should be avoiding 'Int' in such cases, but as a band-aid solution, you can force the Clash compiler to use a specific bit-width for <code>Int</code> and <code>Word</code> using the <code>-fclash-intwidth=N</code> flag, where <em>N</em> must either be <em>32</em> or <em>64</em>.</p>
 </li>
@@ -307,15 +311,17 @@ In general, you should be avoiding 'Int' in such cases, but as a band-aid soluti
 <p>When you use the <code>-fclash-intwidth=32</code> flag on a <em>64-bit</em> machine, the 'Word64' and 'Int64' types <em>cannot</em> be translated. This restriction does <em>not</em> apply to the other three combinations of <code>-fclash-intwidth</code> flag and machine type.</p>
 </li>
 <li>
-<p>The translation of 'Integer' is not meaning-preserving. 'Integer' in Haskell is an arbitrary precision integer, something that cannot be represented in a statically known number of bits.
+<p>The translation of 'Integer' is not meaning-preserving.
+'Integer' in Haskell is an arbitrary precision integer, something that cannot be represented in a statically known number of bits.
 In the Clash compiler, we chose to represent 'Integer' by the same number of bits as we do for <code>Int</code> and <code>Word</code>.
 As you have read in a previous bullet point, this number of bits is either 32 or 64, depending on the architecture of the machine the Clash compiler is running on, or the setting of the <code>-fclash-intwidth</code> flag.</p>
-<p>Consequently, you should use <code>Integer</code> with due diligence; be especially careful when using <code>fromIntegral</code> as it does a conversion via 'Integer'. For example:</p>
+<p>Consequently, you should use <code>Integer</code> with due diligence; be especially careful when using <code>fromIntegral</code> as it does a conversion via 'Integer'.
+For example:</p>
 <pre><code class="language-haskell">signedToUnsigned :: Signed 128 -&gt; Unsigned 128
 signedToUnsigned = fromIntegral
 </code></pre>
-<p>can either lose the top 64 or 96 bits depending on whether 'Integer' is represented by 64 or 32 bits.
-Instead, when doing such conversions, you should use 'bitCoerce':</p>
+<p>can either lose the top 64 or 96 bits depending on whether <code>Integer</code> is represented by 64 or 32 bits.
+Instead, when doing such conversions, you should use <code>bitCoerce</code>:</p>
 <pre><code class="language-haskell">signedToUnsigned :: Signed 128 -&gt; Unsigned 128
 signedToUnsigned = bitCoerce
 </code></pre>
@@ -323,8 +329,8 @@ signedToUnsigned = bitCoerce
 </ul>
 </li>
 <li>
-<p><strong>Side-effects: 'IO', 'ST', etc.</strong></p>
-<p>There is no support for side-effecting computations such as those in the 'IO' or 'ST' monad.
+<p><strong>Side-effects: <code>IO</code>, <code>ST</code>, etc.</strong></p>
+<p>There is no support for side-effecting computations such as those in the <code>IO</code> or <code>ST</code> monad.
 There is also no support for Haskell's <a href="http://www.haskell.org/haskellwiki/Foreign_Function_Interface">FFI</a>.</p>
 </li>
 </ul>
