@@ -14,5 +14,6 @@
     - [Flags](./developing-hardware/flags.md)
     - [Controlling HDL generation](./developing-hardware/annotations.md)
     - [User-defined primitives](./developing-hardware/primitives.md)
+    - [Troubleshooting](./developing-hardware/troubleshooting.md)
     - [Limitations of the compiler](./developing-hardware/limitations.md)
 - [Hacking on Clash](./hacking-on-clash/index.md)
