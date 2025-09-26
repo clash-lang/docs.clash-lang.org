@@ -1282,6 +1282,118 @@ If you still want to simulate your design in Haskell, you will have to describe,
     assign ~RESULT = ~FROMBV[~SYM[2]][~TYP[9]];
     // blockRam end
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
+<p>A list of often encountered errors and their solutions:</p>
+<ul>
+<li>
+<p><strong>Type error: Couldn't match expected type <code>Signal dom (a,b)</code> with actual type <code>(Signal dom a, Signal dom b)</code></strong>:</p>
+<p>Signals of product types and product types of signals are <strong>isomorphic</strong> due to synchronisity principle, but are not (structurally) equal.
+Tuples are a product type. Use the <code>bundle</code> function to convert from a product type to the signal type.
+So if your code which gives the error looks like:</p>
+<pre><code class="language-haskell">... = f a b (c,d)
+</code></pre>
+<p>add the <code>bundle</code> function like so:</p>
+<pre><code class="language-haskell">... = f a b (bundle (c,d))
+</code></pre>
+<p>Product types supported by <code>bundle</code> are:</p>
+<ul>
+<li>All tuples up to and including 62-tuples (GHC limit)</li>
+<li>The <code>Vec</code>tor type</li>
+</ul>
+</li>
+<li>
+<p><strong>Type error: Couldn't match expected type <code>(Signal dom a, Signal dom b)</code> with actual type <code>Signal dom (a,b)</code></strong>:</p>
+<p>Product types of signals and signals of product types are <strong>isomorphic</strong> due to synchronicity principle, but are not (structurally) equal.
+Tuples are a product type. Use the <code>unbundle</code> function to convert from a signal type to the product type.
+So if your code which gives the error looks like:</p>
+<pre><code class="language-haskell">(c,d) = f a b
+</code></pre>
+<p>add the <code>unbundle</code> function like so:</p>
+<pre><code class="language-haskell">(c,d) = unbundle (f a b)
+</code></pre>
+<p>Product types supported by <code>unbundle</code> are:</p>
+<ul>
+<li>All tuples up to and including 62-tuples (GHC limit)</li>
+<li>The <code>Vec</code>tor type</li>
+</ul>
+</li>
+<li>
+<p><strong>Clash.Netlist(..): Not in normal form: &lt;REASON&gt;: &lt;EXPR&gt;</strong>:</p>
+<p>A function could not be transformed into the expected normal form.
+This usually means one of the following:</p>
+<ul>
+<li>The <code>topEntity</code> has higher-order arguments, or a higher-order result.</li>
+<li>You are using types which cannot be represented in hardware.</li>
+</ul>
+<p>The solution for all the above listed reasons is quite simple: remove them.
+That is, make sure that the <code>topEntity</code> is completely monomorphic and first-order.
+Also remove any variables and constants/literals that have a non-representable type; see <a href="developing-hardware/limitations.html">Limitations of Clash</a> to find out which types are not representable.</p>
+</li>
+<li>
+<p><strong>Clash.Normalize(..): Clash can only normalize monomorphic functions, but this is polymorphic</strong>:</p>
+<p>If this happens for a <code>topEntity</code> or something with a <code>Synthesize</code> annotation, add a monomorphic type signature.
+Non topEntites should be type-specialized by clash automatically, if not please report this as a bug.
+But adding a monomorphic type signature should still help (when possible).</p>
+</li>
+<li>
+<p><strong>Clash.Normalize(..): Expr belonging to bndr: &lt;FUNCTION&gt; remains recursive after normalization</strong>:</p>
+<ul>
+<li>
+<p>If you actually wrote a recursive function, rewrite it to a non-recursive one using e.g. one of the higher-order functions in <code>Clash.Sized.Vector</code></p>
+</li>
+<li>
+<p>You defined a recursively defined value, but left it polymorphic:</p>
+</li>
+</ul>
+<pre><code class="language-haskell">topEntity x y = acc
+  where
+    acc = register 3 (acc + x * y)
+</code></pre>
+<p>The above function, works for any number-like type.
+This means that <code>acc</code> is a recursively defined <strong>polymorphic</strong> value.
+Adding a monomorphic type annotation makes the error go away:</p>
+<pre><code class="language-haskell">topEntity
+  :: SystemClockResetEnable
+  =&gt; Signal System (Signed 8)
+  -&gt; Signal System (Signed 8)
+  -&gt; Signal System (Signed 8)
+topEntity x y = acc
+  where
+    acc = register 3 (acc + x * y)
+</code></pre>
+</li>
+<li>
+<p><strong>Clash.Normalize.Transformations(..): InlineNonRep: &lt;FUNCTION&gt; already inlined 100 times in:&lt;FUNCTION&gt;, &lt;TYPE&gt;</strong>:</p>
+<p>You left the <code>topEntity</code> function polymorphic or higher-order: use <code>:i topEntity</code> to check if the type is indeed polymorphic or higher-order.
+If it is, add a monomorphic type signature, and/or supply higher-order arguments.</p>
+</li>
+<li>
+<p><strong>&lt;*** Exception: &lt;&lt;loop&gt;&gt; or "blinking cursor"</strong></p>
+<p>You are using value-recursion, but one of the <code>Vec</code>tor functions that you are using is too <em>strict</em> in one of the recursive arguments. For example:</p>
+<pre><code class="language-haskell">-- Bubble sort for 1 iteration
+sortV xs = map fst sorted :&lt; (snd (last sorted))
+ where
+   lefts  = head xs :&gt; map snd (init sorted)
+   rights = tail xs
+   sorted = zipWith compareSwapL lefts rights
+
+-- Compare and swap
+compareSwapL a b = if a &lt; b then (a,b) else (b,a)
+</code></pre>
+<p>Will not terminate because <code>zipWith</code> is too strict in its second argument.</p>
+<p>In this case, adding <code>lazyV</code> on <code>zipWith</code>s second argument:</p>
+<pre><code class="language-haskell">sortVL xs = map fst sorted :&lt; (snd (last sorted))
+ where
+   lefts  = head xs :&gt; map snd (init sorted)
+   rights = tail xs
+   sorted = zipWith compareSwapL (lazyV lefts) rights
+</code></pre>
+<p>Results in a successful computation:</p>
+<pre><code>clashi&gt; sortVL (4 :&gt; 1 :&gt; 2 :&gt; 3 :&gt; Nil)
+1 :&gt; 2 :&gt; 3 :&gt; 4 :&gt; Nil
+</code></pre>
+</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="limitations-of-the-compiler"><a class="header" href="#limitations-of-the-compiler">Limitations of the compiler</a></h1>
 <p>Here is a list of Haskell features for which the Clash compiler has only <em>limited</em> support (for now):</p>
 <ul>
