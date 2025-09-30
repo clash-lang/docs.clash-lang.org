@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Hacking on Clash - Clash Compiler User Guide</title>
+        <title>Controlling HDL generation - Clash Compiler User Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -166,108 +166,144 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="hacking-on-the-clash-compiler"><a class="header" href="#hacking-on-the-clash-compiler">Hacking on the Clash Compiler</a></h1>
-<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
-<p>Hacking on Clash requires more dependencies than simply running Clash.
-The test suite requires having a tool available to synthesize any backend being tested.
-This means you need:</p>
+                        <h1 id="synthesize-annotations-controlling-vhdlsystemverilog-generation"><a class="header" href="#synthesize-annotations-controlling-vhdlsystemverilog-generation">Synthesize annotations: controlling VHDL/(System)Verilog generation.</a></h1>
+<p><code>Synthesize</code> annotations allow us to control hierarchy and naming aspects of the Clash compiler, specifically, they allow us to:</p>
 <ul>
-<li><a href="https://github.com/ghdl/ghdl">ghdl</a> installed to test <em>VHDL</em></li>
-<li><a href="https://github.com/steveicarus/iverilog">iverilog</a> installed to test <em>Verilog</em></li>
-<li><a href="https://fpgasoftware.intel.com/?product=modelsim_ae#tabs-2">ModelSim</a> installed to test <em>SystemVerilog</em></li>
-<li><a href="https://github.com/YosysHQ/SymbiYosys">SymbiYosys</a> and <a href="https://github.com/Z3Prover/z3">Z3</a> installed to test <em>Verilog</em> and <em>SystemVerilog</em></li>
+<li>Assign names to entities (VHDL) / modules ((System)Verilog), and their ports.</li>
+<li>Put generated HDL files of a logical (sub)entity in their own directory.</li>
+<li>Use cached versions of generated HDL, i.e., prevent recompilation of (sub)entities that have not changed since the last run.
+Caching is based on a <code>.manifest</code> which is generated alongside the HDL; deleting this file means deleting the cache; changing this file will result in <em>undefined</em> behavior.</li>
 </ul>
-<h2 id="get-clash-from-source"><a class="header" href="#get-clash-from-source">Get Clash from source</a></h2>
-<p>Get the source code using <a href="https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F">Git</a> and enter the cloned directory:</p>
-<pre><code class="language-bash">git clone git@github.com:clash-lang/clash-compiler.git
+<p>Functions with a <code>Synthesize</code> annotation must adhere to the following restrictions:</p>
+<ul>
+<li>Although functions with a <code>Synthesize</code> annotation can of course depend on functions with another <code>Synthesize</code> annotation, they must not be mutually recursive.</li>
+<li>Functions with a <code>Synthesize</code> annotation must be completely <em>monomorphic</em> and <em>first-order</em>, and cannot have any <em>non-representable</em> arguments or result.</li>
+</ul>
+<p>Also take the following into account when using <code>Synthesize</code> annotations.</p>
+<ul>
+<li>The Clash compiler is based on the GHC Haskell compiler, and the GHC machinery does not understand <code>Synthesize</code> annotations and it might subsequently decide to inline those functions.
+You should therefor also add a <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> functions.</li>
+<li>Functions with a <code>Synthesize</code> annotation will not be specialized on constants.</li>
+</ul>
+<p>Finally, the root module, the module which you pass as an argument to the Clash compiler must either have:</p>
+<ul>
+<li>A function with a <code>Synthesize</code> annotation.</li>
+<li>A function called <em>topEntity</em>.</li>
+</ul>
+<p>You apply <code>Synthesize</code> annotations to functions using an <code>ANN</code> pragma:</p>
+<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
+{-# ANN topEntity (Synthesize {t_name = ..., ...  }) #-}
+topEntity x = ...
+</code></pre>
+<p>For example, given the following specification:</p>
+<pre><code class="language-haskell">module Blinker where
 
-# Alternatively, if you haven't setup SSH keys with GitHub:
-# git clone https://github.com/clash-lang/clash-compiler.git
+import Clash.Signal
+import Clash.Prelude
+import Clash.Intel.ClockGen
 
-cd clash-compiler
+createDomain vSystem{vName="DomInput", vPeriod=20000, vResetPolarity=ActiveLow}
+createDomain vSystem{vName="Dom100", vPeriod=10000}
+
+topEntity
+  :: Clock DomInput
+  -&gt; Reset DomInput
+  -&gt; Signal Dom100 Bit
+  -&gt; Signal Dom100 (BitVector 8)
+topEntity clk rst =
+  exposeClockResetEnable (mealy blinkerT (1,False,0) . isRising 1) pllOut pllRst enableGen
+ where
+  (pllOut,pllRst) = altpllSync clk rst
+
+blinkerT (leds,mode,cntr) key1R = ((ledsN,modeN,cntrN),leds)
+ where
+  -- clock frequency = 100e6  (100 MHz)
+  -- led update rate = 333e-3 (every 333ms)
+  cnt_max = maxBound :: Index 33300000 -- 100e6 * 333e-3
+
+  cntrN | cntr == cnt_max = 0
+        | otherwise       = cntr + 1
+
+  modeN | key1R     = not mode
+        | otherwise = mode
+
+  ledsN | cntr == 0 = if mode then complement leds
+                              else rotateL leds 1
+        | otherwise = leds
 </code></pre>
-<p>To check out a released version, use:</p>
-<pre><code class="language-bash">git checkout v1.2.3
+<p>The Clash compiler will normally generate the following <code>topentity.vhdl</code> file:</p>
+<pre><code class="language-vhdl">-- Automatically generated VHDL-93
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+use IEEE.MATH_REAL.ALL;
+use std.textio.all;
+use work.all;
+use work.Blinker_topEntity_types.all;
+
+entity topEntity is
+  port(-- clock
+       clk    : in Blinker_topEntity_types.clk_DomInput;
+       -- reset
+       rst    : in Blinker_topEntity_types.rst_DomInput;
+       eta    : in std_logic;
+       result : out std_logic_vector(7 downto 0));
+end;
+
+architecture structural of topEntity is
+ ...
+end;
 </code></pre>
-<p>To checkout a release <em>branch</em> use:</p>
-<pre><code class="language-bash">git checkout 1.2
+<p>However, if we add the following <code>Synthesize</code> annotation in the file:</p>
+<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
+{-# ANN topEntity
+  (Synthesize
+    { t_name   = "blinker"
+    , t_inputs = [PortName "CLOCK_50", PortName "KEY0", PortName "KEY1"]
+    , t_output = PortName "LED"
+    }) #-}
 </code></pre>
-<p>Note that release branches might contain non-released patches.</p>
-<h3 id="cabal"><a class="header" href="#cabal">Cabal</a></h3>
-<p>To use Cabal you need both Cabal and GHC installed on your system.
-For Linux and MacOS users we recommend using <a href="https://www.haskell.org/ghcup/">ghcup</a>.
-Windows users are recommended to use the <a href="https://www.haskell.org/platform/windows.html">Haskell Platform</a>.</p>
-<p>To run <span class="title-ref">clash</span> use:</p>
-<pre><code class="language-bash">cabal v2-run --write-ghc-environment-files=always -- clash
+<p>The Clash compiler will generate the following <code>blinker.vhdl</code> file instead:</p>
+<pre><code class="language-vhdl">-- Automatically generated VHDL-93
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+use IEEE.MATH_REAL.ALL;
+use std.textio.all;
+use work.all;
+use work.blinker_types.all;
+
+entity blinker is
+  port(-- clock
+       CLOCK_50 : in blinker_types.clk_DomInput;
+       -- reset
+       KEY0     : in blinker_types.rst_DomInput;
+       KEY1     : in std_logic;
+       LED      : out std_logic_vector(7 downto 0));
+end;
+
+architecture structural of blinker is
+ ...
+end;
 </code></pre>
-<p>If this fails, make sure you've got an up-to-date package index:</p>
-<pre><code class="language-bash">cabal update
-</code></pre>
-<h3 id="stack"><a class="header" href="#stack">Stack</a></h3>
-<p><a href="https://docs.haskellstack.org/en/stable/install_and_upgrade/">Install Stack</a> and run:</p>
-<pre><code class="language-bash">stack run -- clash
-</code></pre>
-<h3 id="nix"><a class="header" href="#nix">Nix</a></h3>
-<p>Or <a href="https://nixos.org/nix/download.html">use Nix</a> to get a shell with the <code>clash</code> and <code>clashi</code> binaries on your PATH:</p>
-<pre><code class="language-bash">nix-shell
-</code></pre>
-<h2 id="subprojects"><a class="header" href="#subprojects">Subprojects</a></h2>
-<p>The Clash compiler consists of different cabal libraries, which together provide a complete compiler.
-Primarily, this consists of</p>
-<p><code>clash-ghc</code></p>
-<blockquote>
-<p>The frontend of the compiler, using parts of the GHC frontend.
-This provides the ability to load modules, translate GHC Core to Clash Core, and implements the <code>clash</code> and <code>clashi</code> executables.</p>
-<p>A lot of the code in this library is separated by the version of GHC it works with.
-For example, <code>src-bin-9.0</code> is specific to GHC 9.0.x.</p>
-</blockquote>
-<p><code>clash-lib</code></p>
-<blockquote>
-<p>The backend of the compiler, exposed as a library.
-This is the largest library in the project, and includes the various ASTs (e.g. Core, Netlist), normalization, code generation, and primitives / black boxes.</p>
-</blockquote>
-<p><code>clash-prelude</code></p>
-<blockquote>
-<p>The standard library for Clash as a language.
-This includes anything that is used to develop hardware in Clash, such as Signals, Clocks and combinators for common forms of state machine.</p>
-<p>The <code>clash-prelude</code> library also re-exports parts of the Haskell <code>base</code> library, allowing circuit designs to reuse common functions and definitions.</p>
-</blockquote>
-<p>The repository also contains other libraries.
-These either provide additional functionality which is not required, or are not yet production-ready.
-These are</p>
-<p><code>clash-cosim</code></p>
-<blockquote>
-<p>Co-simulation for Clash, allowing Verilog to be run inline as though it were a normal Haskell function.
-This provides a QuasiQuoter for use in Haskell.</p>
-<div class="warning">
-<div class="title">
-<p>Warning</p>
-</div>
-<p>This library is very experimental, and is not guaranteed to work with the most recent development version of Clash.</p>
-</div>
-</blockquote>
-<p><code>clash-term</code></p>
-<blockquote>
-<p>A development tool for analyzing how the normalizer in <code>clash-lib</code> affects the core of a particular design.
-It allows the result of each different optimizer pass to be seen for debugging purposes.</p>
-</blockquote>
-<p><code>clash-lib-hedgehog</code></p>
-<blockquote>
-<p>Hedgehog Generators for <code>clash-lib</code>.</p>
-</blockquote>
-<p><code>clash-prelude-hedgehog</code></p>
-<blockquote>
-<p>Hedgehog Generators for <code>clash-prelude</code>.</p>
-</blockquote>
+<p>Where we now have:</p>
+<ul>
+<li>A top-level component that is called <code>blinker</code>.</li>
+<li>Inputs and outputs that have a <em>user</em>-chosen name: <code>CLOCK_50</code>, <code>KEY0</code>, <code>KEY1</code>, <code>LED</code>, etc.</li>
+</ul>
+<p>See the documentation of <code>Synthesize</code> for the meaning of all its fields.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../developing-hardware/limitations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../developing-hardware/flags.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next prefetch" href="../developing-hardware/primitives.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -275,10 +311,13 @@ It allows the result of each different optimizer pass to be seen for debugging p
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../developing-hardware/limitations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../developing-hardware/flags.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next prefetch" href="../developing-hardware/primitives.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Hacking on Clash - Clash Compiler User Guide</title>
+        <title>Troubleshooting - Clash Compiler User Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -166,108 +166,133 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="hacking-on-the-clash-compiler"><a class="header" href="#hacking-on-the-clash-compiler">Hacking on the Clash Compiler</a></h1>
-<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
-<p>Hacking on Clash requires more dependencies than simply running Clash.
-The test suite requires having a tool available to synthesize any backend being tested.
-This means you need:</p>
+                        <h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
+<p>A list of often encountered errors and their solutions:</p>
 <ul>
-<li><a href="https://github.com/ghdl/ghdl">ghdl</a> installed to test <em>VHDL</em></li>
-<li><a href="https://github.com/steveicarus/iverilog">iverilog</a> installed to test <em>Verilog</em></li>
-<li><a href="https://fpgasoftware.intel.com/?product=modelsim_ae#tabs-2">ModelSim</a> installed to test <em>SystemVerilog</em></li>
-<li><a href="https://github.com/YosysHQ/SymbiYosys">SymbiYosys</a> and <a href="https://github.com/Z3Prover/z3">Z3</a> installed to test <em>Verilog</em> and <em>SystemVerilog</em></li>
+<li>
+<p><strong>Type error: Couldn't match expected type <code>Signal dom (a,b)</code> with actual type <code>(Signal dom a, Signal dom b)</code></strong>:</p>
+<p>Signals of product types and product types of signals are <strong>isomorphic</strong> due to synchronisity principle, but are not (structurally) equal.
+Tuples are a product type.
+Use the <code>bundle</code> function to convert from a product type to the signal type.
+So if your code which gives the error looks like:</p>
+<pre><code class="language-haskell">... = f a b (c,d)
+</code></pre>
+<p>add the <code>bundle</code> function like so:</p>
+<pre><code class="language-haskell">... = f a b (bundle (c,d))
+</code></pre>
+<p>Product types supported by <code>bundle</code> are:</p>
+<ul>
+<li>All tuples up to and including 62-tuples (GHC limit)</li>
+<li>The <code>Vec</code>tor type</li>
 </ul>
-<h2 id="get-clash-from-source"><a class="header" href="#get-clash-from-source">Get Clash from source</a></h2>
-<p>Get the source code using <a href="https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F">Git</a> and enter the cloned directory:</p>
-<pre><code class="language-bash">git clone git@github.com:clash-lang/clash-compiler.git
+</li>
+<li>
+<p><strong>Type error: Couldn't match expected type <code>(Signal dom a, Signal dom b)</code> with actual type <code>Signal dom (a,b)</code></strong>:</p>
+<p>Product types of signals and signals of product types are <strong>isomorphic</strong> due to synchronicity principle, but are not (structurally) equal.
+Tuples are a product type.
+Use the <code>unbundle</code> function to convert from a signal type to the product type.
+So if your code which gives the error looks like:</p>
+<pre><code class="language-haskell">(c,d) = f a b
+</code></pre>
+<p>add the <code>unbundle</code> function like so:</p>
+<pre><code class="language-haskell">(c,d) = unbundle (f a b)
+</code></pre>
+<p>Product types supported by <code>unbundle</code> are:</p>
+<ul>
+<li>All tuples up to and including 62-tuples (GHC limit)</li>
+<li>The <code>Vec</code>tor type</li>
+</ul>
+</li>
+<li>
+<p><strong>Clash.Netlist(..): Not in normal form: &lt;REASON&gt;: &lt;EXPR&gt;</strong>:</p>
+<p>A function could not be transformed into the expected normal form.
+This usually means one of the following:</p>
+<ul>
+<li>The <code>topEntity</code> has higher-order arguments, or a higher-order result.</li>
+<li>You are using types which cannot be represented in hardware.</li>
+</ul>
+<p>The solution for all the above listed reasons is quite simple: remove them.
+That is, make sure that the <code>topEntity</code> is completely monomorphic and first-order.
+Also remove any variables and constants/literals that have a non-representable type; see <a href="limitations.html">Limitations of Clash</a> to find out which types are not representable.</p>
+</li>
+<li>
+<p><strong>Clash.Normalize(..): Clash can only normalize monomorphic functions, but this is polymorphic</strong>:</p>
+<p>If this happens for a <code>topEntity</code> or something with a <code>Synthesize</code> annotation, add a monomorphic type signature.
+Non topEntites should be type-specialized by clash automatically, if not please report this as a bug.
+But adding a monomorphic type signature should still help (when possible).</p>
+</li>
+<li>
+<p><strong>Clash.Normalize(..): Expr belonging to bndr: &lt;FUNCTION&gt; remains recursive after normalization</strong>:</p>
+<ul>
+<li>
+<p>If you actually wrote a recursive function, rewrite it to a non-recursive one using e.g. one of the higher-order functions in <code>Clash.Sized.Vector</code></p>
+</li>
+<li>
+<p>You defined a recursively defined value, but left it polymorphic:</p>
+</li>
+</ul>
+<pre><code class="language-haskell">topEntity x y = acc
+  where
+    acc = register 3 (acc + x * y)
+</code></pre>
+<p>The above function, works for any number-like type.
+This means that <code>acc</code> is a recursively defined <strong>polymorphic</strong> value.
+Adding a monomorphic type annotation makes the error go away:</p>
+<pre><code class="language-haskell">topEntity
+  :: SystemClockResetEnable
+  =&gt; Signal System (Signed 8)
+  -&gt; Signal System (Signed 8)
+  -&gt; Signal System (Signed 8)
+topEntity x y = acc
+  where
+    acc = register 3 (acc + x * y)
+</code></pre>
+</li>
+<li>
+<p><strong>Clash.Normalize.Transformations(..): InlineNonRep: &lt;FUNCTION&gt; already inlined 100 times in:&lt;FUNCTION&gt;, &lt;TYPE&gt;</strong>:</p>
+<p>You left the <code>topEntity</code> function polymorphic or higher-order: use <code>:i topEntity</code> to check if the type is indeed polymorphic or higher-order.
+If it is, add a monomorphic type signature, and/or supply higher-order arguments.</p>
+</li>
+<li>
+<p><strong>&lt;*** Exception: &lt;&lt;loop&gt;&gt; or "blinking cursor"</strong></p>
+<p>You are using value-recursion, but one of the <code>Vec</code>tor functions that you are using is too <em>strict</em> in one of the recursive arguments.
+For example:</p>
+<pre><code class="language-haskell">-- Bubble sort for 1 iteration
+sortV xs = map fst sorted :&lt; (snd (last sorted))
+ where
+   lefts  = head xs :&gt; map snd (init sorted)
+   rights = tail xs
+   sorted = zipWith compareSwapL lefts rights
 
-# Alternatively, if you haven't setup SSH keys with GitHub:
-# git clone https://github.com/clash-lang/clash-compiler.git
-
-cd clash-compiler
+-- Compare and swap
+compareSwapL a b = if a &lt; b then (a,b) else (b,a)
 </code></pre>
-<p>To check out a released version, use:</p>
-<pre><code class="language-bash">git checkout v1.2.3
+<p>Will not terminate because <code>zipWith</code> is too strict in its second argument.</p>
+<p>In this case, adding <code>lazyV</code> on <code>zipWith</code>s second argument:</p>
+<pre><code class="language-haskell">sortVL xs = map fst sorted :&lt; (snd (last sorted))
+ where
+   lefts  = head xs :&gt; map snd (init sorted)
+   rights = tail xs
+   sorted = zipWith compareSwapL (lazyV lefts) rights
 </code></pre>
-<p>To checkout a release <em>branch</em> use:</p>
-<pre><code class="language-bash">git checkout 1.2
+<p>Results in a successful computation:</p>
+<pre><code>clashi&gt; sortVL (4 :&gt; 1 :&gt; 2 :&gt; 3 :&gt; Nil)
+1 :&gt; 2 :&gt; 3 :&gt; 4 :&gt; Nil
 </code></pre>
-<p>Note that release branches might contain non-released patches.</p>
-<h3 id="cabal"><a class="header" href="#cabal">Cabal</a></h3>
-<p>To use Cabal you need both Cabal and GHC installed on your system.
-For Linux and MacOS users we recommend using <a href="https://www.haskell.org/ghcup/">ghcup</a>.
-Windows users are recommended to use the <a href="https://www.haskell.org/platform/windows.html">Haskell Platform</a>.</p>
-<p>To run <span class="title-ref">clash</span> use:</p>
-<pre><code class="language-bash">cabal v2-run --write-ghc-environment-files=always -- clash
-</code></pre>
-<p>If this fails, make sure you've got an up-to-date package index:</p>
-<pre><code class="language-bash">cabal update
-</code></pre>
-<h3 id="stack"><a class="header" href="#stack">Stack</a></h3>
-<p><a href="https://docs.haskellstack.org/en/stable/install_and_upgrade/">Install Stack</a> and run:</p>
-<pre><code class="language-bash">stack run -- clash
-</code></pre>
-<h3 id="nix"><a class="header" href="#nix">Nix</a></h3>
-<p>Or <a href="https://nixos.org/nix/download.html">use Nix</a> to get a shell with the <code>clash</code> and <code>clashi</code> binaries on your PATH:</p>
-<pre><code class="language-bash">nix-shell
-</code></pre>
-<h2 id="subprojects"><a class="header" href="#subprojects">Subprojects</a></h2>
-<p>The Clash compiler consists of different cabal libraries, which together provide a complete compiler.
-Primarily, this consists of</p>
-<p><code>clash-ghc</code></p>
-<blockquote>
-<p>The frontend of the compiler, using parts of the GHC frontend.
-This provides the ability to load modules, translate GHC Core to Clash Core, and implements the <code>clash</code> and <code>clashi</code> executables.</p>
-<p>A lot of the code in this library is separated by the version of GHC it works with.
-For example, <code>src-bin-9.0</code> is specific to GHC 9.0.x.</p>
-</blockquote>
-<p><code>clash-lib</code></p>
-<blockquote>
-<p>The backend of the compiler, exposed as a library.
-This is the largest library in the project, and includes the various ASTs (e.g. Core, Netlist), normalization, code generation, and primitives / black boxes.</p>
-</blockquote>
-<p><code>clash-prelude</code></p>
-<blockquote>
-<p>The standard library for Clash as a language.
-This includes anything that is used to develop hardware in Clash, such as Signals, Clocks and combinators for common forms of state machine.</p>
-<p>The <code>clash-prelude</code> library also re-exports parts of the Haskell <code>base</code> library, allowing circuit designs to reuse common functions and definitions.</p>
-</blockquote>
-<p>The repository also contains other libraries.
-These either provide additional functionality which is not required, or are not yet production-ready.
-These are</p>
-<p><code>clash-cosim</code></p>
-<blockquote>
-<p>Co-simulation for Clash, allowing Verilog to be run inline as though it were a normal Haskell function.
-This provides a QuasiQuoter for use in Haskell.</p>
-<div class="warning">
-<div class="title">
-<p>Warning</p>
-</div>
-<p>This library is very experimental, and is not guaranteed to work with the most recent development version of Clash.</p>
-</div>
-</blockquote>
-<p><code>clash-term</code></p>
-<blockquote>
-<p>A development tool for analyzing how the normalizer in <code>clash-lib</code> affects the core of a particular design.
-It allows the result of each different optimizer pass to be seen for debugging purposes.</p>
-</blockquote>
-<p><code>clash-lib-hedgehog</code></p>
-<blockquote>
-<p>Hedgehog Generators for <code>clash-lib</code>.</p>
-</blockquote>
-<p><code>clash-prelude-hedgehog</code></p>
-<blockquote>
-<p>Hedgehog Generators for <code>clash-prelude</code>.</p>
-</blockquote>
+</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../developing-hardware/limitations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../developing-hardware/primitives.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next prefetch" href="../developing-hardware/limitations.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -275,10 +300,13 @@ It allows the result of each different optimizer pass to be seen for debugging p
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../developing-hardware/limitations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../developing-hardware/primitives.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next prefetch" href="../developing-hardware/limitations.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
