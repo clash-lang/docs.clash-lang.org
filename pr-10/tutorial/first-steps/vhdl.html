@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Controlling HDL generation - Clash Compiler User Guide</title>
+        <title>Generating VHDL - Clash Tutorial</title>
 
 
         <!-- Custom HTML head -->
@@ -134,7 +134,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Clash Compiler User Guide</h1>
+                    <h1 class="menu-title">Clash Tutorial</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -166,142 +166,62 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="synthesize-annotations-controlling-vhdlsystemverilog-generation"><a class="header" href="#synthesize-annotations-controlling-vhdlsystemverilog-generation">Synthesize annotations: controlling VHDL/(System)Verilog generation.</a></h1>
-<p><code>Synthesize</code> annotations allow us to control hierarchy and naming aspects of the Clash compiler, specifically, they allow us to:</p>
-<ul>
-<li>Assign names to entities (VHDL) / modules ((System)Verilog), and their ports.</li>
-<li>Put generated HDL files of a logical (sub)entity in their own directory.</li>
-<li>Use cached versions of generated HDL, i.e., prevent recompilation of (sub)entities that have not changed since the last run.
-Caching is based on a <code>.manifest</code> which is generated alongside the HDL; deleting this file means deleting the cache; changing this file will result in <em>undefined</em> behavior.</li>
-</ul>
-<p>Functions with a <code>Synthesize</code> annotation must adhere to the following restrictions:</p>
-<ul>
-<li>Although functions with a <code>Synthesize</code> annotation can of course depend on functions with another <code>Synthesize</code> annotation, they must not be mutually recursive.</li>
-<li>Functions with a <code>Synthesize</code> annotation must be completely <em>monomorphic</em> and <em>first-order</em>, and cannot have any <em>non-representable</em> arguments or result.</li>
-</ul>
-<p>Also take the following into account when using <code>Synthesize</code> annotations.</p>
-<ul>
-<li>The Clash compiler is based on the GHC Haskell compiler, and the GHC machinery does not understand <code>Synthesize</code> annotations and it might subsequently decide to inline those functions.
-You should therefor also add a <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> functions.</li>
-<li>Functions with a <code>Synthesize</code> annotation will not be specialized on constants.</li>
-</ul>
-<p>Finally, the root module, the module which you pass as an argument to the Clash compiler must either have:</p>
-<ul>
-<li>A function with a <code>Synthesize</code> annotation.</li>
-<li>A function called <em>topEntity</em>.</li>
-</ul>
-<p>You apply <code>Synthesize</code> annotations to functions using an <code>ANN</code> pragma:</p>
-<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
-{-# ANN topEntity (Synthesize {t_name = ..., ...  }) #-}
-topEntity x = ...
+                        <h1 id="generating-vhdl"><a class="header" href="#generating-vhdl">Generating VHDL</a></h1>
+<p>We are now almost at the point that we can create actual hardware, in the form of a <a href="http://en.wikipedia.org/wiki/VHDL">VHDL</a> netlist, from our sequential circuit specification.
+The first thing we have to do is create a function called <code>topEntity</code> and ensure that it has a <strong>monomorphic</strong> type.
+In our case that means that we have to give it an explicit type annotation.
+It might not always be needed, you can always check the type with the <code>:t</code> command and see if the function is monomorphic:</p>
+<pre><code class="language-haskell">topEntity ::
+  Clock System -&gt;
+  Reset System -&gt;
+  Enable System -&gt;
+  Signal System (Signed 9, Signed 9) -&gt;
+  Signal System (Signed 9)
+topEntity = exposeClockResetEnable mac
 </code></pre>
-<p>For example, given the following specification:</p>
-<pre><code class="language-haskell">module Blinker where
+<p>Which makes our circuit work on 9-bit signed integers.
+Including the above definition, our complete <code>MAC.hs</code> should now have the following content:</p>
+<pre><code class="language-haskell">module MAC where
 
-import Clash.Signal
 import Clash.Prelude
-import Clash.Intel.ClockGen
 
-createDomain vSystem{vName="DomInput", vPeriod=20000, vResetPolarity=ActiveLow}
-createDomain vSystem{vName="Dom100", vPeriod=10000}
+ma acc (x, y) = acc + x * y
 
-topEntity
-  :: Clock DomInput
-  -&gt; Reset DomInput
-  -&gt; Signal Dom100 Bit
-  -&gt; Signal Dom100 (BitVector 8)
-topEntity clk rst =
-  exposeClockResetEnable (mealy blinkerT (1,False,0) . isRising 1) pllOut pllRst enableGen
+macT acc (x, y) = (acc', o)
  where
-  (pllOut,pllRst) = altpllSync clk rst
+  acc' = ma acc (x, y)
+  o = acc
 
-blinkerT (leds,mode,cntr) key1R = ((ledsN,modeN,cntrN),leds)
- where
-  -- clock frequency = 100e6  (100 MHz)
-  -- led update rate = 333e-3 (every 333ms)
-  cnt_max = maxBound :: Index 33300000 -- 100e6 * 333e-3
+mac xy = mealy macT 0 xy
 
-  cntrN | cntr == cnt_max = 0
-        | otherwise       = cntr + 1
-
-  modeN | key1R     = not mode
-        | otherwise = mode
-
-  ledsN | cntr == 0 = if mode then complement leds
-                              else rotateL leds 1
-        | otherwise = leds
+topEntity ::
+  Clock System -&gt;
+  Reset System -&gt;
+  Enable System -&gt;
+  Signal System (Signed 9, Signed 9) -&gt;
+  Signal System (Signed 9)
+topEntity = exposeClockResetEnable mac
 </code></pre>
-<p>The Clash compiler will normally generate the following <code>topentity.vhdl</code> file:</p>
-<pre><code class="language-vhdl">-- Automatically generated VHDL-93
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
-use IEEE.MATH_REAL.ALL;
-use std.textio.all;
-use work.all;
-use work.Blinker_topEntity_types.all;
-
-entity topEntity is
-  port(-- clock
-       clk    : in Blinker_topEntity_types.clk_DomInput;
-       -- reset
-       rst    : in Blinker_topEntity_types.rst_DomInput;
-       eta    : in std_logic;
-       result : out std_logic_vector(7 downto 0));
-end;
-
-architecture structural of topEntity is
- ...
-end;
-</code></pre>
-<p>However, if we add the following <code>Synthesize</code> annotation in the file:</p>
-<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
-{-# ANN topEntity
-  (Synthesize
-    { t_name   = "blinker"
-    , t_inputs = [PortName "CLOCK_50", PortName "KEY0", PortName "KEY1"]
-    , t_output = PortName "LED"
-    }) #-}
-</code></pre>
-<p>The Clash compiler will generate the following <code>blinker.vhdl</code> file instead:</p>
-<pre><code class="language-vhdl">-- Automatically generated VHDL-93
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
-use IEEE.MATH_REAL.ALL;
-use std.textio.all;
-use work.all;
-use work.blinker_types.all;
-
-entity blinker is
-  port(-- clock
-       CLOCK_50 : in blinker_types.clk_DomInput;
-       -- reset
-       KEY0     : in blinker_types.rst_DomInput;
-       KEY1     : in std_logic;
-       LED      : out std_logic_vector(7 downto 0));
-end;
-
-architecture structural of blinker is
- ...
-end;
-</code></pre>
-<p>Where we now have:</p>
+<p>The <code>topEntity</code> function is the starting point for the Clash compiler to transform your circuit description into a VHDL netlist.
+It must meet the following restrictions in order for the Clash compiler to work:</p>
 <ul>
-<li>A top-level component that is called <code>blinker</code>.</li>
-<li>Inputs and outputs that have a <em>user</em>-chosen name: <code>CLOCK_50</code>, <code>KEY0</code>, <code>KEY1</code>, <code>LED</code>, etc.</li>
+<li>It must be completely monomorphic</li>
+<li>It must be completely first-order</li>
+<li>Although not strictly necessary, it is recommended to <em>expose</em> <code>Hidden</code> clock and reset arguments, as it makes user-controlled name assignment in the generated HDL easier to do.</li>
 </ul>
-<p>See the documentation of <code>Synthesize</code> for the meaning of all its fields.</p>
+<p>Our <code>topEntity</code> meets those restrictions, and so we can convert it successfully to VHDL by executing the <code>:vhdl</code> command in the interpreter.
+This will create a directory called <code>vhdl</code>, which contains a directory called <code>MAC</code>, which ultimately contains all the generated VHDL files.
+You can now load these files into your favorite VHDL synthesis tool, marking <code>topentity.vhdl</code> as the file containing the top level entity.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../developing-hardware/flags.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../first-steps/sequential.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../developing-hardware/primitives.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../first-steps/test-bench.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -311,11 +231,11 @@ end;
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../developing-hardware/flags.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../first-steps/sequential.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../developing-hardware/primitives.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../first-steps/test-bench.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

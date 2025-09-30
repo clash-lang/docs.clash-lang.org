@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Controlling HDL generation - Clash Compiler User Guide</title>
+        <title>Your first circuit - Clash Tutorial</title>
 
 
         <!-- Custom HTML head -->
@@ -134,7 +134,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Clash Compiler User Guide</h1>
+                    <h1 class="menu-title">Clash Tutorial</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -166,142 +166,115 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="synthesize-annotations-controlling-vhdlsystemverilog-generation"><a class="header" href="#synthesize-annotations-controlling-vhdlsystemverilog-generation">Synthesize annotations: controlling VHDL/(System)Verilog generation.</a></h1>
-<p><code>Synthesize</code> annotations allow us to control hierarchy and naming aspects of the Clash compiler, specifically, they allow us to:</p>
+                        <h1 id="your-first-circuit"><a class="header" href="#your-first-circuit">Your first circuit</a></h1>
+<p>The very first circuit that we will build is the "classic" multiply-and-accumulate (MAC) circuit.
+This circuit is as simple as it sounds, it multiplies its inputs and accumulates them.
+Before we describe any logic, we must first create the file we will be working on and input some preliminaries:</p>
 <ul>
-<li>Assign names to entities (VHDL) / modules ((System)Verilog), and their ports.</li>
-<li>Put generated HDL files of a logical (sub)entity in their own directory.</li>
-<li>Use cached versions of generated HDL, i.e., prevent recompilation of (sub)entities that have not changed since the last run.
-Caching is based on a <code>.manifest</code> which is generated alongside the HDL; deleting this file means deleting the cache; changing this file will result in <em>undefined</em> behavior.</li>
+<li>
+<p>Create the file:</p>
+<pre><code>MAC.hs
+</code></pre>
+</li>
+<li>
+<p>Write on the first line the module header:</p>
+<pre><code class="language-haskell">module MAC where
+</code></pre>
+<p>Module names must always start with a <strong>C</strong>apital letter.
+Also make sure that the file name corresponds to the module name.</p>
+</li>
+<li>
+<p>Add the import statement for the Clash prelude library:</p>
+<pre><code class="language-haskell">import Clash.Prelude
+</code></pre>
+<p>This imports all the necessary functions and datatypes for circuit description.</p>
+</li>
 </ul>
-<p>Functions with a <code>Synthesize</code> annotation must adhere to the following restrictions:</p>
+<p>We can now finally start describing the logic of our circuit, starting with just the multiplication and addition:</p>
+<pre><code class="language-haskell">ma acc (x, y) = acc + x * y
+</code></pre>
+<p>The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we will later see).
+We usually refer to circuits as <em>functions</em>, similar to programming languages such as C, Python, or Haskell.
+In this case, the function we just defined is called <code>ma</code>.
+Its first argument is <code>acc</code>, its second is <code>(x, y)</code> - a composite type called a tuple.
+This component is "unpacked", and its first element is called <code>x</code>, its second <code>y</code>.
+Everything to the right of the equals symbol is <code>ma</code>'s result.
+If you followed the instructions of running the interpreter side-by-side, you can already test this function:</p>
+<pre><code class="language-haskell">&gt;&gt;&gt; ma 4 (8, 9)
+76
+&gt;&gt;&gt; ma 2 (3, 4)
+14
+</code></pre>
+<p>We can also examine the inferred type of <code>ma</code> in the interpreter:</p>
+<pre><code class="language-haskell">&gt;&gt;&gt; :t ma
+ma :: Num a =&gt; a -&gt; (a, a) -&gt; a
+</code></pre>
+<p>You should read this as follows:</p>
 <ul>
-<li>Although functions with a <code>Synthesize</code> annotation can of course depend on functions with another <code>Synthesize</code> annotation, they must not be mutually recursive.</li>
-<li>Functions with a <code>Synthesize</code> annotation must be completely <em>monomorphic</em> and <em>first-order</em>, and cannot have any <em>non-representable</em> arguments or result.</li>
+<li>
+<p><strong><code>ma ::</code></strong>, <code>ma</code> is of type…</p>
+</li>
+<li>
+<p><strong><code>Num a</code></strong>, there is some type called <code>a</code> that is a <code>Num</code>.
+Examples of instances of <code>Num</code> are <code>Int</code>, <code>Signed 16</code>, <code>Index 32</code>, or <code>Float</code>.</p>
+</li>
+<li>
+<p><strong><code>a</code></strong>, <code>ma</code>'s first argument is of type <code>a</code></p>
+</li>
+<li>
+<p><strong><code>(a, a)</code></strong>, <code>ma</code>'s second argument is of type <code>(a, a)</code></p>
+</li>
+<li>
+<p><strong><code>a</code></strong>, <code>ma</code>'s result is of type <code>a</code></p>
+</li>
 </ul>
-<p>Also take the following into account when using <code>Synthesize</code> annotations.</p>
-<ul>
-<li>The Clash compiler is based on the GHC Haskell compiler, and the GHC machinery does not understand <code>Synthesize</code> annotations and it might subsequently decide to inline those functions.
-You should therefor also add a <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> functions.</li>
-<li>Functions with a <code>Synthesize</code> annotation will not be specialized on constants.</li>
-</ul>
-<p>Finally, the root module, the module which you pass as an argument to the Clash compiler must either have:</p>
-<ul>
-<li>A function with a <code>Synthesize</code> annotation.</li>
-<li>A function called <em>topEntity</em>.</li>
-</ul>
-<p>You apply <code>Synthesize</code> annotations to functions using an <code>ANN</code> pragma:</p>
-<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
-{-# ANN topEntity (Synthesize {t_name = ..., ...  }) #-}
-topEntity x = ...
+<p>Note that <code>ma</code> therefore works on multiple types!
+The only condition we imposed is that <code>a</code> should be a <code>Num</code>ber type.
+In Clash this means it should support the operations <code>Prelude.+</code>, <code>Prelude.-</code>, <code>Prelude.*</code>, and some others.
+Indeed, this is why Clash adds the constraint in the first place: the definition of <code>ma</code> uses <code>+</code> and <code>*</code>.
+Whenever a function works over multiple types, we call it <em>polymorphic</em> ("poly" meaning "many", "morphic" meaning "forms").
+While powerful, it is not clear how Clash should synthesize this as numbers come in a great variety of (bit)sizes.
+We will later see how to use this function in a <em>monomorphic</em> manner.</p>
+<p>Talking about <em>types</em> also brings us to one of the most important parts of this tutorial: <em>types</em> and <em>synchronous sequential logic</em>.
+Especially how we can always determine, through the types of a specification, if it describes combinational logic or (synchronous) sequential logic.
+We do this by examining the definition of one of the sequential primitives, the <code>register</code> function:</p>
+<pre><code class="language-haskell">register ::
+  ( HiddenClockResetEnable dom
+  , NFDataX a
+  ) =&gt;
+  a -&gt;
+  Signal dom a -&gt;
+  Signal dom a
+register i s = ...
 </code></pre>
-<p>For example, given the following specification:</p>
-<pre><code class="language-haskell">module Blinker where
-
-import Clash.Signal
-import Clash.Prelude
-import Clash.Intel.ClockGen
-
-createDomain vSystem{vName="DomInput", vPeriod=20000, vResetPolarity=ActiveLow}
-createDomain vSystem{vName="Dom100", vPeriod=10000}
-
-topEntity
-  :: Clock DomInput
-  -&gt; Reset DomInput
-  -&gt; Signal Dom100 Bit
-  -&gt; Signal Dom100 (BitVector 8)
-topEntity clk rst =
-  exposeClockResetEnable (mealy blinkerT (1,False,0) . isRising 1) pllOut pllRst enableGen
- where
-  (pllOut,pllRst) = altpllSync clk rst
-
-blinkerT (leds,mode,cntr) key1R = ((ledsN,modeN,cntrN),leds)
- where
-  -- clock frequency = 100e6  (100 MHz)
-  -- led update rate = 333e-3 (every 333ms)
-  cnt_max = maxBound :: Index 33300000 -- 100e6 * 333e-3
-
-  cntrN | cntr == cnt_max = 0
-        | otherwise       = cntr + 1
-
-  modeN | key1R     = not mode
-        | otherwise = mode
-
-  ledsN | cntr == 0 = if mode then complement leds
-                              else rotateL leds 1
-        | otherwise = leds
+<p>Where we see that the second argument and the result are not just of the <em>polymorphic</em> <code>a</code> type, but of the type: <code>Signal dom a</code>.
+All (synchronous) sequential circuits work on values of type <code>Signal dom a</code>.
+Combinational circuits always work on values of, well, not of type <code>Signal dom a</code>.
+A <code>Signal</code> is an (infinite) list of samples, where the samples correspond to the values of the <code>Signal</code> at discrete, consecutive ticks of the <em>clock</em>.
+All (sequential) components in the circuit are synchronized to this global <em>clock</em>.
+For the rest of this tutorial, and probably at any moment where you will be working with Clash, you should probably not actively think about <code>Signal</code>s as infinite lists of samples, but just as values that are manipulated by sequential circuits.
+To make this even easier, it is actually not possible to manipulate the underlying representation directly: you can only modify <code>Signal</code> values through a set of primitives such as the <code>register</code> function above.</p>
+<p>Now, let us get back to the functionality of the <code>register</code> function: it is a simple <a href="https://en.wikipedia.org/wiki/Flip-flop_(electronics)">flip-flop</a> that only changes state at the tick of the global <em>clock</em>, and it has an initial value <code>a</code> which is its output at time 0.
+We can further examine the <code>register</code> function by taking a look at the first 4 samples of the <code>register</code> functions applied to a constant signal with the value 8:</p>
+<pre><code class="language-haskell">&gt;&gt;&gt; sampleN @System 4 (register 0 (pure (8 :: Signed 8)))
+[0,0,8,8]
 </code></pre>
-<p>The Clash compiler will normally generate the following <code>topentity.vhdl</code> file:</p>
-<pre><code class="language-vhdl">-- Automatically generated VHDL-93
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
-use IEEE.MATH_REAL.ALL;
-use std.textio.all;
-use work.all;
-use work.Blinker_topEntity_types.all;
-
-entity topEntity is
-  port(-- clock
-       clk    : in Blinker_topEntity_types.clk_DomInput;
-       -- reset
-       rst    : in Blinker_topEntity_types.rst_DomInput;
-       eta    : in std_logic;
-       result : out std_logic_vector(7 downto 0));
-end;
-
-architecture structural of topEntity is
- ...
-end;
-</code></pre>
-<p>However, if we add the following <code>Synthesize</code> annotation in the file:</p>
-<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
-{-# ANN topEntity
-  (Synthesize
-    { t_name   = "blinker"
-    , t_inputs = [PortName "CLOCK_50", PortName "KEY0", PortName "KEY1"]
-    , t_output = PortName "LED"
-    }) #-}
-</code></pre>
-<p>The Clash compiler will generate the following <code>blinker.vhdl</code> file instead:</p>
-<pre><code class="language-vhdl">-- Automatically generated VHDL-93
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
-use IEEE.MATH_REAL.ALL;
-use std.textio.all;
-use work.all;
-use work.blinker_types.all;
-
-entity blinker is
-  port(-- clock
-       CLOCK_50 : in blinker_types.clk_DomInput;
-       -- reset
-       KEY0     : in blinker_types.rst_DomInput;
-       KEY1     : in std_logic;
-       LED      : out std_logic_vector(7 downto 0));
-end;
-
-architecture structural of blinker is
- ...
-end;
-</code></pre>
-<p>Where we now have:</p>
-<ul>
-<li>A top-level component that is called <code>blinker</code>.</li>
-<li>Inputs and outputs that have a <em>user</em>-chosen name: <code>CLOCK_50</code>, <code>KEY0</code>, <code>KEY1</code>, <code>LED</code>, etc.</li>
-</ul>
-<p>See the documentation of <code>Synthesize</code> for the meaning of all its fields.</p>
+<p>Where we see that the initial value of the signal is the specified 0 value, followed by 8's.
+You might be surprised to see <em>two</em> zeros instead of just a single zero.
+What happens is that in Clash you get to see the output of the circuit <em>before</em> the clock becomes active.
+In other words, in Clash you get to describe the powerup values of registers too.
+Whether this is a defined or unknown value depends on your hardware target, and can be configured by using a different synthesis <code>Domain</code>.
+The default synthesis domain, <code>@System</code>, assumes that registers do have a powerup value - as is true for most FPGA platforms in most contexts.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../developing-hardware/flags.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../first-steps/working.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../developing-hardware/primitives.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../first-steps/sequential.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -311,11 +284,11 @@ end;
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../developing-hardware/flags.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../first-steps/working.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../developing-hardware/primitives.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../first-steps/sequential.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

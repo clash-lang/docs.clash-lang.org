@@ -168,7 +168,8 @@
                     <main>
                         <h1 id="user-defined-primitives"><a class="header" href="#user-defined-primitives">User-defined primitives</a></h1>
 <p>There are times when you already have an existing piece of IP, or there are times where you need the HDL to have a specific shape so that the HDL synthesis tool can infer a specific component.
-In these specific cases you can resort to defining your own HDL primitives. Actually, most of the primitives in Clash are specified in the same way as you will read about in this section.
+In these specific cases you can resort to defining your own HDL primitives.
+Actually, most of the primitives in Clash are specified in the same way as you will read about in this section.
 There are perhaps 10 (at most) functions which are truly hard-coded into the Clash compiler.
 You can take a look at the files in <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl</a> (or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog</a> for the Verilog primitives or <a href="https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog">https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog</a> for the SystemVerilog primitives) if you want to know which functions are defined as "regular" primitives.
 The compiler looks for primitives in four locations:</p>

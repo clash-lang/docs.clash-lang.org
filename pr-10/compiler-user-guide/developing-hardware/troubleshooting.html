@@ -172,7 +172,8 @@
 <li>
 <p><strong>Type error: Couldn't match expected type <code>Signal dom (a,b)</code> with actual type <code>(Signal dom a, Signal dom b)</code></strong>:</p>
 <p>Signals of product types and product types of signals are <strong>isomorphic</strong> due to synchronisity principle, but are not (structurally) equal.
-Tuples are a product type. Use the <code>bundle</code> function to convert from a product type to the signal type.
+Tuples are a product type.
+Use the <code>bundle</code> function to convert from a product type to the signal type.
 So if your code which gives the error looks like:</p>
 <pre><code class="language-haskell">... = f a b (c,d)
 </code></pre>
@@ -188,7 +189,8 @@ So if your code which gives the error looks like:</p>
 <li>
 <p><strong>Type error: Couldn't match expected type <code>(Signal dom a, Signal dom b)</code> with actual type <code>Signal dom (a,b)</code></strong>:</p>
 <p>Product types of signals and signals of product types are <strong>isomorphic</strong> due to synchronicity principle, but are not (structurally) equal.
-Tuples are a product type. Use the <code>unbundle</code> function to convert from a signal type to the product type.
+Tuples are a product type.
+Use the <code>unbundle</code> function to convert from a signal type to the product type.
 So if your code which gives the error looks like:</p>
 <pre><code class="language-haskell">(c,d) = f a b
 </code></pre>
@@ -253,7 +255,8 @@ If it is, add a monomorphic type signature, and/or supply higher-order arguments
 </li>
 <li>
 <p><strong>&lt;*** Exception: &lt;&lt;loop&gt;&gt; or "blinking cursor"</strong></p>
-<p>You are using value-recursion, but one of the <code>Vec</code>tor functions that you are using is too <em>strict</em> in one of the recursive arguments. For example:</p>
+<p>You are using value-recursion, but one of the <code>Vec</code>tor functions that you are using is too <em>strict</em> in one of the recursive arguments.
+For example:</p>
 <pre><code class="language-haskell">-- Bubble sort for 1 iteration
 sortV xs = map fst sorted :&lt; (snd (last sorted))
  where

@@ -305,17 +305,17 @@ So, without synthesis possibilities for the basic arithmetic operations, there i
 <p><code>Int</code> and <code>Word</code> are represented by the same number of bits as is native for the architecture of the computer on which the Clash compiler is executed.
 This means that if you are working on a 64-bit machine, <code>Int</code> and <code>Word</code> will be 64-bit.
 This might be problematic when you are working in a team, and one designer has a 32-bit machine, and the other has a 64-bit machine.
-In general, you should be avoiding 'Int' in such cases, but as a band-aid solution, you can force the Clash compiler to use a specific bit-width for <code>Int</code> and <code>Word</code> using the <code>-fclash-intwidth=N</code> flag, where <em>N</em> must either be <em>32</em> or <em>64</em>.</p>
+In general, you should be avoiding <code>Int</code> in such cases, but as a band-aid solution, you can force the Clash compiler to use a specific bit-width for <code>Int</code> and <code>Word</code> using the <code>-fclash-intwidth=N</code> flag, where <em>N</em> must either be <em>32</em> or <em>64</em>.</p>
 </li>
 <li>
-<p>When you use the <code>-fclash-intwidth=32</code> flag on a <em>64-bit</em> machine, the 'Word64' and 'Int64' types <em>cannot</em> be translated. This restriction does <em>not</em> apply to the other three combinations of <code>-fclash-intwidth</code> flag and machine type.</p>
+<p>When you use the <code>-fclash-intwidth=32</code> flag on a <em>64-bit</em> machine, the <code>Word64</code> and <code>Int64</code> types <em>cannot</em> be translated. This restriction does <em>not</em> apply to the other three combinations of <code>-fclash-intwidth</code> flag and machine type.</p>
 </li>
 <li>
-<p>The translation of 'Integer' is not meaning-preserving.
-'Integer' in Haskell is an arbitrary precision integer, something that cannot be represented in a statically known number of bits.
-In the Clash compiler, we chose to represent 'Integer' by the same number of bits as we do for <code>Int</code> and <code>Word</code>.
+<p>The translation of <code>Integer</code> is not meaning-preserving.
+<code>Integer</code> in Haskell is an arbitrary precision integer, something that cannot be represented in a statically known number of bits.
+In the Clash compiler, we chose to represent <code>Integer</code> by the same number of bits as we do for <code>Int</code> and <code>Word</code>.
 As you have read in a previous bullet point, this number of bits is either 32 or 64, depending on the architecture of the machine the Clash compiler is running on, or the setting of the <code>-fclash-intwidth</code> flag.</p>
-<p>Consequently, you should use <code>Integer</code> with due diligence; be especially careful when using <code>fromIntegral</code> as it does a conversion via 'Integer'.
+<p>Consequently, you should use <code>Integer</code> with due diligence; be especially careful when using <code>fromIntegral</code> as it does a conversion via <code>Integer</code>.
 For example:</p>
 <pre><code class="language-haskell">signedToUnsigned :: Signed 128 -&gt; Unsigned 128
 signedToUnsigned = fromIntegral

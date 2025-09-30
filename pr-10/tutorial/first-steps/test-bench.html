@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Controlling HDL generation - Clash Compiler User Guide</title>
+        <title>Circuit test bench - Clash Tutorial</title>
 
 
         <!-- Custom HTML head -->
@@ -134,7 +134,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Clash Compiler User Guide</h1>
+                    <h1 class="menu-title">Clash Tutorial</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -166,142 +166,79 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="synthesize-annotations-controlling-vhdlsystemverilog-generation"><a class="header" href="#synthesize-annotations-controlling-vhdlsystemverilog-generation">Synthesize annotations: controlling VHDL/(System)Verilog generation.</a></h1>
-<p><code>Synthesize</code> annotations allow us to control hierarchy and naming aspects of the Clash compiler, specifically, they allow us to:</p>
+                        <h1 id="circuit-test-bench"><a class="header" href="#circuit-test-bench">Circuit test bench</a></h1>
+<p>There are multiple reasons as to why you might want to create a so-called <em>test bench</em> for the generated HDL:</p>
 <ul>
-<li>Assign names to entities (VHDL) / modules ((System)Verilog), and their ports.</li>
-<li>Put generated HDL files of a logical (sub)entity in their own directory.</li>
-<li>Use cached versions of generated HDL, i.e., prevent recompilation of (sub)entities that have not changed since the last run.
-Caching is based on a <code>.manifest</code> which is generated alongside the HDL; deleting this file means deleting the cache; changing this file will result in <em>undefined</em> behavior.</li>
+<li>You want to compare post-synthesis / post-place&amp;route behavior to that of the behavior of the original generated HDL.</li>
+<li>You need representative stimuli for your dynamic power calculations.</li>
+<li>You want to verify that the HDL output of the Clash compiler has the same behavior as the Haskell/Clash specification.</li>
 </ul>
-<p>Functions with a <code>Synthesize</code> annotation must adhere to the following restrictions:</p>
+<p>For these purposes, you can have the Clash compiler generate a <em>test bench</em>.
+In order for the Clash compiler to do this you need to do one of the following:</p>
 <ul>
-<li>Although functions with a <code>Synthesize</code> annotation can of course depend on functions with another <code>Synthesize</code> annotation, they must not be mutually recursive.</li>
-<li>Functions with a <code>Synthesize</code> annotation must be completely <em>monomorphic</em> and <em>first-order</em>, and cannot have any <em>non-representable</em> arguments or result.</li>
+<li>Create a function called <code>testBench</code> in the root module.</li>
+<li>Annotate your test bench function with a <code>TestBench</code> annotation.</li>
 </ul>
-<p>Also take the following into account when using <code>Synthesize</code> annotations.</p>
-<ul>
-<li>The Clash compiler is based on the GHC Haskell compiler, and the GHC machinery does not understand <code>Synthesize</code> annotations and it might subsequently decide to inline those functions.
-You should therefor also add a <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> functions.</li>
-<li>Functions with a <code>Synthesize</code> annotation will not be specialized on constants.</li>
-</ul>
-<p>Finally, the root module, the module which you pass as an argument to the Clash compiler must either have:</p>
-<ul>
-<li>A function with a <code>Synthesize</code> annotation.</li>
-<li>A function called <em>topEntity</em>.</li>
-</ul>
-<p>You apply <code>Synthesize</code> annotations to functions using an <code>ANN</code> pragma:</p>
-<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
-{-# ANN topEntity (Synthesize {t_name = ..., ...  }) #-}
-topEntity x = ...
-</code></pre>
-<p>For example, given the following specification:</p>
-<pre><code class="language-haskell">module Blinker where
+<p>For example, you can test the earlier defined <em>topEntity</em> by:</p>
+<pre><code class="language-haskell">import Clash.Explicit.Testbench
 
-import Clash.Signal
-import Clash.Prelude
-import Clash.Intel.ClockGen
+topEntity ::
+  Clock System -&gt;
+  Reset System -&gt;
+  Enable System -&gt;
+  Signal System (Signed 9, Signed 9) -&gt;
+  Signal System (Signed 9)
+topEntity = exposeClockResetEnable mac
 
-createDomain vSystem{vName="DomInput", vPeriod=20000, vResetPolarity=ActiveLow}
-createDomain vSystem{vName="Dom100", vPeriod=10000}
-
-topEntity
-  :: Clock DomInput
-  -&gt; Reset DomInput
-  -&gt; Signal Dom100 Bit
-  -&gt; Signal Dom100 (BitVector 8)
-topEntity clk rst =
-  exposeClockResetEnable (mealy blinkerT (1,False,0) . isRising 1) pllOut pllRst enableGen
+testBench :: Signal System Bool
+testBench = done
  where
-  (pllOut,pllRst) = altpllSync clk rst
-
-blinkerT (leds,mode,cntr) key1R = ((ledsN,modeN,cntrN),leds)
- where
-  -- clock frequency = 100e6  (100 MHz)
-  -- led update rate = 333e-3 (every 333ms)
-  cnt_max = maxBound :: Index 33300000 -- 100e6 * 333e-3
-
-  cntrN | cntr == cnt_max = 0
-        | otherwise       = cntr + 1
-
-  modeN | key1R     = not mode
-        | otherwise = mode
-
-  ledsN | cntr == 0 = if mode then complement leds
-                              else rotateL leds 1
-        | otherwise = leds
+  testInput =
+    stimuliGenerator
+      clk
+      rst
+      $(listToVecTH [(1, 1) :: (Signed 9, Signed 9), (2, 2), (3, 3), (4, 4)])
+  expectOutput =
+    outputVerifier clk rst $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
+  done = expectOutput (topEntity clk rst en testInput)
+  en = enableGen
+  clk = tbSystemClockGen (not &lt;$&gt; done)
+  rst = systemResetGen
 </code></pre>
-<p>The Clash compiler will normally generate the following <code>topentity.vhdl</code> file:</p>
-<pre><code class="language-vhdl">-- Automatically generated VHDL-93
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
-use IEEE.MATH_REAL.ALL;
-use std.textio.all;
-use work.all;
-use work.Blinker_topEntity_types.all;
-
-entity topEntity is
-  port(-- clock
-       clk    : in Blinker_topEntity_types.clk_DomInput;
-       -- reset
-       rst    : in Blinker_topEntity_types.rst_DomInput;
-       eta    : in std_logic;
-       result : out std_logic_vector(7 downto 0));
-end;
-
-architecture structural of topEntity is
- ...
-end;
+<p>This will create a stimulus generator that creates the same inputs as we used earlier for the simulation of the circuit, and creates an output verifier that compares against the results we got from our earlier simulation.
+We can even simulate the behavior of the <em>testBench</em>:</p>
+<pre><code class="language-haskell">&gt;&gt;&gt; sampleN 8 testBench
+[False,False,False,False,False
+cycle(&lt;Clock: System&gt;): 5, outputVerifier
+expected value: 14, not equal to actual value: 30
+,False
+cycle(&lt;Clock: System&gt;): 6, outputVerifier
+expected value: 14, not equal to actual value: 46
+,False
+cycle(&lt;Clock: System&gt;): 7, outputVerifier
+expected value: 14, not equal to actual value: 62
+,False]
 </code></pre>
-<p>However, if we add the following <code>Synthesize</code> annotation in the file:</p>
-<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
-{-# ANN topEntity
-  (Synthesize
-    { t_name   = "blinker"
-    , t_inputs = [PortName "CLOCK_50", PortName "KEY0", PortName "KEY1"]
-    , t_output = PortName "LED"
-    }) #-}
-</code></pre>
-<p>The Clash compiler will generate the following <code>blinker.vhdl</code> file instead:</p>
-<pre><code class="language-vhdl">-- Automatically generated VHDL-93
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
-use IEEE.MATH_REAL.ALL;
-use std.textio.all;
-use work.all;
-use work.blinker_types.all;
-
-entity blinker is
-  port(-- clock
-       CLOCK_50 : in blinker_types.clk_DomInput;
-       -- reset
-       KEY0     : in blinker_types.rst_DomInput;
-       KEY1     : in std_logic;
-       LED      : out std_logic_vector(7 downto 0));
-end;
-
-architecture structural of blinker is
- ...
-end;
-</code></pre>
-<p>Where we now have:</p>
-<ul>
-<li>A top-level component that is called <code>blinker</code>.</li>
-<li>Inputs and outputs that have a <em>user</em>-chosen name: <code>CLOCK_50</code>, <code>KEY0</code>, <code>KEY1</code>, <code>LED</code>, etc.</li>
-</ul>
-<p>See the documentation of <code>Synthesize</code> for the meaning of all its fields.</p>
+<p>We can see that for the first 4 samples, everything is working as expected, after which warnings are being reported.
+The reason is that <code>stimuliGenerator</code> will keep on producing the last sample, (4,4), while the <code>outputVerifier'</code> will keep on expecting the last sample, 14.
+In the VHDL test bench these errors will not show, as the global clock will be stopped after 4 ticks.</p>
+<p>You should now again run <code>:vhdl</code> in the interpreter; this time the compiler will take a bit longer to generate all the circuits.
+Inside the <code>./vhdl/MAC</code> directory you will now also find a <code>testbench</code> subdirectory containing all the <code>vhdl</code> files for the <em>test bench</em>.</p>
+<p>After compilation is finished you load all the files in your favorite VHDL simulation tool.
+Once all files are loaded into the VHDL simulator, run the simulation on the <code>testbench</code> entity.
+On questasim / modelsim: doing a <code>run -all</code> will finish once the output verifier will assert its output to <code>true</code>.
+The generated test bench, modulo the clock signal generator(s), is completely synthesizable.
+This means that if you want to test your circuit on an FPGA, you will only have to replace the clock signal generator(s) by actual clock sources, such as an onboard PLL.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../developing-hardware/flags.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../first-steps/vhdl.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../developing-hardware/primitives.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../first-steps/verilog.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -311,11 +248,11 @@ end;
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../developing-hardware/flags.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../first-steps/vhdl.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../developing-hardware/primitives.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../first-steps/verilog.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
