@@ -1,6 +1,7 @@
 # User-defined primitives
 There are times when you already have an existing piece of IP, or there are times where you need the HDL to have a specific shape so that the HDL synthesis tool can infer a specific component.
-In these specific cases you can resort to defining your own HDL primitives. Actually, most of the primitives in Clash are specified in the same way as you will read about in this section.
+In these specific cases you can resort to defining your own HDL primitives.
+Actually, most of the primitives in Clash are specified in the same way as you will read about in this section.
 There are perhaps 10 (at most) functions which are truly hard-coded into the Clash compiler.
 You can take a look at the files in <https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/vhdl> (or <https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/verilog> for the Verilog primitives or <https://github.com/clash-lang/clash-compiler/tree/master/clash-lib/prims/systemverilog> for the SystemVerilog primitives) if you want to know which functions are defined as "regular" primitives.
 The compiler looks for primitives in four locations:

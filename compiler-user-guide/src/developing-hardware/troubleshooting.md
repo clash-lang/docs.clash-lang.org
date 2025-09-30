@@ -5,7 +5,8 @@ A list of often encountered errors and their solutions:
 * __Type error: Couldn't match expected type `Signal dom (a,b)` with actual type `(Signal dom a, Signal dom b)`__:
 
     Signals of product types and product types of signals are __isomorphic__ due to synchronisity principle, but are not (structurally) equal.
-    Tuples are a product type. Use the `bundle` function to convert from a product type to the signal type.
+    Tuples are a product type.
+    Use the `bundle` function to convert from a product type to the signal type.
     So if your code which gives the error looks like:
 
     ``` haskell
@@ -26,7 +27,8 @@ A list of often encountered errors and their solutions:
 * __Type error: Couldn't match expected type `(Signal dom a, Signal dom b)` with actual type `Signal dom (a,b)`__:
 
     Product types of signals and signals of product types are __isomorphic__ due to synchronicity principle, but are not (structurally) equal.
-    Tuples are a product type. Use the `unbundle` function to convert from a signal type to the product type.
+    Tuples are a product type.
+    Use the `unbundle` function to convert from a signal type to the product type.
     So if your code which gives the error looks like:
 
     ``` haskell
@@ -96,7 +98,8 @@ A list of often encountered errors and their solutions:
 
 *  __<*** Exception: <\<loop\>> or "blinking cursor"__
 
-    You are using value-recursion, but one of the `Vec`tor functions that you are using is too *strict* in one of the recursive arguments. For example:
+    You are using value-recursion, but one of the `Vec`tor functions that you are using is too *strict* in one of the recursive arguments.
+    For example:
 
     ``` haskell
     -- Bubble sort for 1 iteration

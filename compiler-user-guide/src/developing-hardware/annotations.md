@@ -7,7 +7,7 @@
   * Use cached versions of generated HDL, i.e., prevent recompilation of (sub)entities that have not changed since the last run.
     Caching is based on a `.manifest` which is generated alongside the HDL; deleting this file means deleting the cache; changing this file will result in *undefined* behavior.
 
-Functions with a 'Synthesize' annotation must adhere to the following restrictions:
+Functions with a `Synthesize` annotation must adhere to the following restrictions:
 
   * Although functions with a `Synthesize` annotation can of course depend on functions with another `Synthesize` annotation, they must not be mutually recursive.
   * Functions with a `Synthesize` annotation must be completely *monomorphic* and *first-order*, and cannot have any *non-representable* arguments or result.

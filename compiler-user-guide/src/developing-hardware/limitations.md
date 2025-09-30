@@ -160,16 +160,16 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
     * `Int` and `Word` are represented by the same number of bits as is native for the architecture of the computer on which the Clash compiler is executed.
       This means that if you are working on a 64-bit machine, `Int` and `Word` will be 64-bit.
       This might be problematic when you are working in a team, and one designer has a 32-bit machine, and the other has a 64-bit machine.
-      In general, you should be avoiding 'Int' in such cases, but as a band-aid solution, you can force the Clash compiler to use a specific bit-width for `Int` and `Word` using the `-fclash-intwidth=N` flag, where _N_ must either be _32_ or _64_.
+      In general, you should be avoiding `Int` in such cases, but as a band-aid solution, you can force the Clash compiler to use a specific bit-width for `Int` and `Word` using the `-fclash-intwidth=N` flag, where _N_ must either be _32_ or _64_.
 
-    * When you use the `-fclash-intwidth=32` flag on a _64-bit_ machine, the 'Word64' and 'Int64' types _cannot_ be translated. This restriction does _not_ apply to the other three combinations of `-fclash-intwidth` flag and machine type.
+    * When you use the `-fclash-intwidth=32` flag on a _64-bit_ machine, the `Word64` and `Int64` types _cannot_ be translated. This restriction does _not_ apply to the other three combinations of `-fclash-intwidth` flag and machine type.
 
-    * The translation of 'Integer' is not meaning-preserving.
-      'Integer' in Haskell is an arbitrary precision integer, something that cannot be represented in a statically known number of bits.
-      In the Clash compiler, we chose to represent 'Integer' by the same number of bits as we do for `Int` and `Word`.
+    * The translation of `Integer` is not meaning-preserving.
+      `Integer` in Haskell is an arbitrary precision integer, something that cannot be represented in a statically known number of bits.
+      In the Clash compiler, we chose to represent `Integer` by the same number of bits as we do for `Int` and `Word`.
       As you have read in a previous bullet point, this number of bits is either 32 or 64, depending on the architecture of the machine the Clash compiler is running on, or the setting of the `-fclash-intwidth` flag.
 
-      Consequently, you should use `Integer` with due diligence; be especially careful when using `fromIntegral` as it does a conversion via 'Integer'.
+      Consequently, you should use `Integer` with due diligence; be especially careful when using `fromIntegral` as it does a conversion via `Integer`.
       For example:
 
       ``` haskell
