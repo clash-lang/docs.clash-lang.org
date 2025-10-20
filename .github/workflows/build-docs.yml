@@ -49,6 +49,7 @@ jobs:
       - name: Add root files
         run: |
           cp CNAME public/
+          cp robots.txt public/
 
       - name: Copy PR previews
         # If there are no open PR's, this step will emit error messages that no
