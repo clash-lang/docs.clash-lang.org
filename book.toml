@@ -1,0 +1,8 @@
+[book]
+authors = ["The Clash Developers"]
+language = "en"
+src = "root-src"
+title = "Clash Documentation"
+
+[build]
+build-dir = "public/"

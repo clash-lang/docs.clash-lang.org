@@ -21,8 +21,8 @@ jobs:
       - name: Remove PR Preview Directory
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
-          echo "Removing directory ./pr-${PR_NUMBER}"
-          rm -rf ./pr-${PR_NUMBER}
+          echo "Removing directory ./pr/${PR_NUMBER}"
+          rm -rf ./pr/${PR_NUMBER}
 
       - name: Commit and Push Deletion
         uses: peaceiris/actions-gh-pages@v4
