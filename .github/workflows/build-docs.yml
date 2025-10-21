@@ -43,19 +43,21 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      - name: Build root book with mdBook
+        run: mdbook build
+
+      - name: Add root files
+        run: |
+          cp CNAME public/
+          cp robots.txt public/
+
       - name: Copy PR previews
         # If there are no open PR's, this step will emit error messages that no
         # files matched and it does not look like a tar archive. These are
         # expected and don't indicate a problem.
         run: |
-          mkdir -p public
           git fetch --depth=1 origin +gh-pages:refs/remotes/origin/gh-pages
-          git archive --prefix=public/ refs/remotes/origin/gh-pages -- ':(glob)pr-*/**' | tar x || true
-
-      - name: Add root files
-        run: |
-          cp CNAME public/
-          cp index.html public/
+          git archive --prefix=public/ refs/remotes/origin/gh-pages -- ':(glob)pr/**' | tar x || true
 
       - name: Build Compiler User Guide with mdBook
         run: mdbook build
