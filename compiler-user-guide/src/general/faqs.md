@@ -4,7 +4,7 @@
 
 - **Q**: How do I install Clash?
 
-  **A**: Check out the `installing` page in the *Getting Started* section of the manual.
+  **A**: Check out [clash-lang.org/install](https://clash-lang.org/install) to install the latest stable release of Clash, or to setup a Clash project.
 
 ------------------------------------------------------------------------
 
@@ -19,10 +19,10 @@
 
 ------------------------------------------------------------------------
 
-- **Q**: Is Clash a "high level synthesis" tool?
+- **Q**: Is Clash a "high-level synthesis" tool?
 
-  **A**: While clash provides a high level language features, hardware descriptions written in Clash are not decoupled from clock-level timing.
-  Clash does therefore not offer what is generally understood as "high level synthesis".
+  **A**: While clash provides high-level language features, hardware descriptions written in Clash are not decoupled from clock-level timing.
+  Clash does therefore not offer what is generally understood as "high-level synthesis".
   Compared to the big three hardware description languages, *VHDL*, *Verilog*, and *SystemVerilog*, Clash arguably *is* high-level.
   It offers many of the powerful abstractions that modern software programming languages offer.
   In fact, it inherits many of the software industry's bleeding-edge features by virtue of basing its implementation on Haskell.
