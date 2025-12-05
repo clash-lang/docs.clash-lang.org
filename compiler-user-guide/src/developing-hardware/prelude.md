@@ -151,7 +151,7 @@ There are also implementations of typical classes in Haskell which have been cha
 Currently these are
 
 - `ShowX`, which works like the `Show` class in Haskell.
-  When an undefined value is encountered an "X" is printed.
+  When an undefined value is encountered, `undefined` is printed.
   `Show` can still be used, but will throw an exception if an undefined value is encountered.
 - `NFDataX`, which works like the `NFData` class in the `deepseq` library.
   This allows evaluating values to normal form in code when `XException` may be present.
