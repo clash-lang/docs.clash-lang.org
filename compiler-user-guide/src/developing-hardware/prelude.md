@@ -129,12 +129,12 @@ ROM is defined using the functions in `Clash.Prelude.ROM`.
 
 RAM is more complex, as it allows both reading and writing.
 The function to define a RAM takes in a signal for the address to read, and a signal for an optional address to update (bundled with the new value).
-At each cycle it outputs the value of the memory address read in the previous cycle.
+The RAM outputs the value of the memory at the requested read address.
 Asynchronous RAM is defined in `Clash.Prelude.RAM`.
 
 An FPGA may include a block RAM, which is a larger memory structure and more suitable for some applications.
-Block RAM also has a synchronous read port, allowing memory access to be synchronized to a clock.
-Block RAM is used the same way as async RAM, allowing the two to be compared quickly.
+Block RAM has a synchronous read port, allowing memory access to be synchronized to a clock.
+Block RAM has a one-cycle delay, meaning that it outputs the value in memory pointed to by the read address input from the *previous* cycle.
 Block RAM is defined in `Clash.Prelude.BlockRam`.
 
 ## Undefined Values
