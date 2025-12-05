@@ -33,12 +33,12 @@ testBench = done
       clk
       rst
       $(listToVecTH [(1, 1) :: (Signed 9, Signed 9), (2, 2), (3, 3), (4, 4)])
-  expectOutput =
-    outputVerifier clk rst $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
-  done = expectOutput (topEntity clk rst en testInput)
-  en = enableGen
+  out = topEntity clk rst en testInput
+  expected = $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
+  done = outputVerifier' clk rst expected out
   clk = tbSystemClockGen (not <$> done)
   rst = systemResetGen
+  en = enableGen
 ```
 
 This will create a stimulus generator that creates the same inputs as we used earlier for the simulation of the circuit, and creates an output verifier that compares against the results we got from our earlier simulation.
