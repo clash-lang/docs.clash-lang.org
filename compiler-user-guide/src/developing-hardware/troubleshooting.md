@@ -22,6 +22,9 @@ A list of often encountered errors and their solutions:
     Product types supported by `bundle` are:
 
     * All tuples up to and including 62-tuples (GHC limit)
+        <!--
+        Tuples up to 12 elements, not 62, unless you pass the flag `-flarge-tuples`.
+        -->
     * The `Vec`tor type
 
 * __Type error: Couldn't match expected type `(Signal dom a, Signal dom b)` with actual type `Signal dom (a,b)`__:
@@ -44,6 +47,9 @@ A list of often encountered errors and their solutions:
     Product types supported by `unbundle` are:
 
     * All tuples up to and including 62-tuples (GHC limit)
+        <!--
+        Tuples up to 12 elements, not 62, unless you pass the flag `-flarge-tuples`.
+        -->
     * The `Vec`tor type
 
 * __Clash.Netlist(..): Not in normal form: \<REASON\>: \<EXPR\>__:

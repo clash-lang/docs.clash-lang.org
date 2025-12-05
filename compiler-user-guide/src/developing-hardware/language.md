@@ -8,6 +8,12 @@ For people unfamiliar with Haskell, there are many resources to learn the langua
 - [The Haskell Wikibook](https://en.wikibooks.org/wiki/Haskell)
 
 Clash does make some use of more advanced features of GHC Haskell, which are exposed by GHC as language extensions.
+    <!--
+    Please investigate the extensions actually enabled by the `clash{,i}` binaries, as well as those enabled by starter projects.
+    There are some differences.
+    This list should be made to match the `clash{,i}` binaries, but we should probably also make the starter projects equal to the binaries.
+    This might mean we add extensions to the starter project or we add them to the binaries or both.
+    -->
 The extensions used by Clash are
 
 - [BinaryLiterals](https://downloads.haskell.org/~ghc/9.0.1/docs/html/users_guide/exts/binary_literals.html)

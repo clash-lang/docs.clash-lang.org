@@ -21,6 +21,9 @@ stack exec --resolver lts-23.15 --package clash-ghc -- clashi
 ```
 
 For those familiar with Haskell/GHC, this is indeed just `GHCi`, with three added commands (`:vhdl`, `:verilog`, and `:systemverilog`).
+    <!--
+    See <https://github.com/clash-lang/clash-compiler/issues/3064>: We should probably stop telling people to generate HDL from within clashi.
+    -->
 You can load files into the interpreter using the `:l <FILENAME>` command.
 Now, depending on your choice in editor, the following `edit-load-run` cycle probably work best for you:
 

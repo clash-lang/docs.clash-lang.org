@@ -54,6 +54,14 @@ mac inp = mealy macT 0 inp
 
 Where the first argument of `mealy` is our `macT` function, and the second argument is the initial state, in this case 0.
 We can see it is functioning correctly in our interpreter:
+    <!--
+    We do something very interesting here.
+    In the previous chapter (tutorial/src/first-steps/first-circuit.md), we introduced `sampleN` and explained the significance of the first two samples.
+    Now we use `simulateN`, which drops the initial value and only shows the reset cycle, and brazenly we say "we can see it is functioning correctly".
+    So first we explain the first two samples will often be the initial value (due to the reset value being equal to the initial value), and then without any explanation we say that it is correct that suddenly we see only one initial value.
+    We need to take away the confusion.
+    This can be done in several ways and should be discussed.
+    -->
 
 ``` haskell
 >>> simulateN @System 4 mac [(1,1),(2,2),(3,3),(4,4)]
