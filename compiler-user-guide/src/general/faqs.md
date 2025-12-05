@@ -32,7 +32,7 @@
 - **Q**: Is Clash production ready?
 
   **A**: Clash is constantly evolving, and since the 1.0 release there is a focus on maintaining API backwards compatibility.
-  Clash is used successfully in real-world scenarios, and [QBayLogic Clash support](https://qbaylogic.com/clash-support.html) can help with education and implementation of Clash projects.
+  Clash is used successfully in real-world scenarios, and [QBayLogic Clash support](https://qbaylogic.com/services/) can help with education and implementation of Clash projects.
 
 ------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@
 
   For most toolchains, the default primitives supplied by Clash should work with minimal effort.
   If not, it is possible to call your vendor's library manually, or use a tool like [Yosys](http://clifford.at/yosys) to do mapping.
-  It is also possible to consult [QBayLogic Clash support](https://qbaylogic.com/clash-support.html) for more assistance.
+  It is also possible to consult [QBayLogic Clash support](https://qbaylogic.com/services/) for more assistance.
 
 ------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@
   Clash can be used for ASIC designs, however the RTL produced by Clash may not be immediately suitable as it is largely platform agnostic.
   While this is not a problem for FPGAs, it can make developing ASICs more complicated as many ASIC vendors have different proprietary tool flows, with limited information available about their workings.
 
-  If you are using Clash to develop for ASIC, and need assistance with getting your toolchain to work, you can contact [QBayLogic Clash support](https://qbaylogic.com/clash-support.html) for assistance.
+  If you are using Clash to develop for ASIC, and need assistance with getting your toolchain to work, you can contact [QBayLogic Clash support](https://qbaylogic.com/services/) for assistance.
 
 ## Clash and Haskell
 
