@@ -90,7 +90,7 @@ Note
 
 </div>
 
-Due to the Clash's tight integration with GHC, updates to the GHC version that Clash uses result in changes to the Clash version.
+Due to Clash's tight integration with GHC, updates to the GHC version that Clash uses result in changes to the Clash version.
 As GHC's internals change frequently, even for minor bumps, it cannot be guaranteed that these changes will not result in Clash changes.
 
 </div>
