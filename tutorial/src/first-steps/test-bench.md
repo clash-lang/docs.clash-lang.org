@@ -61,8 +61,16 @@ expected value: 14, not equal to actual value: 62
 We can see that for the first 4 samples, everything is working as expected, after which warnings are being reported.
 The reason is that `stimuliGenerator` will keep on producing the last sample, (4,4), while the `outputVerifier'` will keep on expecting the last sample, 14.
 In the VHDL test bench these errors will not show, as the global clock will be stopped after 4 ticks.
+    <!--
+    This whole paragraph is incorrect (probably refers to behavior it once had but no longer does).
+    For one thing, `outputVerifier'` stops the assertions once it comes to the end of the `Vec` of expected values.
+    The tutorial could be improved by using the `runUntil` function.
+    -->
 
 You should now again run `:vhdl` in the interpreter; this time the compiler will take a bit longer to generate all the circuits.
+    <!--
+    See <https://github.com/clash-lang/clash-compiler/issues/3064>: We should probably stop telling people to generate HDL from within clashi.
+    -->
 Inside the `./vhdl/MAC.testBench` directory you will now find all the `vhdl` files for the *test bench*.
 
 After compilation is finished you load all the files in your favorite VHDL simulation tool.

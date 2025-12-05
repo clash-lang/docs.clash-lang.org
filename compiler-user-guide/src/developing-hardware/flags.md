@@ -202,6 +202,9 @@ If there is extra information and this flag is not enabled, a message will be pr
 `-fclash-float-support`  
 Enable support for floating point numbers.
 If this is disabled, Clash will not attempt to convert Float and Double values for hardware.
+    <!--
+    Deprecated flag, this is always set to true.
+    -->
 
 **Default:** False
 
@@ -217,6 +220,11 @@ clash -fclash-component-prefix "xcorp"
 
 `-fclash-old-inline-strategy`  
 The new inlining strategy for Clash inlines all functions which are not marked with `NOINLINE` or a synthesize attribute.
+    <!--
+    Okay... what about the flags about inlining above?
+    Are they only for the old inlining strategy?
+    We should specify which flags apply when.
+    -->
 The old inlining strategy differed, attempting only to inline functions which were deemed "cheap".
 The old inlining strategy may be quicker in practice for some circuits.
 

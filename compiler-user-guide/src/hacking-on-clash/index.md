@@ -79,6 +79,9 @@ The Clash compiler consists of different cabal libraries, which together provide
 Primarily, this consists of
 
 `clash-ghc`
+    <!--
+    We should note here as well that `clash-ghc` is an internal package and offers no API stability.
+    -->
 
 > The frontend of the compiler, using parts of the GHC frontend.
 > This provides the ability to load modules, translate GHC Core to Clash Core, and implements the `clash` and `clashi` executables.
@@ -87,6 +90,9 @@ Primarily, this consists of
 > For example, `src-bin-9.0` is specific to GHC 9.0.x.
 
 `clash-lib`
+    <!--
+    We should note here as well that `clash-lib` is an internal package and offers no API stability.
+    -->
 
 > The backend of the compiler, exposed as a library.
 > This is the largest library in the project, and includes the various ASTs (e.g. Core, Netlist), normalization, code generation, and primitives / black boxes.

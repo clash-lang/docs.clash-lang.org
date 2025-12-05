@@ -84,6 +84,10 @@ the most of Clash.
 
 Clash follows the [Haskell PVP Specification](https://pvp.haskell.org) for its version numbers, for all packages.
 The main libraries that make up the Clash compiler maintain the same version numbers, making it easy to identify which versions are compatible.
+    <!--
+    We should add a note that `clash-lib` and `clash-ghc` are internal packages; i.e., the whole PVP point is moot.
+    There is no API stability.
+    -->
 
 <div class="note">
 

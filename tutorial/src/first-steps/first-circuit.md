@@ -109,7 +109,20 @@ We can further examine the `register` function by taking a look at the first 4 s
 
 Where we see that the initial value of the signal is the specified 0 value, followed by 8's.
 You might be surprised to see *two* zeros instead of just a single zero.
+    <!--
+    The following explanation is not enough.
+    We need to explicitly mention that the reset is asserted in the first cycle.
+    We properly explain the first 0 but hardly explain the second 0 now.
+    -->
 What happens is that in Clash you get to see the output of the circuit *before* the clock becomes active.
+    <!--
+    I question this is the best way to describe it.
+    With `sample`, you observe all the values in the respective `Signal`.
+    A `Signal` contains the list of stable values that can be captured by a register at active clock edges.
+    The first value will be the value captured on the line at the first clock cycle.
+    This capture does not take place before the clock becomes active, but rather when the clock becomes active.
+    I'm hoping we can explain this well here. Time for a picture?
+    -->
 In other words, in Clash you get to describe the powerup values of registers too.
 Whether this is a defined or unknown value depends on your hardware target, and can be configured by using a different synthesis `Domain`.
 The default synthesis domain, `@System`, assumes that registers do have a powerup value - as is true for most FPGA platforms in most contexts.

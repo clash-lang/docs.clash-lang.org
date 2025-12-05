@@ -20,6 +20,9 @@ These include, but may not be limited to
 
 Another commonly used type is `BitVector n`.
 This provides a fixed size vector of `Bit` values which can be indexed, and used to perform *unsigned integer arithmetic*.
+    <!--
+    I suggest mentioning the defining difference between `Unsigned` and `BitVector`: three-valued logic.
+    -->
 Any type that can be marshaled to/from a `BitVector n` implements the `BitPack` class, which defines the conversion.
 
 <div class="note">
@@ -120,6 +123,9 @@ unbundle :: Signal dom (a, b) -> (Signal dom a, Signal dom b)
 
 There are combinators which can automatically perform this bundling and unbundling for you as required, called `mealyB` and `mooreB`.
 The `Bundle` class is already defined for many types, including tuples (up to 62 elements), `Maybe a`, `Either a b` and `Vec n a`.
+    <!--
+    Tuples up to 12 elements, not 62, unless you pass the flag `-flarge-tuples`.
+    -->
 
 ## RAM and ROM
 

@@ -14,6 +14,11 @@ topEntity ::
   Signal System (Signed 9)
 topEntity = exposeClockResetEnable mac
 ```
+<!---
+    We should include OPAQUE and explain it.
+    While we're still on Clash 1.8, maybe explain you need GHC >= 9.4, instead of complicating stuff with NOINLINE in older versions.
+    In Clash 1.10, we will no longer support those old GHC's.
+-->
 
 Which makes our circuit work on 9-bit signed integers.
 Including the above definition, our complete `MAC.hs` should now have the following content:
@@ -49,5 +54,8 @@ It must meet the following restrictions in order for the Clash compiler to work:
 -   Although not strictly necessary, it is recommended to *expose* `Hidden` clock and reset arguments, as it makes user-controlled name assignment in the generated HDL easier to do.
 
 Our `topEntity` meets those restrictions, and so we can convert it successfully to VHDL by executing the `:vhdl` command in the interpreter.
+    <!--
+    See <https://github.com/clash-lang/clash-compiler/issues/3064>: We should probably stop telling people to generate HDL from within clashi.
+    -->
 This will create a directory called `vhdl`, which contains a directory called `MAC.topEntity`, which ultimately contains all the generated VHDL files.
 You can now load these files into your favorite VHDL synthesis tool, marking `topEntity.vhdl` as the file containing the top level entity.
