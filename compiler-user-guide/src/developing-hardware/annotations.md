@@ -15,7 +15,7 @@ Functions with a `Synthesize` annotation must adhere to the following restrictio
 Also take the following into account when using `Synthesize` annotations.
 
   * The Clash compiler is based on the GHC Haskell compiler, and the GHC machinery does not understand `Synthesize` annotations and it might subsequently decide to inline those functions.
-    You should therefor also add a `{-# OPAQUE f #-}` pragma to the functions which you give a `Synthesize` functions.
+    You should therefore also add a `{-# OPAQUE f #-}` pragma to the functions which you give a `Synthesize` annotation.
   * Functions with a `Synthesize` annotation will not be specialized on constants.
 
 Finally, the root module, the module which you pass as an argument to the Clash compiler must either have:

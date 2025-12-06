@@ -33,12 +33,12 @@ testBench = done
       clk
       rst
       $(listToVecTH [(1, 1) :: (Signed 9, Signed 9), (2, 2), (3, 3), (4, 4)])
-  expectOutput =
-    outputVerifier clk rst $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
-  done = expectOutput (topEntity clk rst en testInput)
-  en = enableGen
+  out = topEntity clk rst en testInput
+  expected = $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
+  done = outputVerifier' clk rst expected out
   clk = tbSystemClockGen (not <$> done)
   rst = systemResetGen
+  en = enableGen
 ```
 
 This will create a stimulus generator that creates the same inputs as we used earlier for the simulation of the circuit, and creates an output verifier that compares against the results we got from our earlier simulation.
@@ -63,10 +63,10 @@ The reason is that `stimuliGenerator` will keep on producing the last sample, (4
 In the VHDL test bench these errors will not show, as the global clock will be stopped after 4 ticks.
 
 You should now again run `:vhdl` in the interpreter; this time the compiler will take a bit longer to generate all the circuits.
-Inside the `./vhdl/MAC` directory you will now also find a `testbench` subdirectory containing all the `vhdl` files for the *test bench*.
+Inside the `./vhdl/MAC.testBench` directory you will now find all the `vhdl` files for the *test bench*.
 
 After compilation is finished you load all the files in your favorite VHDL simulation tool.
-Once all files are loaded into the VHDL simulator, run the simulation on the `testbench` entity.
+Once all files are loaded into the VHDL simulator, run the simulation on the `testBench` entity.
 On questasim / modelsim: doing a `run -all` will finish once the output verifier will assert its output to `true`.
 The generated test bench, modulo the clock signal generator(s), is completely synthesizable.
 This means that if you want to test your circuit on an FPGA, you will only have to replace the clock signal generator(s) by actual clock sources, such as an onboard PLL.

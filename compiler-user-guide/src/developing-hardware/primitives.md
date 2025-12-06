@@ -259,7 +259,7 @@ Instead of discussing what the individual template holes mean in the above conte
 
 Some final remarks to end this section: HDL primitives are there to instruct the Clash compiler to use the given HDL template, instead of trying to do normal synthesis.
 As a consequence you can use constructs inside the Haskell definitions that are normally not synthesizable by the Clash compiler.
-However, VHDL primitives do not give us _co-simulation_: where you would be able to simulate VHDL and Haskell in a _single_ environment.
+However, VHDL primitives do not give us _co-simulation_, where you would be able to simulate VHDL and Haskell in a _single_ environment.
 If you still want to simulate your design in Haskell, you will have to describe, in a cycle- and bit-accurate way, the behavior of that (potentially complex) IP you are trying to include in your design.
 
 ## Verilog examples
