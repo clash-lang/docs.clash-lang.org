@@ -8,7 +8,9 @@ This means you need:
 
 - [ghdl](https://github.com/ghdl/ghdl) installed to test *VHDL*
 - [iverilog](https://github.com/steveicarus/iverilog) installed to test *Verilog*
+- [Verilator](http://verilator.org/) installed to test *Verilog* and *SystemVerilog*
 - [ModelSim](https://fpgasoftware.intel.com/?product=modelsim_ae#tabs-2) installed to test *SystemVerilog*
+- [Vivado](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html) installed to test *VHDL*, *Verilog* and *SystemVerilog*
 - [SymbiYosys](https://github.com/YosysHQ/SymbiYosys) and [Z3](https://github.com/Z3Prover/z3) installed to test *Verilog* and *SystemVerilog*
 
 ## Get Clash from source
@@ -47,7 +49,7 @@ Windows users are recommended to use the [Haskell Platform](https://www.haskell.
 To run <span class="title-ref">clash</span> use:
 
 ``` bash
-cabal v2-run --write-ghc-environment-files=always -- clash
+cabal v2-run -- clash
 ```
 
 If this fails, make sure you've got an up-to-date package index:
@@ -69,7 +71,7 @@ stack run -- clash
 Or [use Nix](https://nixos.org/nix/download.html) to get a shell with the `clash` and `clashi` binaries on your PATH:
 
 ``` bash
-nix-shell
+nix develop
 ```
 ## Subprojects
 

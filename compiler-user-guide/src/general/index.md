@@ -68,14 +68,17 @@ Several companies and enthusiasts are already using Clash to develop circuit des
 While care is taken to thoroughly test the Clash compiler, some bugs may exist.
 We encourage users to file issues, or contribute pull requests on our [GitHub repository](https://github.com/clash-lang/clash-compiler).
 
-## Meta-information: Web Sites, Mailing Lists, etc.
+## Open-source community
 
-**Mailing list**: for updates and questions join the mailing list <clash-language+subscribe@googlegroups.com> or read the [forum](https://groups.google.com/d/forum/clash-language)
+Clash benefits from an active community. Whether you need a question answered or
+want to contribute to open-source features, browse the features below to make
+the most of Clash.
 
-**Slack**: Invite yourself at [fpchat-invite.herokuapp.com](https://fpchat-invite.herokuapp.com/).
-To join \#clash, click on "Channels" and search for "clash".
-
-**IRC**: [freenode#clash-lang](https://webchat.freenode.net/#clash-lang)
+- [Discourse: long form discussions and questions](https://clash-lang.discourse.group/)
+- [Discord: short form discussions and community chat room](https://discord.gg/rebGq25FB4)
+- [Slack: short form discussions and questions](https://functionalprogramming.slack.com/archives/CPGMJFF50)
+  (Invite yourself at [fpslack.com](https://fpslack.com))
+- [Github: issue tracker](https://github.com/clash-lang/clash-compiler/issues)
 
 ## Clash Version Numbering Policy
 
@@ -90,7 +93,7 @@ Note
 
 </div>
 
-Due to the Clash's tight integration with GHC, updates to the GHC version that Clash uses result in changes to the Clash version.
+Due to Clash's tight integration with GHC, updates to the GHC version that Clash uses result in changes to the Clash version.
 As GHC's internals change frequently, even for minor bumps, it cannot be guaranteed that these changes will not result in Clash changes.
 
 </div>
