@@ -174,7 +174,9 @@ This means you need:</p>
 <ul>
 <li><a href="https://github.com/ghdl/ghdl">ghdl</a> installed to test <em>VHDL</em></li>
 <li><a href="https://github.com/steveicarus/iverilog">iverilog</a> installed to test <em>Verilog</em></li>
+<li><a href="http://verilator.org/">Verilator</a> installed to test <em>Verilog</em> and <em>SystemVerilog</em></li>
 <li><a href="https://fpgasoftware.intel.com/?product=modelsim_ae#tabs-2">ModelSim</a> installed to test <em>SystemVerilog</em></li>
+<li><a href="https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html">Vivado</a> installed to test <em>VHDL</em>, <em>Verilog</em> and <em>SystemVerilog</em></li>
 <li><a href="https://github.com/YosysHQ/SymbiYosys">SymbiYosys</a> and <a href="https://github.com/Z3Prover/z3">Z3</a> installed to test <em>Verilog</em> and <em>SystemVerilog</em></li>
 </ul>
 <h2 id="get-clash-from-source"><a class="header" href="#get-clash-from-source">Get Clash from source</a></h2>
@@ -198,7 +200,7 @@ cd clash-compiler
 For Linux and MacOS users we recommend using <a href="https://www.haskell.org/ghcup/">ghcup</a>.
 Windows users are recommended to use the <a href="https://www.haskell.org/platform/windows.html">Haskell Platform</a>.</p>
 <p>To run <span class="title-ref">clash</span> use:</p>
-<pre><code class="language-bash">cabal v2-run --write-ghc-environment-files=always -- clash
+<pre><code class="language-bash">cabal v2-run -- clash
 </code></pre>
 <p>If this fails, make sure you've got an up-to-date package index:</p>
 <pre><code class="language-bash">cabal update
@@ -209,7 +211,7 @@ Windows users are recommended to use the <a href="https://www.haskell.org/platfo
 </code></pre>
 <h3 id="nix"><a class="header" href="#nix">Nix</a></h3>
 <p>Or <a href="https://nixos.org/nix/download.html">use Nix</a> to get a shell with the <code>clash</code> and <code>clashi</code> binaries on your PATH:</p>
-<pre><code class="language-bash">nix-shell
+<pre><code class="language-bash">nix develop
 </code></pre>
 <h2 id="subprojects"><a class="header" href="#subprojects">Subprojects</a></h2>
 <p>The Clash compiler consists of different cabal libraries, which together provide a complete compiler.

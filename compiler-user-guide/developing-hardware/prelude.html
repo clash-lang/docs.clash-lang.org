@@ -266,11 +266,11 @@ The simplest of these are ROMs, which only allow indexing into a <code>Vec n a</
 ROM is defined using the functions in <code>Clash.Prelude.ROM</code>.</p>
 <p>RAM is more complex, as it allows both reading and writing.
 The function to define a RAM takes in a signal for the address to read, and a signal for an optional address to update (bundled with the new value).
-At each cycle it outputs the value of the memory address read in the previous cycle.
+The RAM outputs the value of the memory at the requested read address.
 Asynchronous RAM is defined in <code>Clash.Prelude.RAM</code>.</p>
 <p>An FPGA may include a block RAM, which is a larger memory structure and more suitable for some applications.
-Block RAM also has a synchronous read port, allowing memory access to be synchronized to a clock.
-Block RAM is used the same way as async RAM, allowing the two to be compared quickly.
+Block RAM has a synchronous read port, allowing memory access to be synchronized to a clock.
+Block RAM has a one-cycle delay, meaning that it outputs the value in memory pointed to by the read address input from the <em>previous</em> cycle.
 Block RAM is defined in <code>Clash.Prelude.BlockRam</code>.</p>
 <h2 id="undefined-values"><a class="header" href="#undefined-values">Undefined Values</a></h2>
 <p>When working with hardware designs, there are times when undefined values may be encountered in simulation.
@@ -285,7 +285,7 @@ There are also many utility functions for working with exceptions, such as</p>
 Currently these are</p>
 <ul>
 <li><code>ShowX</code>, which works like the <code>Show</code> class in Haskell.
-When an undefined value is encountered an "X" is printed.
+When an undefined value is encountered, <code>undefined</code> is printed.
 <code>Show</code> can still be used, but will throw an exception if an undefined value is encountered.</li>
 <li><code>NFDataX</code>, which works like the <code>NFData</code> class in the <code>deepseq</code> library.
 This allows evaluating values to normal form in code when <code>XException</code> may be present.

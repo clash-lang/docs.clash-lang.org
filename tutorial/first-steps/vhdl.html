@@ -210,8 +210,8 @@ It must meet the following restrictions in order for the Clash compiler to work:
 <li>Although not strictly necessary, it is recommended to <em>expose</em> <code>Hidden</code> clock and reset arguments, as it makes user-controlled name assignment in the generated HDL easier to do.</li>
 </ul>
 <p>Our <code>topEntity</code> meets those restrictions, and so we can convert it successfully to VHDL by executing the <code>:vhdl</code> command in the interpreter.
-This will create a directory called <code>vhdl</code>, which contains a directory called <code>MAC</code>, which ultimately contains all the generated VHDL files.
-You can now load these files into your favorite VHDL synthesis tool, marking <code>topentity.vhdl</code> as the file containing the top level entity.</p>
+This will create a directory called <code>vhdl</code>, which contains a directory called <code>MAC.topEntity</code>, which ultimately contains all the generated VHDL files.
+You can now load these files into your favorite VHDL synthesis tool, marking <code>topEntity.vhdl</code> as the file containing the top level entity.</p>
 
                     </main>
 

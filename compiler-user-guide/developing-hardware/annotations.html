@@ -182,7 +182,7 @@ Caching is based on a <code>.manifest</code> which is generated alongside the HD
 <p>Also take the following into account when using <code>Synthesize</code> annotations.</p>
 <ul>
 <li>The Clash compiler is based on the GHC Haskell compiler, and the GHC machinery does not understand <code>Synthesize</code> annotations and it might subsequently decide to inline those functions.
-You should therefor also add a <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> functions.</li>
+You should therefore also add an <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> annotation.</li>
 <li>Functions with a <code>Synthesize</code> annotation will not be specialized on constants.</li>
 </ul>
 <p>Finally, the root module, the module which you pass as an argument to the Clash compiler must either have:</p>

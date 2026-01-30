@@ -420,7 +420,7 @@ Fails when the <code>(N+1)</code>'th argument is not a string literal.</li>
 </ul>
 <p>Some final remarks to end this section: HDL primitives are there to instruct the Clash compiler to use the given HDL template, instead of trying to do normal synthesis.
 As a consequence you can use constructs inside the Haskell definitions that are normally not synthesizable by the Clash compiler.
-However, VHDL primitives do not give us <em>co-simulation</em>: where you would be able to simulate VHDL and Haskell in a <em>single</em> environment.
+However, VHDL primitives do not give us <em>co-simulation</em>, where you would be able to simulate VHDL and Haskell in a <em>single</em> environment.
 If you still want to simulate your design in Haskell, you will have to describe, in a cycle- and bit-accurate way, the behavior of that (potentially complex) IP you are trying to include in your design.</p>
 <h2 id="verilog-examples"><a class="header" href="#verilog-examples">Verilog examples</a></h2>
 <p>For those who are interested, the equivalent Verilog primitives are:</p>

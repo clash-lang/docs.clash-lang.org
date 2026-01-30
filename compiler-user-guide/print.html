@@ -224,11 +224,17 @@ Today, the Clash Compiler is actively developed by QBayLogic B.V., volunteers an
 <p>Several companies and enthusiasts are already using Clash to develop circuit designs, ranging from small designs on hobbyist boards to larger designs on modern FPGA and ASIC architectures.</p>
 <p>While care is taken to thoroughly test the Clash compiler, some bugs may exist.
 We encourage users to file issues, or contribute pull requests on our <a href="https://github.com/clash-lang/clash-compiler">GitHub repository</a>.</p>
-<h2 id="meta-information-web-sites-mailing-lists-etc"><a class="header" href="#meta-information-web-sites-mailing-lists-etc">Meta-information: Web Sites, Mailing Lists, etc.</a></h2>
-<p><strong>Mailing list</strong>: for updates and questions join the mailing list <a href="mailto:general/clash-language+subscribe@googlegroups.com">clash-language+subscribe@googlegroups.com</a> or read the <a href="https://groups.google.com/d/forum/clash-language">forum</a></p>
-<p><strong>Slack</strong>: Invite yourself at <a href="https://fpchat-invite.herokuapp.com/">fpchat-invite.herokuapp.com</a>.
-To join #clash, click on "Channels" and search for "clash".</p>
-<p><strong>IRC</strong>: <a href="https://webchat.freenode.net/#clash-lang">freenode#clash-lang</a></p>
+<h2 id="open-source-community"><a class="header" href="#open-source-community">Open-source community</a></h2>
+<p>Clash benefits from an active community. Whether you need a question answered or
+want to contribute to open-source features, browse the features below to make
+the most of Clash.</p>
+<ul>
+<li><a href="https://clash-lang.discourse.group/">Discourse: long form discussions and questions</a></li>
+<li><a href="https://discord.gg/rebGq25FB4">Discord: short form discussions and community chat room</a></li>
+<li><a href="https://functionalprogramming.slack.com/archives/CPGMJFF50">Slack: short form discussions and questions</a>
+(Invite yourself at <a href="https://fpslack.com">fpslack.com</a>)</li>
+<li><a href="https://github.com/clash-lang/clash-compiler/issues">Github: issue tracker</a></li>
+</ul>
 <h2 id="clash-version-numbering-policy"><a class="header" href="#clash-version-numbering-policy">Clash Version Numbering Policy</a></h2>
 <p>Clash follows the <a href="https://pvp.haskell.org">Haskell PVP Specification</a> for its version numbers, for all packages.
 The main libraries that make up the Clash compiler maintain the same version numbers, making it easy to identify which versions are compatible.</p>
@@ -236,7 +242,7 @@ The main libraries that make up the Clash compiler maintain the same version num
 <div class="title">
 <p>Note</p>
 </div>
-<p>Due to the Clash's tight integration with GHC, updates to the GHC version that Clash uses result in changes to the Clash version.
+<p>Due to Clash's tight integration with GHC, updates to the GHC version that Clash uses result in changes to the Clash version.
 As GHC's internals change frequently, even for minor bumps, it cannot be guaranteed that these changes will not result in Clash changes.</p>
 </div>
 <p>It is recommended (but not required) that downstream Clash packages and published Clash code also follow the PVP specification.</p>
@@ -247,7 +253,7 @@ As GHC's internals change frequently, even for minor bumps, it cannot be guarant
 <ul>
 <li>
 <p><strong>Q</strong>: How do I install Clash?</p>
-<p><strong>A</strong>: Check out the <code>installing</code> page in the <em>Getting Started</em> section of the manual.</p>
+<p><strong>A</strong>: Check out <a href="https://clash-lang.org/install">clash-lang.org/install</a> to install the latest stable release of Clash, or to setup a Clash project.</p>
 </li>
 </ul>
 <hr />
@@ -264,9 +270,9 @@ The stylization "CλaSH" is an homage to <a href="https://haskell.org">Haskell</
 <hr />
 <ul>
 <li>
-<p><strong>Q</strong>: Is Clash a "high level synthesis" tool?</p>
-<p><strong>A</strong>: While clash provides a high level language features, hardware descriptions written in Clash are not decoupled from clock-level timing.
-Clash does therefore not offer what is generally understood as "high level synthesis".
+<p><strong>Q</strong>: Is Clash a "high-level synthesis" tool?</p>
+<p><strong>A</strong>: While clash provides high-level language features, hardware descriptions written in Clash are not decoupled from clock-level timing.
+Clash does therefore not offer what is generally understood as "high-level synthesis".
 Compared to the big three hardware description languages, <em>VHDL</em>, <em>Verilog</em>, and <em>SystemVerilog</em>, Clash arguably <em>is</em> high-level.
 It offers many of the powerful abstractions that modern software programming languages offer.
 In fact, it inherits many of the software industry's bleeding-edge features by virtue of basing its implementation on Haskell.</p>
@@ -277,7 +283,7 @@ In fact, it inherits many of the software industry's bleeding-edge features by v
 <li>
 <p><strong>Q</strong>: Is Clash production ready?</p>
 <p><strong>A</strong>: Clash is constantly evolving, and since the 1.0 release there is a focus on maintaining API backwards compatibility.
-Clash is used successfully in real-world scenarios, and <a href="https://qbaylogic.com/clash-support.html">QBayLogic Clash support</a> can help with education and implementation of Clash projects.</p>
+Clash is used successfully in real-world scenarios, and <a href="https://clash-lang.org/support/">QBayLogic Clash support</a> can help with education and implementation of Clash projects.</p>
 </li>
 </ul>
 <hr />
@@ -288,7 +294,7 @@ Clash is used successfully in real-world scenarios, and <a href="https://qbaylog
 Clash has also been successfully used on Microsemi (formerly Actel) SmartFusion 2 and Lattice Semiconductor iCE40 FPGAs, and some basic IP for these exist.</p>
 <p>For most toolchains, the default primitives supplied by Clash should work with minimal effort.
 If not, it is possible to call your vendor's library manually, or use a tool like <a href="http://clifford.at/yosys">Yosys</a> to do mapping.
-It is also possible to consult <a href="https://qbaylogic.com/clash-support.html">QBayLogic Clash support</a> for more assistance.</p>
+It is also possible to consult <a href="https://clash-lang.org/support/">QBayLogic Clash support</a> for more assistance.</p>
 </li>
 </ul>
 <hr />
@@ -306,7 +312,7 @@ Additionally, Clash has some support for the Lattice Semiconductor iCE40 FPGA.</
 <p><strong>Q</strong>: Can Clash be used for ASIC designs, as well as FPGA designs?</p>
 <p>Clash can be used for ASIC designs, however the RTL produced by Clash may not be immediately suitable as it is largely platform agnostic.
 While this is not a problem for FPGAs, it can make developing ASICs more complicated as many ASIC vendors have different proprietary tool flows, with limited information available about their workings.</p>
-<p>If you are using Clash to develop for ASIC, and need assistance with getting your toolchain to work, you can contact <a href="https://qbaylogic.com/clash-support.html">QBayLogic Clash support</a> for assistance.</p>
+<p>If you are using Clash to develop for ASIC, and need assistance with getting your toolchain to work, you can contact <a href="https://clash-lang.org/support/">QBayLogic Clash support</a> for assistance.</p>
 </li>
 </ul>
 <h2 id="clash-and-haskell"><a class="header" href="#clash-and-haskell">Clash and Haskell</a></h2>
@@ -393,31 +399,7 @@ If you have enough time, we encourage to try several of them and see which style
 </li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="license"><a class="header" href="#license">License</a></h1>
-<div class="literalinclude" language="text">
-<p>Copyright (c) 2012-2016, University of Twente,
-2016-2019, Myrtle Software Ltd,
-2017-2019, QBayLogic B.V., Google Inc.
-All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:</p>
-<ol>
-<li>Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.</li>
-<li>Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.</li>
-</ol>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
-</div>
+<p>Clash is licensed under the <a href="https://spdx.org/licenses/BSD-2-Clause.html">BSD 2-Clause "Simplified" License</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="clash-as-a-language"><a class="header" href="#clash-as-a-language">Clash as a Language</a></h1>
 <p>As Clash reuses parts of the GHC compiler for its frontend, the syntax and semantics should be familiar to Haskell programmers.
 For people unfamiliar with Haskell, there are many resources to learn the language, such as</p>
@@ -572,11 +554,11 @@ The simplest of these are ROMs, which only allow indexing into a <code>Vec n a</
 ROM is defined using the functions in <code>Clash.Prelude.ROM</code>.</p>
 <p>RAM is more complex, as it allows both reading and writing.
 The function to define a RAM takes in a signal for the address to read, and a signal for an optional address to update (bundled with the new value).
-At each cycle it outputs the value of the memory address read in the previous cycle.
+The RAM outputs the value of the memory at the requested read address.
 Asynchronous RAM is defined in <code>Clash.Prelude.RAM</code>.</p>
 <p>An FPGA may include a block RAM, which is a larger memory structure and more suitable for some applications.
-Block RAM also has a synchronous read port, allowing memory access to be synchronized to a clock.
-Block RAM is used the same way as async RAM, allowing the two to be compared quickly.
+Block RAM has a synchronous read port, allowing memory access to be synchronized to a clock.
+Block RAM has a one-cycle delay, meaning that it outputs the value in memory pointed to by the read address input from the <em>previous</em> cycle.
 Block RAM is defined in <code>Clash.Prelude.BlockRam</code>.</p>
 <h2 id="undefined-values"><a class="header" href="#undefined-values">Undefined Values</a></h2>
 <p>When working with hardware designs, there are times when undefined values may be encountered in simulation.
@@ -591,7 +573,7 @@ There are also many utility functions for working with exceptions, such as</p>
 Currently these are</p>
 <ul>
 <li><code>ShowX</code>, which works like the <code>Show</code> class in Haskell.
-When an undefined value is encountered an "X" is printed.
+When an undefined value is encountered, <code>undefined</code> is printed.
 <code>Show</code> can still be used, but will throw an exception if an undefined value is encountered.</li>
 <li><code>NFDataX</code>, which works like the <code>NFData</code> class in the <code>deepseq</code> library.
 This allows evaluating values to normal form in code when <code>XException</code> may be present.
@@ -802,7 +784,7 @@ Caching is based on a <code>.manifest</code> which is generated alongside the HD
 <p>Also take the following into account when using <code>Synthesize</code> annotations.</p>
 <ul>
 <li>The Clash compiler is based on the GHC Haskell compiler, and the GHC machinery does not understand <code>Synthesize</code> annotations and it might subsequently decide to inline those functions.
-You should therefor also add a <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> functions.</li>
+You should therefore also add an <code>{-# OPAQUE f #-}</code> pragma to the functions which you give a <code>Synthesize</code> annotation.</li>
 <li>Functions with a <code>Synthesize</code> annotation will not be specialized on constants.</li>
 </ul>
 <p>Finally, the root module, the module which you pass as an argument to the Clash compiler must either have:</p>
@@ -1166,7 +1148,7 @@ Fails when the <code>(N+1)</code>'th argument is not a string literal.</li>
 </ul>
 <p>Some final remarks to end this section: HDL primitives are there to instruct the Clash compiler to use the given HDL template, instead of trying to do normal synthesis.
 As a consequence you can use constructs inside the Haskell definitions that are normally not synthesizable by the Clash compiler.
-However, VHDL primitives do not give us <em>co-simulation</em>: where you would be able to simulate VHDL and Haskell in a <em>single</em> environment.
+However, VHDL primitives do not give us <em>co-simulation</em>, where you would be able to simulate VHDL and Haskell in a <em>single</em> environment.
 If you still want to simulate your design in Haskell, you will have to describe, in a cycle- and bit-accurate way, the behavior of that (potentially complex) IP you are trying to include in your design.</p>
 <h2 id="verilog-examples"><a class="header" href="#verilog-examples">Verilog examples</a></h2>
 <p>For those who are interested, the equivalent Verilog primitives are:</p>
@@ -1574,7 +1556,9 @@ This means you need:</p>
 <ul>
 <li><a href="https://github.com/ghdl/ghdl">ghdl</a> installed to test <em>VHDL</em></li>
 <li><a href="https://github.com/steveicarus/iverilog">iverilog</a> installed to test <em>Verilog</em></li>
+<li><a href="http://verilator.org/">Verilator</a> installed to test <em>Verilog</em> and <em>SystemVerilog</em></li>
 <li><a href="https://fpgasoftware.intel.com/?product=modelsim_ae#tabs-2">ModelSim</a> installed to test <em>SystemVerilog</em></li>
+<li><a href="https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html">Vivado</a> installed to test <em>VHDL</em>, <em>Verilog</em> and <em>SystemVerilog</em></li>
 <li><a href="https://github.com/YosysHQ/SymbiYosys">SymbiYosys</a> and <a href="https://github.com/Z3Prover/z3">Z3</a> installed to test <em>Verilog</em> and <em>SystemVerilog</em></li>
 </ul>
 <h2 id="get-clash-from-source"><a class="header" href="#get-clash-from-source">Get Clash from source</a></h2>
@@ -1598,7 +1582,7 @@ cd clash-compiler
 For Linux and MacOS users we recommend using <a href="https://www.haskell.org/ghcup/">ghcup</a>.
 Windows users are recommended to use the <a href="https://www.haskell.org/platform/windows.html">Haskell Platform</a>.</p>
 <p>To run <span class="title-ref">clash</span> use:</p>
-<pre><code class="language-bash">cabal v2-run --write-ghc-environment-files=always -- clash
+<pre><code class="language-bash">cabal v2-run -- clash
 </code></pre>
 <p>If this fails, make sure you've got an up-to-date package index:</p>
 <pre><code class="language-bash">cabal update
@@ -1609,7 +1593,7 @@ Windows users are recommended to use the <a href="https://www.haskell.org/platfo
 </code></pre>
 <h3 id="nix"><a class="header" href="#nix">Nix</a></h3>
 <p>Or <a href="https://nixos.org/nix/download.html">use Nix</a> to get a shell with the <code>clash</code> and <code>clashi</code> binaries on your PATH:</p>
-<pre><code class="language-bash">nix-shell
+<pre><code class="language-bash">nix develop
 </code></pre>
 <h2 id="subprojects"><a class="header" href="#subprojects">Subprojects</a></h2>
 <p>The Clash compiler consists of different cabal libraries, which together provide a complete compiler.
