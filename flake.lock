@@ -75,6 +75,45 @@
         "type": "github"
       }
     },
+    "doctest-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1000000000,
+        "narHash": "sha256-pKEuBEZmEyt/wOhXjMY3WvP/i8CyPtH4psD27eSRZ3E=",
+        "type": "tarball",
+        "url": "https://hackage.haskell.org/package/doctest-0.24.3/doctest-0.24.3.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://hackage.haskell.org/package/doctest-0.24.3/doctest-0.24.3.tar.gz"
+      }
+    },
+    "doctest-src_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1000000000,
+        "narHash": "sha256-pKEuBEZmEyt/wOhXjMY3WvP/i8CyPtH4psD27eSRZ3E=",
+        "type": "tarball",
+        "url": "https://hackage.haskell.org/package/doctest-0.24.3/doctest-0.24.3.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://hackage.haskell.org/package/doctest-0.24.3/doctest-0.24.3.tar.gz"
+      }
+    },
+    "doctest-src_3": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1000000000,
+        "narHash": "sha256-pKEuBEZmEyt/wOhXjMY3WvP/i8CyPtH4psD27eSRZ3E=",
+        "type": "tarball",
+        "url": "https://hackage.haskell.org/package/doctest-0.24.3/doctest-0.24.3.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://hackage.haskell.org/package/doctest-0.24.3/doctest-0.24.3.tar.gz"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -374,6 +413,7 @@
         "clash-compiler": [
           "clash-1_10"
         ],
+        "doctest-src": "doctest-src",
         "nixpkgs": [
           "mdbook-clash-1_10",
           "clash-compiler",
@@ -381,11 +421,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785844505,
-        "narHash": "sha256-VOoTfCY9TlNZdmiMhzxI4CnPlDs1s6yr/WWEPMb/DBo=",
+        "lastModified": 1785882641,
+        "narHash": "sha256-padUI1hY6SMrREzJfjtio1+D6EX1EUT2sHZrHsOKn1w=",
         "owner": "clash-lang",
         "repo": "mdbook-clash",
-        "rev": "47050a5d437e40ae19f2c1da09aad61e19d17816",
+        "rev": "862bb9a364cca1e9d30f17822a9a72ef3fef104c",
         "type": "github"
       },
       "original": {
@@ -399,6 +439,7 @@
         "clash-compiler": [
           "clash-1_8_5"
         ],
+        "doctest-src": "doctest-src_2",
         "nixpkgs": [
           "mdbook-clash-1_8_5",
           "clash-compiler",
@@ -406,11 +447,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785844505,
-        "narHash": "sha256-VOoTfCY9TlNZdmiMhzxI4CnPlDs1s6yr/WWEPMb/DBo=",
+        "lastModified": 1785882641,
+        "narHash": "sha256-padUI1hY6SMrREzJfjtio1+D6EX1EUT2sHZrHsOKn1w=",
         "owner": "clash-lang",
         "repo": "mdbook-clash",
-        "rev": "47050a5d437e40ae19f2c1da09aad61e19d17816",
+        "rev": "862bb9a364cca1e9d30f17822a9a72ef3fef104c",
         "type": "github"
       },
       "original": {
@@ -424,6 +465,7 @@
         "clash-compiler": [
           "clash-master"
         ],
+        "doctest-src": "doctest-src_3",
         "nixpkgs": [
           "mdbook-clash-master",
           "clash-compiler",
@@ -431,11 +473,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785844505,
-        "narHash": "sha256-VOoTfCY9TlNZdmiMhzxI4CnPlDs1s6yr/WWEPMb/DBo=",
+        "lastModified": 1785882641,
+        "narHash": "sha256-padUI1hY6SMrREzJfjtio1+D6EX1EUT2sHZrHsOKn1w=",
         "owner": "clash-lang",
         "repo": "mdbook-clash",
-        "rev": "47050a5d437e40ae19f2c1da09aad61e19d17816",
+        "rev": "862bb9a364cca1e9d30f17822a9a72ef3fef104c",
         "type": "github"
       },
       "original": {

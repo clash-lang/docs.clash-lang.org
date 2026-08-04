@@ -33,7 +33,9 @@ topEntity x = ...
 
 For example, given the following specification:
 
-``` haskell
+```haskell,clash group=blinker topEntity=topEntity
+{-# LANGUAGE TemplateHaskell #-}
+
 module Blinker where
 
 import Clash.Signal
@@ -98,7 +100,7 @@ end;
 
 However, if we add the following `Synthesize` annotation in the file:
 
-``` haskell
+```haskell,clash group=blinker
 {-# OPAQUE topEntity #-}
 {-# ANN topEntity
   (Synthesize

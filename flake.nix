@@ -90,6 +90,7 @@
             packages = [
               pkgs.mdbook
               self.packages.${system}.mdbook-clash
+              self.packages.${system}.mdbook-clash.clash
             ];
 
             shellHook = ''

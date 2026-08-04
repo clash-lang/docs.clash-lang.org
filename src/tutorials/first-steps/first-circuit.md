@@ -12,7 +12,7 @@ Before we describe any logic, we must first create the file we will be working o
 
 * Write on the first line the module header:
 
-    ``` haskell
+    ```haskell,clash group=first-circuit
     module MAC where
     ```
 
@@ -21,7 +21,7 @@ Before we describe any logic, we must first create the file we will be working o
 
 * Add the import statement for the Clash prelude library:
 
-    ``` haskell
+    ```haskell,clash group=first-circuit
     import Clash.Prelude
     ```
 
@@ -29,7 +29,7 @@ Before we describe any logic, we must first create the file we will be working o
 
 We can now finally start describing the logic of our circuit, starting with just the multiplication and addition:
 
-```haskell,clash
+```haskell,clash group=first-circuit
 ma acc (x, y) = acc + x * y
 
 >>> ma 4 (8, 9)
@@ -48,7 +48,7 @@ The lines beginning with `>>>` show two tests you can enter in the interpreter.
 
 We can also examine the inferred type of `ma` in the interpreter:
 
-``` haskell
+```haskell,clash group=first-circuit
 >>> :t ma
 ma :: Num a => a -> (a, a) -> a
 ```
@@ -78,7 +78,7 @@ Talking about *types* also brings us to one of the most important parts of this 
 Especially how we can always determine, through the types of a specification, if it describes combinational logic or (synchronous) sequential logic.
 We do this by examining the definition of one of the sequential primitives, the `register` function:
 
-``` haskell
+```haskell
 register ::
   ( HiddenClockResetEnable dom
   , NFDataX a
@@ -100,7 +100,7 @@ To make this even easier, it is actually not possible to manipulate the underlyi
 Now, let us get back to the functionality of the `register` function: it is a simple [flip-flop](https://en.wikipedia.org/wiki/Flip-flop_\(electronics\)) that only changes state at the tick of the global *clock*, and it has an initial value `a` which is its output at time 0.
 We can further examine the `register` function by taking a look at the first 4 samples of the `register` functions applied to a constant signal with the value 8:
 
-```haskell
+```haskell,clash group=first-circuit
 >>> sampleN @System 4 (register 0 (pure (8 :: Signed 8)))
 [0,0,8,8]
 ```

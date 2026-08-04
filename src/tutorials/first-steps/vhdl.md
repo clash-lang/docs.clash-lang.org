@@ -1,24 +1,12 @@
-# Generating VHDL
+# Generate VHDL
 
-We are now almost at the point that we can create actual hardware, in the form of a [VHDL](http://en.wikipedia.org/wiki/VHDL) netlist, from our sequential circuit specification.
-The first thing we have to do is create a function called `topEntity` and ensure that it has a **monomorphic** type.
-In our case that means that we have to give it an explicit type annotation.
-It might not always be needed, you can always check the type with the `:t` command and see if the function is monomorphic:
+Our MAC circuit can now be simulated, but Clash still needs to know the exact
+hardware interface before it can generate VHDL. We describe that interface with
+a monomorphic `topEntity`.
 
-``` haskell
-topEntity ::
-  Clock System ->
-  Reset System ->
-  Enable System ->
-  Signal System (Signed 9, Signed 9) ->
-  Signal System (Signed 9)
-topEntity = exposeClockResetEnable mac
-```
+Update `MAC.hs` to contain the complete circuit:
 
-Which makes our circuit work on 9-bit signed integers.
-Including the above definition, our complete `MAC.hs` should now have the following content:
-
-``` haskell
+```haskell,clash group=mac-vhdl topEntity=topEntity
 module MAC where
 
 import Clash.Prelude
@@ -41,13 +29,55 @@ topEntity ::
 topEntity = exposeClockResetEnable mac
 ```
 
-The `topEntity` function is the starting point for the Clash compiler to transform your circuit description into a VHDL netlist.
-It must meet the following restrictions in order for the Clash compiler to work:
+The type of `topEntity` fixes the choices that were still polymorphic in
+`mac`:
 
--   It must be completely monomorphic
--   It must be completely first-order
--   Although not strictly necessary, it is recommended to *expose* `Hidden` clock and reset arguments, as it makes user-controlled name assignment in the generated HDL easier to do.
+- The circuit uses the `System` clock domain.
+- Both input values and the output are 9-bit signed integers.
+- Clock, reset, and enable are explicit ports of the generated circuit.
 
-Our `topEntity` meets those restrictions, and so we can convert it successfully to VHDL by executing the `:vhdl` command in the interpreter.
-This will create a directory called `vhdl`, which contains a directory called `MAC.topEntity`, which ultimately contains all the generated VHDL files.
-You can now load these files into your favorite VHDL synthesis tool, marking `topEntity.vhdl` as the file containing the top level entity.
+`mac` uses an implicit clock, reset, and enable through the
+`HiddenClockResetEnable` constraint required by `mealy`.
+`exposeClockResetEnable` turns those hidden arguments into the explicit ports
+shown in the type of `topEntity`.
+
+## The hardware boundary
+
+Clash starts HDL generation at `topEntity`. A top entity must have a type that
+can describe a finite hardware interface. In practice, it must be:
+
+- monomorphic, with no unresolved type variables;
+- first-order, with no functions as inputs or outputs;
+- built from types that Clash can represent in hardware.
+
+The explicit type signature makes these choices visible to both Clash and the
+reader. It also prevents a later change elsewhere in the module from silently
+changing the generated ports.
+
+## Generate the files
+
+Start the Clash interpreter with the module:
+
+```console
+clash --interactive MAC.hs
+```
+
+At the interpreter prompt, generate VHDL:
+
+```console
+clash> :vhdl
+```
+
+You can also generate it without entering the interpreter:
+
+```console
+clash --vhdl MAC.hs
+```
+
+Clash writes the result below `vhdl/MAC.topEntity/`. The generated
+`topEntity.vhdl` file contains the top-level VHDL entity. Add all generated VHDL
+files from that directory to your synthesis project and select `topEntity` as
+the design's top level.
+
+The next chapter adds a test bench so the generated HDL can be exercised in a
+VHDL simulator.

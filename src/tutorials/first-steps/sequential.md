@@ -8,7 +8,15 @@ Within the Clash prelude library we offer a standard function to support the [Me
 To improve sharing, we will combine the transition function and output function into one.
 This gives rise to the following Mealy specification of the MAC circuit:
 
-``` haskell
+```haskell,clash group=sequential hidden
+module MAC where
+
+import Clash.Prelude
+
+ma acc (x, y) = acc + x * y
+```
+
+```haskell,clash group=sequential
 macT acc (x, y) = (acc', o)
  where
   acc' = ma acc (x, y)
@@ -17,8 +25,11 @@ macT acc (x, y) = (acc', o)
 
 Note that the `where` clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could have also written:
 
-``` haskell
-macT acc inp = (ma acc inp, acc)
+```haskell,clash group=sequential
+macTShort acc inp = (ma acc inp, acc)
+
+>>> macTShort 1 (2, 3)
+(7,1)
 ```
 
 Going back to the original specification we note the following:
@@ -30,14 +41,14 @@ Going back to the original specification we note the following:
 
 When we examine the type of `macT` we see that is still completely combinational:
 
-``` haskell
+```haskell,clash group=sequential
 >>> :t macT
-macT :: Num a => a -> (a, a) -> (a, a)
+macT :: Num b => b -> (b, b) -> (b, b)
 ```
 
 The `Clash.Prelude` library contains a function that creates a sequential circuit from a combinational circuit that has the same Mealy machine type/shape of `macT`:
 
-``` haskell
+```text
 mealy ::
   (HiddenClockResetEnable dom, NFDataX s) =>
   (s -> i -> (s, o)) ->
@@ -48,15 +59,15 @@ mealy f initS = ...
 
 The complete sequential MAC circuit can now be specified as:
 
-``` haskell
+```haskell,clash group=sequential
 mac inp = mealy macT 0 inp
 ```
 
 Where the first argument of `mealy` is our `macT` function, and the second argument is the initial state, in this case 0.
 We can see it is functioning correctly in our interpreter:
 
-``` haskell
->>> simulateN @System 4 mac [(1,1),(2,2),(3,3),(4,4)]
+```haskell,clash group=sequential
+>>> simulateN @System 4 mac ([(1,1),(2,2),(3,3),(4,4)] :: [(Signed 9, Signed 9)])
 [0,1,5,14]
 ```
 
