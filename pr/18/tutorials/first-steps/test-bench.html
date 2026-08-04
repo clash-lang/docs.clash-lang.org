@@ -35,7 +35,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0b61026b.js";
+            window.path_to_searchindex_js = "../../searchindex-6432a04c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-f3542ed5.js"></script>
@@ -188,7 +188,18 @@ In order for the Clash compiler to do this you need to do one of the following:<
 <li>Annotate your test bench function with a <code>TestBench</code> annotation.</li>
 </ul>
 <p>For example, you can test the earlier defined <em>topEntity</em> by:</p>
-<pre><code class="language-haskell">import Clash.Explicit.Testbench
+<pre><code class="language-haskell clash group=mac-test-bench">{-# LANGUAGE TemplateHaskell #-}
+
+module MACTestBench where
+
+import Clash.Prelude
+import Clash.Explicit.Testbench
+
+ma acc (x, y) = acc + x * y
+
+macT acc (x, y) = (ma acc (x, y), acc)
+
+mac xy = mealy macT 0 xy
 
 topEntity ::
   Clock System -&gt;
@@ -213,9 +224,10 @@ testBench = done
   rst = systemResetGen
   en = enableGen
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>This will create a stimulus generator that creates the same inputs as we used earlier for the simulation of the circuit, and creates an output verifier that compares against the results we got from our earlier simulation.
 We can even simulate the behavior of the <em>testBench</em>:</p>
-<pre><code class="language-haskell">&gt;&gt;&gt; sampleN 8 testBench
+<pre><code class="language-haskell clash group=mac-test-bench">&gt;&gt;&gt; sampleN 8 testBench
 [False,False,False,False,False
 cycle(&lt;Clock: System&gt;): 5, outputVerifier
 expected value: 14, not equal to actual value: 30
@@ -227,6 +239,7 @@ cycle(&lt;Clock: System&gt;): 7, outputVerifier
 expected value: 14, not equal to actual value: 62
 ,False]
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>We can see that for the first 4 samples, everything is working as expected, after which warnings are being reported.
 The reason is that <code>stimuliGenerator</code> will keep on producing the last sample, (4,4), while the <code>outputVerifier'</code> will keep on expecting the last sample, 14.
 In the VHDL test bench these errors will not show, as the global clock will be stopped after 4 ticks.</p>
@@ -237,6 +250,47 @@ Once all files are loaded into the VHDL simulator, run the simulation on the <co
 On questasim / modelsim: doing a <code>run -all</code> will finish once the output verifier will assert its output to <code>true</code>.
 The generated test bench, modulo the clock signal generator(s), is completely synthesizable.
 This means that if you want to test your circuit on an FPGA, you will only have to replace the clock signal generator(s) by actual clock sources, such as an onboard PLL.</p>
+<h2 id="full-code-listings"><a class="header" href="#full-code-listings">Full code listings</a></h2>
+<p><a id="mdbook-clash-listing-1"></a></p>
+<h3 id="group-mac-test-bench"><a class="header" href="#group-mac-test-bench">Group <code>mac-test-bench</code></a></h3>
+<pre><code class="language-haskell">{-# LANGUAGE TemplateHaskell #-}
+
+module MACTestBench where
+
+import Clash.Prelude
+import Clash.Explicit.Testbench
+
+ma acc (x, y) = acc + x * y
+
+macT acc (x, y) = (ma acc (x, y), acc)
+
+mac xy = mealy macT 0 xy
+
+topEntity ::
+  Clock System -&gt;
+  Reset System -&gt;
+  Enable System -&gt;
+  Signal System (Signed 9, Signed 9) -&gt;
+  Signal System (Signed 9)
+topEntity = exposeClockResetEnable mac
+
+testBench :: Signal System Bool
+testBench = done
+ where
+  testInput =
+    stimuliGenerator
+      clk
+      rst
+      $(listToVecTH [(1, 1) :: (Signed 9, Signed 9), (2, 2), (3, 3), (4, 4)])
+  out = topEntity clk rst en testInput
+  expected = $(listToVecTH [0 :: Signed 9, 1, 5, 14, 14, 14, 14])
+  done = outputVerifier' clk rst expected out
+  clk = tbSystemClockGen (not &lt;$&gt; done)
+  rst = systemResetGen
+  en = enableGen
+
+
+</code></pre>
 
                     </main>
 

@@ -35,7 +35,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0b61026b.js";
+            window.path_to_searchindex_js = "../../searchindex-6432a04c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-f3542ed5.js"></script>
@@ -187,68 +187,102 @@ Also, only certain types of recursion are considered non-synthesizable; recursiv
 <li>
 <p><strong>Dynamic data-dependent recursion</strong></p>
 <p>As demonstrated in this definition of a function that calculates the n’th Fibbonacci number:</p>
-<pre><code class="language-haskell">fibR 0 = 0
+<pre><code class="language-haskell clash group=limitations">fibR 0 = 0
 fibR 1 = 1
 fibR n = fibR (n-1) + fibR (n-2)
 </code></pre>
-<p>To get the first 10 numbers, we do the following:</p>
-<pre><code>&gt;&gt;&gt; import qualified Data.List as L
-&gt;&gt;&gt; L.map fibR [0..9]
-[0,1,1,2,3,5,8,13,21,34]
-</code></pre>
-<p>The <code>fibR</code> function is not synthesizable by the Clash compiler, because, when we take a <em>structural</em> view, <code>fibR</code> describes an infinitely deep structure.</p>
-<p>In principle, descriptions like the above could be synthesized to a circuit, but it would have to be a <em>sequential</em> circuit.
-Where the most general synthesis would then require a stack.
-Such a synthesis approach is also known as <em>behavioral</em> synthesis, something which the Clash compiler simply does not do.
-One reason that Clash does not do this is because it does not fit the paradigm that only functions working on values of type <code>Signal</code> result in sequential circuits, and all other (non higher-order) functions result in combinational circuits.
-This paradigm gives the designer the most straightforward mapping from the original Haskell description to generated circuit, and thus the greatest control over the eventual size of the circuit and longest propagation delay.</p>
-</li>
-<li>
-<p><strong>Value-recursion</strong></p>
-<p>As demonstrated in this definition of a function that calculates the n’th Fibbonaci number on the n’th clock cycle:</p>
-<pre><code class="language-haskell">fibS :: SystemClockResetEnable =&gt; Signal System (Unsigned 64)
-fibS = r
-    where r = register 0 r + register 0 (register 1 r)
-</code></pre>
-<p>To get the first 10 numbers, we do the following:</p>
-<pre><code>&gt;&gt;&gt; sampleN @System 11 fibS
-[0,0,1,1,2,3,5,8,13,21,34]
-</code></pre>
-<p>Unlike the <code>fibR</code> function, the above <code>fibS</code> function <em>is</em> synthesizable by the Clash compiler.
-Where the recursively defined (non-function) value <em>r</em> is synthesized to a feedback loop containing three registers and one adder.</p>
-<p>Note that not all recursively defined values result in a feedback loop.
-An example that uses recursively defined values which does not result in a feedback loop is the following function that performs one iteration of bubble sort:</p>
-<pre><code class="language-haskell">sortV xs = map fst sorted :&lt; (snd (last sorted))
-  where
-    lefts  = head xs :&gt; map snd (init sorted)
-    rights = tail xs
-    sorted = zipWith compareAndSwap (lazyV lefts) rights
-
-compareAndSwap a b = if a &lt; b then (a,b) else (b,a)
-</code></pre>
-<p>Where we can clearly see that <code>lefts</code> and <code>sorted</code> are defined in terms of each other.
-Also the above <code>sortV</code> function <em>is</em> synthesizable.</p>
-</li>
-<li>
-<p><strong>Static/Structure-dependent recursion</strong></p>
-<p>Static, or, structure-dependent recursion is a rather <em>vague</em> concept.
-What we mean by this concept are recursive definitions where a user can sensibly imagine that the recursive definition can be completely unfolded (all recursion is eliminated) at compile-time in a finite amount of time.</p>
-<p>Such definitions would e.g. be:</p>
-<pre><code class="language-haskell">mapV :: (a -&gt; b) -&gt; Vec n a -&gt; Vec n b
-mapV _ Nil         = Nil
-mapV f (Cons x xs) = Cons (f x) (mapV f xs)
-
-topEntity :: Vec 4 Int -&gt; Vec 4 Int
-topEntity = mapV (+1)
-</code></pre>
-<p>Where one can imagine that a compiler can unroll the definition of <code>mapV</code> four times, knowing that the <code>topEntity</code> function applies <code>mapV</code> to a <code>Vec</code> of length 4.
-Sadly, the compile-time evaluation mechanisms in the Clash compiler are very poor, and a user-defined function such as the <code>mapV</code> function defined above, is <em>currently</em> not synthesizable.
-We <em>do</em> plan to add support for this in the future.
-In the mean time, this poor support for user-defined recursive functions is amortized by the fact that the Clash compiler has built-in support for the higher-order functions defined in <code>Clash.Sized.Vector</code>.
-Most regular design patterns often encountered in circuit design are captured by the higher-order functions in <code>Clash.Sized.Vector</code>.</p>
 </li>
 </ul>
 </li>
+</ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>    To get the first 10 numbers, we do the following:
+
+    ```haskell,clash group=limitations
+    firstTenFibs = L.map fibR [0..9]
+
+    &gt;&gt;&gt; firstTenFibs
+    [0,1,1,2,3,5,8,13,21,34]
+    ```
+</code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>    The `fibR` function is not synthesizable by the Clash compiler, because, when we take a _structural_ view, `fibR` describes an infinitely deep structure.
+
+    In principle, descriptions like the above could be synthesized to a circuit, but it would have to be a _sequential_ circuit.
+    Where the most general synthesis would then require a stack.
+    Such a synthesis approach is also known as _behavioral_ synthesis, something which the Clash compiler simply does not do.
+    One reason that Clash does not do this is because it does not fit the paradigm that only functions working on values of type `Signal` result in sequential circuits, and all other (non higher-order) functions result in combinational circuits.
+    This paradigm gives the designer the most straightforward mapping from the original Haskell description to generated circuit, and thus the greatest control over the eventual size of the circuit and longest propagation delay.
+
+* __Value-recursion__
+
+    As demonstrated in this definition of a function that calculates the n'th Fibbonaci number on the n'th clock cycle:
+
+    ```haskell,clash group=limitations
+    fibS :: SystemClockResetEnable =&gt; Signal System (Unsigned 64)
+    fibS = r
+        where r = register 0 r + register 0 (register 1 r)
+    ```
+</code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>    To get the first 10 numbers, we do the following:
+
+    ```haskell,clash group=limitations
+    &gt;&gt;&gt; sampleN @System 11 fibS
+    [0,0,1,1,2,3,5,8,13,21,34]
+    ```
+</code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>    Unlike the `fibR` function, the above `fibS` function _is_ synthesizable by the Clash compiler.
+    Where the recursively defined (non-function) value _r_ is synthesized to a feedback loop containing three registers and one adder.
+
+    Note that not all recursively defined values result in a feedback loop.
+    An example that uses recursively defined values which does not result in a feedback loop is the following function that performs one iteration of bubble sort:
+
+    ```haskell,clash group=limitations
+    sortV xs = map fst sorted :&lt; (snd (last sorted))
+      where
+        lefts  = head xs :&gt; map snd (init sorted)
+        rights = tail xs
+        sorted = zipWith compareAndSwap (lazyV lefts) rights
+
+    compareAndSwap a b = if a &lt; b then (a,b) else (b,a)
+
+    &gt;&gt;&gt; sortV (4 :&gt; 1 :&gt; 2 :&gt; 3 :&gt; Nil)
+    1 :&gt; 2 :&gt; 3 :&gt; 4 :&gt; Nil
+    ```
+</code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>    Where we can clearly see that `lefts` and `sorted` are defined in terms of each other.
+    Also the above `sortV` function _is_ synthesizable.
+
+* __Static/Structure-dependent recursion__
+
+    Static, or, structure-dependent recursion is a rather _vague_ concept.
+    What we mean by this concept are recursive definitions where a user can sensibly imagine that the recursive definition can be completely unfolded (all recursion is eliminated) at compile-time in a finite amount of time.
+
+    Such definitions would e.g. be:
+
+    ```haskell,clash group=limitations
+    mapV :: (a -&gt; b) -&gt; Vec n a -&gt; Vec n b
+    mapV _ Nil         = Nil
+    mapV f (Cons x xs) = Cons (f x) (mapV f xs)
+
+    topEntity :: Vec 4 Int -&gt; Vec 4 Int
+    topEntity = mapV (+1)
+
+    &gt;&gt;&gt; topEntity (1 :&gt; 2 :&gt; 3 :&gt; 4 :&gt; Nil)
+    2 :&gt; 3 :&gt; 4 :&gt; 5 :&gt; Nil
+    ```
+</code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>    Where one can imagine that a compiler can unroll the definition of `mapV` four times, knowing that the `topEntity` function applies `mapV` to a `Vec` of length 4.
+    Sadly, the compile-time evaluation mechanisms in the Clash compiler are very poor, and a user-defined function such as the `mapV` function defined above, is _currently_ not synthesizable.
+    We _do_ plan to add support for this in the future.
+    In the mean time, this poor support for user-defined recursive functions is amortized by the fact that the Clash compiler has built-in support for the higher-order functions defined in `Clash.Sized.Vector`.
+    Most regular design patterns often encountered in circuit design are captured by the higher-order functions in `Clash.Sized.Vector`.
+</code></pre>
+<ul>
 <li>
 <p><strong>Recursive datatypes</strong></p>
 <p>The Clash compiler needs to be able to determine a bit-size for any value that will be represented in the eventual circuit.
@@ -265,12 +299,19 @@ Similar to recursive types, Clash cannot determine bit-sizes of GADTs.
 Notable exceptions to this rule are <code>Vec</code> and <code>RTree</code>.
 You can still use your own GADTs, as long as they can be removed through static analysis.
 For example, the following case will be optimized away and is therefore fine to use:</p>
-<pre><code class="language-haskell">x =
+<pre><code class="language-haskell clash group=limitations">x :: Char
+x =
   case resetKind @System of
     SAsynchronous -&gt; 'a'
     SSynchronous -&gt; 'b'
+
+&gt;&gt;&gt; x == 'a' || x == 'b'
+True
 </code></pre>
 </li>
+</ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<ul>
 <li>
 <p><strong>Floating point types</strong></p>
 <p>There is no support for the <code>Float</code> and <code>Double</code> types, if you need numbers with a <em>fractional</em> part you can use the <code>Fixed</code> point type.</p>
@@ -325,23 +366,83 @@ In the Clash compiler, we chose to represent <code>Integer</code> by the same nu
 As you have read in a previous bullet point, this number of bits is either 32 or 64, depending on the architecture of the machine the Clash compiler is running on, or the setting of the <code>-fclash-intwidth</code> flag.</p>
 <p>Consequently, you should use <code>Integer</code> with due diligence; be especially careful when using <code>fromIntegral</code> as it does a conversion via <code>Integer</code>.
 For example:</p>
-<pre><code class="language-haskell">signedToUnsigned :: Signed 128 -&gt; Unsigned 128
-signedToUnsigned = fromIntegral
-</code></pre>
-<p>can either lose the top 64 or 96 bits depending on whether <code>Integer</code> is represented by 64 or 32 bits.
-Instead, when doing such conversions, you should use <code>bitCoerce</code>:</p>
-<pre><code class="language-haskell">signedToUnsigned :: Signed 128 -&gt; Unsigned 128
-signedToUnsigned = bitCoerce
+<pre><code class="language-haskell clash group=limitations">signedToUnsignedViaIntegral :: Signed 128 -&gt; Unsigned 128
+signedToUnsignedViaIntegral = fromIntegral
+
+&gt;&gt;&gt; signedToUnsignedViaIntegral 1
+1
 </code></pre>
 </li>
 </ul>
 </li>
+</ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>  can either lose the top 64 or 96 bits depending on whether `Integer` is represented by 64 or 32 bits.
+  Instead, when doing such conversions, you should use `bitCoerce`:
+
+  ```haskell,clash group=limitations
+  signedToUnsignedViaBitCoerce :: Signed 128 -&gt; Unsigned 128
+  signedToUnsignedViaBitCoerce = bitCoerce
+
+  &gt;&gt;&gt; signedToUnsignedViaBitCoerce 1
+  1
+  ```
+</code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<ul>
 <li>
 <p><strong>Side-effects: <code>IO</code>, <code>ST</code>, etc.</strong></p>
 <p>There is no support for side-effecting computations such as those in the <code>IO</code> or <code>ST</code> monad.
 There is also no support for Haskell’s <a href="http://www.haskell.org/haskellwiki/Foreign_Function_Interface">FFI</a>.</p>
 </li>
 </ul>
+<h2 id="full-code-listings"><a class="header" href="#full-code-listings">Full code listings</a></h2>
+<p><a id="mdbook-clash-listing-1"></a></p>
+<h3 id="group-limitations"><a class="header" href="#group-limitations">Group <code>limitations</code></a></h3>
+<pre><code class="language-haskell">module LimitationExamples where
+
+import Clash.Prelude
+import qualified Data.List as L
+
+fibR 0 = 0
+fibR 1 = 1
+fibR n = fibR (n-1) + fibR (n-2)
+
+firstTenFibs = L.map fibR [0..9]
+
+fibS :: SystemClockResetEnable =&gt; Signal System (Unsigned 64)
+fibS = r
+    where r = register 0 r + register 0 (register 1 r)
+
+
+
+sortV xs = map fst sorted :&lt; (snd (last sorted))
+  where
+    lefts  = head xs :&gt; map snd (init sorted)
+    rights = tail xs
+    sorted = zipWith compareAndSwap (lazyV lefts) rights
+
+compareAndSwap a b = if a &lt; b then (a,b) else (b,a)
+
+mapV :: (a -&gt; b) -&gt; Vec n a -&gt; Vec n b
+mapV _ Nil         = Nil
+mapV f (Cons x xs) = Cons (f x) (mapV f xs)
+
+topEntity :: Vec 4 Int -&gt; Vec 4 Int
+topEntity = mapV (+1)
+
+x :: Char
+x =
+  case resetKind @System of
+    SAsynchronous -&gt; 'a'
+    SSynchronous -&gt; 'b'
+
+signedToUnsignedViaIntegral :: Signed 128 -&gt; Unsigned 128
+signedToUnsignedViaIntegral = fromIntegral
+
+signedToUnsignedViaBitCoerce :: Signed 128 -&gt; Unsigned 128
+signedToUnsignedViaBitCoerce = bitCoerce
+</code></pre>
 
                     </main>
 

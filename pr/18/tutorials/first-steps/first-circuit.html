@@ -35,7 +35,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0b61026b.js";
+            window.path_to_searchindex_js = "../../searchindex-6432a04c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-f3542ed5.js"></script>
@@ -186,26 +186,33 @@ Before we describe any logic, we must first create the file we will be working o
 </li>
 <li>
 <p>Write on the first line the module header:</p>
-<pre><code class="language-haskell">module MAC where
+<pre><code class="language-haskell clash group=first-circuit">module MAC where
 </code></pre>
-<p>Module names must always start with a <strong>C</strong>apital letter.
-Also make sure that the file name corresponds to the module name.</p>
-</li>
-<li>
-<p>Add the import statement for the Clash prelude library:</p>
-<pre><code class="language-haskell">import Clash.Prelude
-</code></pre>
-<p>This imports all the necessary functions and datatypes for circuit description.</p>
 </li>
 </ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>Module names must always start with a **C**apital letter.
+Also make sure that the file name corresponds to the module name.
+</code></pre>
+<ul>
+<li>
+<p>Add the import statement for the Clash prelude library:</p>
+<pre><code class="language-haskell clash group=first-circuit">import Clash.Prelude
+</code></pre>
+</li>
+</ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>This imports all the necessary functions and datatypes for circuit description.
+</code></pre>
 <p>We can now finally start describing the logic of our circuit, starting with just the multiplication and addition:</p>
-<pre><code class="language-haskell clash">ma acc (x, y) = acc + x * y
+<pre><code class="language-haskell clash group=first-circuit">ma acc (x, y) = acc + x * y
 
 &gt;&gt;&gt; ma 4 (8, 9)
 76
 &gt;&gt;&gt; ma 2 (3, 4)
 14
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we will later see).
 We usually refer to circuits as <em>functions</em>, similar to programming languages such as C, Python, or Haskell.
 In this case, the function we just defined is called <code>ma</code>.
@@ -214,9 +221,10 @@ This component is “unpacked”, and its first element is called <code>x</code>
 Everything to the right of the equals symbol is <code>ma</code>’s result.
 The lines beginning with <code>&gt;&gt;&gt;</code> show two tests you can enter in the interpreter.</p>
 <p>We can also examine the inferred type of <code>ma</code> in the interpreter:</p>
-<pre><code class="language-haskell">&gt;&gt;&gt; :t ma
+<pre><code class="language-haskell clash group=first-circuit">&gt;&gt;&gt; :t ma
 ma :: Num a =&gt; a -&gt; (a, a) -&gt; a
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>You should read this as follows:</p>
 <ul>
 <li>
@@ -264,15 +272,29 @@ For the rest of this tutorial, and probably at any moment where you will be work
 To make this even easier, it is actually not possible to manipulate the underlying representation directly: you can only modify <code>Signal</code> values through a set of primitives such as the <code>register</code> function above.</p>
 <p>Now, let us get back to the functionality of the <code>register</code> function: it is a simple <a href="https://en.wikipedia.org/wiki/Flip-flop_(electronics)">flip-flop</a> that only changes state at the tick of the global <em>clock</em>, and it has an initial value <code>a</code> which is its output at time 0.
 We can further examine the <code>register</code> function by taking a look at the first 4 samples of the <code>register</code> functions applied to a constant signal with the value 8:</p>
-<pre><code class="language-haskell">&gt;&gt;&gt; sampleN @System 4 (register 0 (pure (8 :: Signed 8)))
+<pre><code class="language-haskell clash group=first-circuit">&gt;&gt;&gt; sampleN @System 4 (register 0 (pure (8 :: Signed 8)))
 [0,0,8,8]
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>Where we see that the initial value of the signal is the specified 0 value, followed by 8’s.
 You might be surprised to see <em>two</em> zeros instead of just a single zero.
 What happens is that in Clash you get to see the output of the circuit <em>before</em> the clock becomes active.
 In other words, in Clash you get to describe the powerup values of registers too.
 Whether this is a defined or unknown value depends on your hardware target, and can be configured by using a different synthesis <code>Domain</code>.
 The default synthesis domain, <code>@System</code>, assumes that registers do have a powerup value - as is true for most FPGA platforms in most contexts.</p>
+<h2 id="full-code-listings"><a class="header" href="#full-code-listings">Full code listings</a></h2>
+<p><a id="mdbook-clash-listing-1"></a></p>
+<h3 id="group-first-circuit"><a class="header" href="#group-first-circuit">Group <code>first-circuit</code></a></h3>
+<pre><code class="language-haskell">module MAC where
+
+import Clash.Prelude
+
+ma acc (x, y) = acc + x * y
+
+
+
+
+</code></pre>
 
                     </main>
 

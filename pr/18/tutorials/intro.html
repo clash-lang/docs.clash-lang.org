@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0b61026b.js";
+            window.path_to_searchindex_js = "../searchindex-6432a04c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-f3542ed5.js"></script>
@@ -191,16 +191,33 @@ This means, in an academically handwavy way, that every function denotes a compo
 Now, this has consequences on how we view <em>recursively</em> defined functions: structurally, a recursively defined function would denote an <em>infinitely</em> deeply structured component, something that cannot be turned into an actual circuit.</p>
 <p>On the other hand, Haskell’s by-default non-strict evaluation works very well for the simulation of feedback loops, which are ubiquitous in digital circuits.
 That is, when we take a structural view on circuit descriptions, value recursion corresponds directly to a feedback loop:</p>
-<pre><code class="language-haskell">counter = s
+<pre><code class="language-haskell clash group=counter">counter :: HiddenClockResetEnable dom =&gt; Signal dom (Unsigned 8)
+counter = s
  where
   s = register 0 (s + 1)
+
+&gt;&gt;&gt; sampleN @System 5 counter
+[0,0,1,2,3]
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>The above definition, which uses value recursion, <em>can</em> be synthesized to a circuit by the Clash compiler.</p>
 <p>Over time, you will get a better feeling for the consequences of taking a <em>structural</em> view on circuit descriptions.
 What is always important to remember is that every applied function results in an instantiated component, and also that the compiler will <em>never</em> infer/invent more logic than what is specified in the circuit description.</p>
 <p>With that out of the way, let us continue with installing Clash and building our first circuit.</p>
 <h2 id="installing-clash"><a class="header" href="#installing-clash">Installing Clash</a></h2>
 <p>For installation instructions, see <a href="https://clash-lang.org/install/">clash-lang.org/install/</a></p>
+<h2 id="full-code-listings"><a class="header" href="#full-code-listings">Full code listings</a></h2>
+<p><a id="mdbook-clash-listing-1"></a></p>
+<h3 id="group-counter"><a class="header" href="#group-counter">Group <code>counter</code></a></h3>
+<pre><code class="language-haskell">module Counter where
+
+import Clash.Prelude
+
+counter :: HiddenClockResetEnable dom =&gt; Signal dom (Unsigned 8)
+counter = s
+ where
+  s = register 0 (s + 1)
+</code></pre>
 
                     </main>
 

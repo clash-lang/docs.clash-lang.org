@@ -35,7 +35,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0b61026b.js";
+            window.path_to_searchindex_js = "../../searchindex-6432a04c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-f3542ed5.js"></script>
@@ -181,14 +181,19 @@ It is used internally by one of the <code>Clash.Prelude</code> functions that we
 Within the Clash prelude library we offer a standard function to support the <a href="http://en.wikipedia.org/wiki/Mealy_machine">Mealy machine</a>.
 To improve sharing, we will combine the transition function and output function into one.
 This gives rise to the following Mealy specification of the MAC circuit:</p>
-<pre><code class="language-haskell">macT acc (x, y) = (acc', o)
+<pre><code class="language-haskell clash group=sequential">macT acc (x, y) = (acc', o)
  where
   acc' = ma acc (x, y)
   o = acc
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>Note that the <code>where</code> clause and explicit tuple are just for demonstrative purposes, without loss of sharing we could have also written:</p>
-<pre><code class="language-haskell">macT acc inp = (ma acc inp, acc)
+<pre><code class="language-haskell clash group=sequential">macTShort acc inp = (ma acc inp, acc)
+
+&gt;&gt;&gt; macTShort 1 (2, 3)
+(7,1)
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>Going back to the original specification we note the following:</p>
 <ul>
 <li><code>acc</code> is the current <em>state</em> of the circuit.</li>
@@ -197,11 +202,12 @@ This gives rise to the following Mealy specification of the MAC circuit:</p>
 <li><code>o</code> is the output.</li>
 </ul>
 <p>When we examine the type of <code>macT</code> we see that is still completely combinational:</p>
-<pre><code class="language-haskell">&gt;&gt;&gt; :t macT
-macT :: Num a =&gt; a -&gt; (a, a) -&gt; (a, a)
+<pre><code class="language-haskell clash group=sequential">&gt;&gt;&gt; :t macT
+macT :: Num b =&gt; b -&gt; (b, b) -&gt; (b, b)
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>The <code>Clash.Prelude</code> library contains a function that creates a sequential circuit from a combinational circuit that has the same Mealy machine type/shape of <code>macT</code>:</p>
-<pre><code class="language-haskell">mealy ::
+<pre><code class="language-text">mealy ::
   (HiddenClockResetEnable dom, NFDataX s) =&gt;
   (s -&gt; i -&gt; (s, o)) -&gt;
   s -&gt;
@@ -209,15 +215,39 @@ macT :: Num a =&gt; a -&gt; (a, a) -&gt; (a, a)
 mealy f initS = ...
 </code></pre>
 <p>The complete sequential MAC circuit can now be specified as:</p>
-<pre><code class="language-haskell">mac inp = mealy macT 0 inp
+<pre><code class="language-haskell clash group=sequential">mac inp = mealy macT 0 inp
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>Where the first argument of <code>mealy</code> is our <code>macT</code> function, and the second argument is the initial state, in this case 0.
 We can see it is functioning correctly in our interpreter:</p>
-<pre><code class="language-haskell">&gt;&gt;&gt; simulateN @System 4 mac [(1,1),(2,2),(3,3),(4,4)]
+<pre><code class="language-haskell clash group=sequential">&gt;&gt;&gt; simulateN @System 4 mac ([(1,1),(2,2),(3,3),(4,4)] :: [(Signed 9, Signed 9)])
 [0,1,5,14]
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>Where we simulate our sequential circuit over a list of input samples and take the first 4 output samples.
 We have now completed our first sequential circuit and have made an initial confirmation that it is working as expected.</p>
+<h2 id="full-code-listings"><a class="header" href="#full-code-listings">Full code listings</a></h2>
+<p><a id="mdbook-clash-listing-1"></a></p>
+<h3 id="group-sequential"><a class="header" href="#group-sequential">Group <code>sequential</code></a></h3>
+<pre><code class="language-haskell">module MAC where
+
+import Clash.Prelude
+
+ma acc (x, y) = acc + x * y
+
+macT acc (x, y) = (acc', o)
+ where
+  acc' = ma acc (x, y)
+  o = acc
+
+macTShort acc inp = (ma acc inp, acc)
+
+
+
+mac inp = mealy macT 0 inp
+
+
+</code></pre>
 
                     </main>
 

@@ -35,7 +35,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0b61026b.js";
+            window.path_to_searchindex_js = "../../searchindex-6432a04c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-f3542ed5.js"></script>
@@ -204,7 +204,9 @@ You should therefore also add an <code>{-# OPAQUE f #-}</code> pragma to the fun
 topEntity x = ...
 </code></pre>
 <p>For example, given the following specification:</p>
-<pre><code class="language-haskell">module Blinker where
+<pre><code class="language-haskell clash group=blinker topEntity=topEntity">{-# LANGUAGE TemplateHaskell #-}
+
+module Blinker where
 
 import Clash.Signal
 import Clash.Prelude
@@ -239,6 +241,7 @@ blinkerT (leds,mode,cntr) key1R = ((ledsN,modeN,cntrN),leds)
                               else rotateL leds 1
         | otherwise = leds
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>The Clash compiler will normally generate the following <code>topentity.vhdl</code> file:</p>
 <pre><code class="language-vhdl">-- Automatically generated VHDL-93
 library IEEE;
@@ -263,7 +266,7 @@ architecture structural of topEntity is
 end;
 </code></pre>
 <p>However, if we add the following <code>Synthesize</code> annotation in the file:</p>
-<pre><code class="language-haskell">{-# OPAQUE topEntity #-}
+<pre><code class="language-haskell clash group=blinker">{-# OPAQUE topEntity #-}
 {-# ANN topEntity
   (Synthesize
     { t_name   = "blinker"
@@ -271,6 +274,7 @@ end;
     , t_output = PortName "LED"
     }) #-}
 </code></pre>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
 <p>The Clash compiler will generate the following <code>blinker.vhdl</code> file instead:</p>
 <pre><code class="language-vhdl">-- Automatically generated VHDL-93
 library IEEE;
@@ -300,6 +304,54 @@ end;
 <li>Inputs and outputs that have a <em>user</em>-chosen name: <code>CLOCK_50</code>, <code>KEY0</code>, <code>KEY1</code>, <code>LED</code>, etc.</li>
 </ul>
 <p>See the documentation of <code>Synthesize</code> for the meaning of all its fields.</p>
+<h2 id="full-code-listings"><a class="header" href="#full-code-listings">Full code listings</a></h2>
+<p><a id="mdbook-clash-listing-1"></a></p>
+<h3 id="group-blinker"><a class="header" href="#group-blinker">Group <code>blinker</code></a></h3>
+<pre><code class="language-haskell">{-# LANGUAGE TemplateHaskell #-}
+
+module Blinker where
+
+import Clash.Signal
+import Clash.Prelude
+import Clash.Intel.ClockGen
+
+createDomain vSystem{vName="DomInput", vPeriod=20000, vResetPolarity=ActiveLow}
+createDomain vSystem{vName="Dom100", vPeriod=10000}
+
+topEntity
+  :: Clock DomInput
+  -&gt; Reset DomInput
+  -&gt; Signal Dom100 Bit
+  -&gt; Signal Dom100 (BitVector 8)
+topEntity clk rst =
+  exposeClockResetEnable (mealy blinkerT (1,False,0) . isRising 1) pllOut pllRst enableGen
+ where
+  (pllOut,pllRst) = altpllSync clk rst
+
+blinkerT (leds,mode,cntr) key1R = ((ledsN,modeN,cntrN),leds)
+ where
+  -- clock frequency = 100e6  (100 MHz)
+  -- led update rate = 333e-3 (every 333ms)
+  cnt_max = maxBound :: Index 33300000 -- 100e6 * 333e-3
+
+  cntrN | cntr == cnt_max = 0
+        | otherwise       = cntr + 1
+
+  modeN | key1R     = not mode
+        | otherwise = mode
+
+  ledsN | cntr == 0 = if mode then complement leds
+                              else rotateL leds 1
+        | otherwise = leds
+
+{-# OPAQUE topEntity #-}
+{-# ANN topEntity
+  (Synthesize
+    { t_name   = "blinker"
+    , t_inputs = [PortName "CLOCK_50", PortName "KEY0", PortName "KEY1"]
+    , t_output = PortName "LED"
+    }) #-}
+</code></pre>
 
                     </main>
 

@@ -35,7 +35,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0b61026b.js";
+            window.path_to_searchindex_js = "../../searchindex-6432a04c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-f3542ed5.js"></script>
@@ -246,7 +246,7 @@ But adding a monomorphic type signature should still help (when possible).</p>
 <p>The above function, works for any number-like type.
 This means that <code>acc</code> is a recursively defined <strong>polymorphic</strong> value.
 Adding a monomorphic type annotation makes the error go away:</p>
-<pre><code class="language-haskell">topEntity
+<pre><code class="language-haskell clash group=troubleshooting topEntity=topEntity">topEntity
   :: SystemClockResetEnable
   =&gt; Signal System (Signed 8)
   -&gt; Signal System (Signed 8)
@@ -256,6 +256,9 @@ topEntity x y = acc
     acc = register 3 (acc + x * y)
 </code></pre>
 </li>
+</ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<ul>
 <li>
 <p><strong>Clash.Normalize.Transformations(..): InlineNonRep: &lt;FUNCTION&gt; already inlined 100 times in:&lt;FUNCTION&gt;, &lt;TYPE&gt;</strong>:</p>
 <p>You left the <code>topEntity</code> function polymorphic or higher-order: use <code>:i topEntity</code> to check if the type is indeed polymorphic or higher-order.
@@ -265,7 +268,7 @@ If it is, add a monomorphic type signature, and/or supply higher-order arguments
 <p><strong>&lt;*** Exception: &lt;&lt;loop&gt;&gt; or “blinking cursor”</strong></p>
 <p>You are using value-recursion, but one of the <code>Vec</code>tor functions that you are using is too <em>strict</em> in one of the recursive arguments.
 For example:</p>
-<pre><code class="language-haskell">-- Bubble sort for 1 iteration
+<pre><code class="language-haskell clash group=troubleshooting">-- Bubble sort for 1 iteration
 sortV xs = map fst sorted :&lt; (snd (last sorted))
  where
    lefts  = head xs :&gt; map snd (init sorted)
@@ -275,20 +278,64 @@ sortV xs = map fst sorted :&lt; (snd (last sorted))
 -- Compare and swap
 compareSwapL a b = if a &lt; b then (a,b) else (b,a)
 </code></pre>
-<p>Will not terminate because <code>zipWith</code> is too strict in its second argument.</p>
-<p>In this case, adding <code>lazyV</code> on <code>zipWith</code>s second argument:</p>
-<pre><code class="language-haskell">sortVL xs = map fst sorted :&lt; (snd (last sorted))
+</li>
+</ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>Will not terminate because `zipWith` is too strict in its second argument.
+
+In this case, adding `lazyV` on `zipWith`s second argument:
+
+```haskell,clash group=troubleshooting
+sortVL xs = map fst sorted :&lt; (snd (last sorted))
  where
    lefts  = head xs :&gt; map snd (init sorted)
    rights = tail xs
    sorted = zipWith compareSwapL (lazyV lefts) rights
+```
 </code></pre>
-<p>Results in a successful computation:</p>
-<pre><code>clashi&gt; sortVL (4 :&gt; 1 :&gt; 2 :&gt; 3 :&gt; Nil)
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<pre><code>Results in a successful computation:
+
+```haskell,clash group=troubleshooting
+&gt;&gt;&gt; sortVL (4 :&gt; 1 :&gt; 2 :&gt; 3 :&gt; Nil)
 1 :&gt; 2 :&gt; 3 :&gt; 4 :&gt; Nil
+```
 </code></pre>
-</li>
-</ul>
+<p><a href="#mdbook-clash-listing-1">View full listing</a></p>
+<h2 id="full-code-listings"><a class="header" href="#full-code-listings">Full code listings</a></h2>
+<p><a id="mdbook-clash-listing-1"></a></p>
+<h3 id="group-troubleshooting"><a class="header" href="#group-troubleshooting">Group <code>troubleshooting</code></a></h3>
+<pre><code class="language-haskell">module TroubleshootingExamples where
+
+import Clash.Prelude
+
+topEntity
+  :: SystemClockResetEnable
+  =&gt; Signal System (Signed 8)
+  -&gt; Signal System (Signed 8)
+  -&gt; Signal System (Signed 8)
+topEntity x y = acc
+  where
+    acc = register 3 (acc + x * y)
+
+-- Bubble sort for 1 iteration
+sortV xs = map fst sorted :&lt; (snd (last sorted))
+ where
+   lefts  = head xs :&gt; map snd (init sorted)
+   rights = tail xs
+   sorted = zipWith compareSwapL lefts rights
+
+-- Compare and swap
+compareSwapL a b = if a &lt; b then (a,b) else (b,a)
+
+sortVL xs = map fst sorted :&lt; (snd (last sorted))
+ where
+   lefts  = head xs :&gt; map snd (init sorted)
+   rights = tail xs
+   sorted = zipWith compareSwapL (lazyV lefts) rights
+
+
+</code></pre>
 
                     </main>
 
