@@ -1,3 +1,3 @@
 # Summary
 
-- [Clash Documentation](./index.md)
+- [The Clash Book](./index.md)

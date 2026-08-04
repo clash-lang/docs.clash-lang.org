@@ -1,8 +1,13 @@
-# Clash Documentation
+# The Clash Book
 
-Welcome to the Clash Documentation!
+Welcome to the Clash Book, the official documentation for learning and using
+the Clash hardware description language.
 
-Here you can find different types of documentation.
+The book is being reorganized around the different needs readers have:
 
-1. [Tutorial](./tutorial/)
-2. [Compiler User Guide](./compiler-user-guide/)
+1. [Tutorial](./tutorial/) - learn Clash by building a circuit.
+2. [Reference](./compiler-user-guide/) - look up precise compiler and language
+   information.
+
+Task-focused how-to guides and deeper explanations will be promoted into their
+own sections as the existing material is revised.

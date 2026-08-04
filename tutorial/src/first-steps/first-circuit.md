@@ -29,8 +29,13 @@ Before we describe any logic, we must first create the file we will be working o
 
 We can now finally start describing the logic of our circuit, starting with just the multiplication and addition:
 
-``` haskell
+```haskell,clash
 ma acc (x, y) = acc + x * y
+
+>>> ma 4 (8, 9)
+76
+>>> ma 2 (3, 4)
+14
 ```
 
 The circuit we just wrote is a combinational circuit: no registers are inserted (you describe explicitly where Clash will insert registers, as we will later see).
@@ -39,14 +44,7 @@ In this case, the function we just defined is called `ma`.
 Its first argument is `acc`, its second is `(x, y)` - a composite type called a tuple.
 This component is "unpacked", and its first element is called `x`, its second `y`.
 Everything to the right of the equals symbol is `ma`'s result.
-If you followed the instructions of running the interpreter side-by-side, you can already test this function:
-
-``` haskell
->>> ma 4 (8, 9)
-76
->>> ma 2 (3, 4)
-14
-```
+The lines beginning with `>>>` show two tests you can enter in the interpreter.
 
 We can also examine the inferred type of `ma` in the interpreter:
 
