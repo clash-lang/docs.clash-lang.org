@@ -1,7 +1,7 @@
 [book]
 authors = ["The Clash Developers"]
 language = "en"
-src = "root-src"
+src = "src"
 title = "The Clash Book"
 
 [build]
@@ -11,3 +11,27 @@ build-dir = "public/"
 command = "mdbook-clash"
 clash-cmd = ["clash"]
 ghc-cmd = ["ghc"]
+
+[output.html.redirect]
+"/tutorial/index.html" = "../tutorials/index.html"
+"/tutorial/intro.html" = "../tutorials/intro.html"
+"/tutorial/first-steps/working.html" = "../../tutorials/first-steps/working.html"
+"/tutorial/first-steps/first-circuit.html" = "../../tutorials/first-steps/first-circuit.html"
+"/tutorial/first-steps/sequential.html" = "../../tutorials/first-steps/sequential.html"
+"/tutorial/first-steps/vhdl.html" = "../../tutorials/first-steps/vhdl.html"
+"/tutorial/first-steps/test-bench.html" = "../../tutorials/first-steps/test-bench.html"
+"/tutorial/first-steps/verilog.html" = "../../tutorials/first-steps/verilog.html"
+"/compiler-user-guide/index.html" = "../reference/index.html"
+"/compiler-user-guide/getting-started/installing.html" = "../../reference/getting-started/installing.html"
+"/compiler-user-guide/general/index.html" = "../../reference/general/index.html"
+"/compiler-user-guide/general/relnotes.html" = "../../reference/general/relnotes.html"
+"/compiler-user-guide/general/faqs.html" = "../../reference/general/faqs.html"
+"/compiler-user-guide/general/license.html" = "../../reference/general/license.html"
+"/compiler-user-guide/developing-hardware/language.html" = "../../reference/developing-hardware/language.html"
+"/compiler-user-guide/developing-hardware/prelude.html" = "../../reference/developing-hardware/prelude.html"
+"/compiler-user-guide/developing-hardware/flags.html" = "../../reference/developing-hardware/flags.html"
+"/compiler-user-guide/developing-hardware/annotations.html" = "../../reference/developing-hardware/annotations.html"
+"/compiler-user-guide/developing-hardware/primitives.html" = "../../reference/developing-hardware/primitives.html"
+"/compiler-user-guide/developing-hardware/troubleshooting.html" = "../../reference/developing-hardware/troubleshooting.html"
+"/compiler-user-guide/developing-hardware/limitations.html" = "../../reference/developing-hardware/limitations.html"
+"/compiler-user-guide/hacking-on-clash/index.html" = "../../reference/hacking-on-clash/index.html"

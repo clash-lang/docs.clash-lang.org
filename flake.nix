@@ -51,8 +51,6 @@
             cd source
 
             mdbook build
-            mdbook build tutorial
-            mdbook build compiler-user-guide
 
             mkdir -p $out
             cp -r public/. $out/
@@ -96,7 +94,7 @@
 
             shellHook = ''
               echo "Clash Book development shell (Clash 1.10)"
-              echo "Build locally: mdbook build && mdbook build tutorial && mdbook build compiler-user-guide"
+              echo "Build locally: mdbook build"
               echo "Check all supported Clash versions: nix flake check"
             '';
           };

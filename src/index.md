@@ -5,8 +5,8 @@ the Clash hardware description language.
 
 The book is being reorganized around the different needs readers have:
 
-1. [Tutorial](./tutorial/) - learn Clash by building a circuit.
-2. [Reference](./compiler-user-guide/) - look up precise compiler and language
+1. [Tutorials](./tutorials/) - learn Clash by building a circuit.
+2. [Reference](./reference/) - look up precise compiler and language
    information.
 
 Task-focused how-to guides and deeper explanations will be promoted into their
