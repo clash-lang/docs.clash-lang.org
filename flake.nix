@@ -1,6 +1,11 @@
 {
   description = "The Clash Book, with executable examples checked against supported Clash versions";
 
+  nixConfig = {
+    extra-substituters = [ "https://clash-lang.cachix.org" ];
+    extra-trusted-public-keys = [ "clash-lang.cachix.org-1:/2N1uka38B/heaOAC+Ztd/EWLmF0RLfizWgC5tamCBg=" ];
+  };
+
   inputs = {
     clash-1_8_5.url = "github:clash-lang/clash-compiler/v1.8.5";
     clash-1_10.url = "github:clash-lang/clash-compiler/v1.10.0";

@@ -33,10 +33,6 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3.21.8
-        with:
-          extra-conf: |
-            extra-substituters = https://clash-lang.cachix.org
-            extra-trusted-public-keys = clash-lang.cachix.org-1:/2N1uka38B/heaOAC+Ztd/EWLmF0RLfizWgC5tamCBg=
 
       - name: Enable Nix cache
         uses: DeterminateSystems/flakehub-cache-action@3be0931021788e3bb4df65f59a555039c2fa2d46 # v3.21.7
@@ -47,7 +43,7 @@ jobs:
 
       - name: Build the Clash 1.10 book
         run: |
-          nix build .#book-clash-1_10 --print-build-logs --out-link site
+          nix build --accept-flake-config .#book-clash-1_10 --print-build-logs --out-link site
           cp -RL site public
 
       - name: Copy PR previews

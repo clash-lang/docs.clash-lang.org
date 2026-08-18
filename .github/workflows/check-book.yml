@@ -17,18 +17,10 @@ concurrency:
   cancel-in-progress: ${{ github.event_name != 'schedule' }}
 
 jobs:
-  releases:
+  checks:
     if: github.event_name != 'schedule'
-    name: Clash ${{ matrix.clash-version }}
+    name: All pinned Clash versions
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - clash-version: 1.8.5
-            flake-package: book-clash-1_8_5
-          - clash-version: "1.10"
-            flake-package: book-clash-1_10
 
     steps:
       - name: Check out repository
@@ -36,16 +28,12 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3.21.8
-        with:
-          extra-conf: |
-            extra-substituters = https://clash-lang.cachix.org
-            extra-trusted-public-keys = clash-lang.cachix.org-1:/2N1uka38B/heaOAC+Ztd/EWLmF0RLfizWgC5tamCBg=
 
       - name: Enable Nix cache
         uses: DeterminateSystems/flakehub-cache-action@3be0931021788e3bb4df65f59a555039c2fa2d46 # v3.21.7
 
-      - name: Build book
-        run: nix build ".#${{ matrix.flake-package }}" --print-build-logs
+      - name: Check all books
+        run: nix flake check --accept-flake-config --print-build-logs
 
   clash-master:
     name: Clash master
@@ -57,22 +45,18 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3.21.8
-        with:
-          extra-conf: |
-            extra-substituters = https://clash-lang.cachix.org
-            extra-trusted-public-keys = clash-lang.cachix.org-1:/2N1uka38B/heaOAC+Ztd/EWLmF0RLfizWgC5tamCBg=
 
       - name: Enable Nix cache
         uses: DeterminateSystems/flakehub-cache-action@3be0931021788e3bb4df65f59a555039c2fa2d46 # v3.21.7
 
       - name: Update Clash master
         run: >-
-          nix flake lock
+          nix flake lock --accept-flake-config
           --override-input clash-master
           github:clash-lang/clash-compiler/master
 
       - name: Show selected Clash revision
-        run: nix flake metadata --json | jq -r '.locks.nodes["clash-master"].locked.rev'
+        run: nix flake metadata --accept-flake-config --json | jq -r '.locks.nodes["clash-master"].locked.rev'
 
-      - name: Build book
-        run: nix build .#book-clash-master --print-build-logs
+      - name: Check all books
+        run: nix flake check --accept-flake-config --print-build-logs
