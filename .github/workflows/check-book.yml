@@ -3,6 +3,7 @@ name: Check book examples
 on:
   pull_request:
   push:
+    branches: ["main"]
   schedule:
     # Exercise the moving Clash master branch once a week, outside peak hours.
     - cron: "17 5 * * 1"
