@@ -49,14 +49,16 @@ jobs:
       - name: Enable Nix cache
         uses: DeterminateSystems/flakehub-cache-action@3be0931021788e3bb4df65f59a555039c2fa2d46 # v3.21.7
 
-      - name: Update Clash master
+      - name: Show selected Clash revision
         run: >-
-          nix flake lock --accept-flake-config
+          nix flake metadata --accept-flake-config
           --override-input clash-master
           github:clash-lang/clash-compiler/master
+          --json | jq -r '.locks.nodes["clash-master"].locked.rev'
 
-      - name: Show selected Clash revision
-        run: nix flake metadata --accept-flake-config --json | jq -r '.locks.nodes["clash-master"].locked.rev'
-
-      - name: Check all books
-        run: nix flake check --accept-flake-config --print-build-logs
+      - name: Build book
+        run: >-
+          nix build --accept-flake-config .#book-clash-master
+          --override-input clash-master
+          github:clash-lang/clash-compiler/master
+          --print-build-logs
