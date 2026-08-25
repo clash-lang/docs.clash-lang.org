@@ -19,10 +19,20 @@ Now, this has consequences on how we view *recursively* defined functions: struc
 On the other hand, Haskell's by-default non-strict evaluation works very well for the simulation of feedback loops, which are ubiquitous in digital circuits.
 That is, when we take a structural view on circuit descriptions, value recursion corresponds directly to a feedback loop:
 
-``` haskell
+```haskell,clash group=counter hidden
+module Counter where
+
+import Clash.Prelude
+```
+
+```haskell,clash group=counter
+counter :: HiddenClockResetEnable dom => Signal dom (Unsigned 8)
 counter = s
  where
   s = register 0 (s + 1)
+
+>>> sampleN @System 5 counter
+[0,0,1,2,3]
 ```
 
 The above definition, which uses value recursion, *can* be synthesized to a circuit by the Clash compiler.

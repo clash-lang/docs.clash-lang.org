@@ -14,8 +14,19 @@ In order for the Clash compiler to do this you need to do one of the following:
 
 For example, you can test the earlier defined *topEntity* by:
 
-``` haskell
+```haskell,clash group=mac-test-bench
+{-# LANGUAGE TemplateHaskell #-}
+
+module MACTestBench where
+
+import Clash.Prelude
 import Clash.Explicit.Testbench
+
+ma acc (x, y) = acc + x * y
+
+macT acc (x, y) = (ma acc (x, y), acc)
+
+mac xy = mealy macT 0 xy
 
 topEntity ::
   Clock System ->
@@ -44,7 +55,7 @@ testBench = done
 This will create a stimulus generator that creates the same inputs as we used earlier for the simulation of the circuit, and creates an output verifier that compares against the results we got from our earlier simulation.
 We can even simulate the behavior of the *testBench*:
 
-``` haskell
+```haskell,clash group=mac-test-bench
 >>> sampleN 8 testBench
 [False,False,False,False,False
 cycle(<Clock: System>): 5, outputVerifier

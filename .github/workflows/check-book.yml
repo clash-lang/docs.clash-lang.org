@@ -1,0 +1,65 @@
+name: Check book examples
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+  schedule:
+    # Exercise the moving Clash master branch once a week, outside peak hours.
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+
+jobs:
+  checks:
+    if: github.event_name != 'schedule'
+    name: All pinned Clash versions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3.21.8
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/flakehub-cache-action@3be0931021788e3bb4df65f59a555039c2fa2d46 # v3.21.7
+
+      - name: Check all books
+        run: nix flake check --accept-flake-config --print-build-logs
+
+  clash-master:
+    name: Clash master
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3.21.8
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/flakehub-cache-action@3be0931021788e3bb4df65f59a555039c2fa2d46 # v3.21.7
+
+      - name: Show selected Clash revision
+        run: >-
+          nix flake metadata --accept-flake-config
+          --override-input clash-master
+          github:clash-lang/clash-compiler/master
+          --json | jq -r '.locks.nodes["clash-master"].locked.rev'
+
+      - name: Build book
+        run: >-
+          nix build --accept-flake-config .#book-clash-master
+          --override-input clash-master
+          github:clash-lang/clash-compiler/master
+          --print-build-logs

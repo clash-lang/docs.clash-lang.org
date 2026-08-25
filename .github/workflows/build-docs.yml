@@ -28,28 +28,23 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    env:
-      MDBOOK_VERSION: 0.4.51
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install mdBook
-        run: |
-          curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -y | sh
-          rustup update
-          cargo install --version ${MDBOOK_VERSION} mdbook
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@d96678350ffd6a456235832eb11e1c491589b7bb # v3.21.8
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/flakehub-cache-action@3be0931021788e3bb4df65f59a555039c2fa2d46 # v3.21.7
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
 
-      - name: Build root book with mdBook
-        run: mdbook build
-
-      - name: Add root files
+      - name: Build the Clash 1.10 book
         run: |
-          cp CNAME public/
-          cp robots.txt public/
+          nix build --accept-flake-config .#book-clash-1_10 --print-build-logs --out-link site
+          cp -RL site public
 
       - name: Copy PR previews
         # If there are no open PR's, this step will emit error messages that no
@@ -58,14 +53,6 @@ jobs:
         run: |
           git fetch --depth=1 origin +gh-pages:refs/remotes/origin/gh-pages
           git archive --prefix=public/ refs/remotes/origin/gh-pages -- ':(glob)pr/**' | tar x || true
-
-      - name: Build Compiler User Guide with mdBook
-        run: mdbook build
-        working-directory: ./compiler-user-guide
-
-      - name: Build Tutorial with mdBook
-        run: mdbook build
-        working-directory: ./tutorial
 
       - name: Deploy site to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

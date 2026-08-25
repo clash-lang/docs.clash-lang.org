@@ -1,3 +1,4 @@
+
 /* Globals */
 
 :root {
@@ -9,8 +10,8 @@
     --content-max-width: 750px;
     --menu-bar-height: 50px;
     --mono-font: "Source Code Pro", Consolas, "Ubuntu Mono", Menlo, "DejaVu Sans Mono", monospace, monospace;
-    --code-font-size: 0.875em;
-    /* please adjust the ace font size accordingly in editor.js */
+    --code-font-size: 0.875em; /* please adjust the ace font size accordingly in editor.js */
+    --searchbar-margin-block-start: 5px;
 }
 
 /* Themes */
@@ -42,7 +43,6 @@
     --quote-border: hsl(226, 15%, 22%);
 
     --warning-border: #ff8e00;
-    --note-border: #a6ff00;
 
     --table-border-color: hsl(210, 25%, 13%);
     --table-header-bg: hsl(210, 25%, 28%);
@@ -67,6 +67,14 @@
     --footnote-highlight: #2668a6;
 
     --overlay-bg: rgba(33, 40, 48, 0.4);
+
+    --blockquote-note-color: #74b9ff;
+    --blockquote-tip-color: #09ca09;
+    --blockquote-important-color: #d3abff;
+    --blockquote-warning-color: #f0b72f;
+    --blockquote-caution-color: #f21424;
+
+    --sidebar-header-border-color: #c18639;
 }
 
 .coal {
@@ -96,7 +104,6 @@
     --quote-border: hsl(234, 21%, 23%);
 
     --warning-border: #ff8e00;
-    --note-border: #a6ff00;
 
     --table-border-color: hsl(200, 7%, 13%);
     --table-header-bg: hsl(200, 7%, 28%);
@@ -121,10 +128,17 @@
     --footnote-highlight: #4079ae;
 
     --overlay-bg: rgba(33, 40, 48, 0.4);
+
+    --blockquote-note-color: #4493f8;
+    --blockquote-tip-color: #08ae08;
+    --blockquote-important-color: #ab7df8;
+    --blockquote-warning-color: #d29922;
+    --blockquote-caution-color: #d91b29;
+
+    --sidebar-header-border-color: #3473ad;
 }
 
-.light,
-html:not(.js) {
+.light, html:not(.js) {
     --bg: hsl(0, 0%, 100%);
     --fg: hsl(0, 0%, 0%);
 
@@ -151,7 +165,6 @@ html:not(.js) {
     --quote-border: hsl(197, 37%, 91%);
 
     --warning-border: #ff8e00;
-    --note-border: #a6ff00;
 
     --table-border-color: hsl(0, 0%, 95%);
     --table-header-bg: hsl(0, 0%, 80%);
@@ -176,6 +189,14 @@ html:not(.js) {
     --footnote-highlight: #7e7eff;
 
     --overlay-bg: rgba(200, 200, 205, 0.4);
+
+    --blockquote-note-color: #0969da;
+    --blockquote-tip-color: #008000;
+    --blockquote-important-color: #8250df;
+    --blockquote-warning-color: #9a6700;
+    --blockquote-caution-color: #b52731;
+
+    --sidebar-header-border-color: #6e6edb;
 }
 
 .navy {
@@ -205,7 +226,6 @@ html:not(.js) {
     --quote-border: hsl(226, 15%, 22%);
 
     --warning-border: #ff8e00;
-    --note-border: #a6ff00;
 
     --table-border-color: hsl(226, 23%, 16%);
     --table-header-bg: hsl(226, 23%, 31%);
@@ -230,6 +250,14 @@ html:not(.js) {
     --footnote-highlight: #4079ae;
 
     --overlay-bg: rgba(33, 40, 48, 0.4);
+
+    --blockquote-note-color: #4493f8;
+    --blockquote-tip-color: #09ca09;
+    --blockquote-important-color: #ab7df8;
+    --blockquote-warning-color: #d29922;
+    --blockquote-caution-color: #f21424;
+
+    --sidebar-header-border-color: #2f6ab5;
 }
 
 .rust {
@@ -259,7 +287,6 @@ html:not(.js) {
     --quote-border: hsl(60, 5%, 70%);
 
     --warning-border: #ff8e00;
-    --note-border: #a6ff00;
 
     --table-border-color: hsl(60, 9%, 82%);
     --table-header-bg: #b3a497;
@@ -282,6 +309,14 @@ html:not(.js) {
     --footnote-highlight: #d3a17a;
 
     --overlay-bg: rgba(150, 150, 150, 0.25);
+
+    --blockquote-note-color: #023b95;
+    --blockquote-tip-color: #007700;
+    --blockquote-important-color: #8250df;
+    --blockquote-warning-color: #603700;
+    --blockquote-caution-color: #aa1721;
+
+    --sidebar-header-border-color: #8c391f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -312,7 +347,6 @@ html:not(.js) {
         --quote-border: hsl(234, 21%, 23%);
 
         --warning-border: #ff8e00;
-        --note-border: #a6ff00;
 
         --table-border-color: hsl(200, 7%, 13%);
         --table-header-bg: hsl(200, 7%, 28%);
@@ -333,5 +367,17 @@ html:not(.js) {
         --copy-button-filter: invert(26%) sepia(8%) saturate(575%) hue-rotate(169deg) brightness(87%) contrast(82%);
         /* Same as `--sidebar-active` */
         --copy-button-filter-hover: invert(36%) sepia(70%) saturate(503%) hue-rotate(167deg) brightness(98%) contrast(89%);
+
+        --footnote-highlight: #4079ae;
+
+        --overlay-bg: rgba(33, 40, 48, 0.4);
+
+        --blockquote-note-color: #4493f8;
+        --blockquote-tip-color: #08ae08;
+        --blockquote-important-color: #ab7df8;
+        --blockquote-warning-color: #d29922;
+        --blockquote-caution-color: #d91b29;
+
+        --sidebar-header-border-color: #3473ad;
     }
 }

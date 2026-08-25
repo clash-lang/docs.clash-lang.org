@@ -9,13 +9,13 @@ A list of often encountered errors and their solutions:
     Use the `bundle` function to convert from a product type to the signal type.
     So if your code which gives the error looks like:
 
-    ``` haskell
+    ```haskell
     ... = f a b (c,d)
     ```
 
     add the `bundle` function like so:
 
-    ``` haskell
+    ```haskell
     ... = f a b (bundle (c,d))
     ```
 
@@ -31,13 +31,13 @@ A list of often encountered errors and their solutions:
     Use the `unbundle` function to convert from a signal type to the product type.
     So if your code which gives the error looks like:
 
-    ``` haskell
+    ```haskell
     (c,d) = f a b
     ```
 
     add the `unbundle` function like so:
 
-    ``` haskell
+    ```haskell
     (c,d) = unbundle (f a b)
     ```
 
@@ -70,7 +70,7 @@ A list of often encountered errors and their solutions:
 
     * You defined a recursively defined value, but left it polymorphic:
 
-    ``` haskell
+    ```haskell
     topEntity x y = acc
       where
         acc = register 3 (acc + x * y)
@@ -80,7 +80,13 @@ A list of often encountered errors and their solutions:
     This means that `acc` is a recursively defined __polymorphic__ value.
     Adding a monomorphic type annotation makes the error go away:
 
-    ``` haskell
+    ```haskell,clash group=troubleshooting hidden
+    module TroubleshootingExamples where
+
+    import Clash.Prelude
+    ```
+
+    ```haskell,clash group=troubleshooting topEntity=topEntity
     topEntity
       :: SystemClockResetEnable
       => Signal System (Signed 8)
@@ -101,7 +107,7 @@ A list of often encountered errors and their solutions:
     You are using value-recursion, but one of the `Vec`tor functions that you are using is too *strict* in one of the recursive arguments.
     For example:
 
-    ``` haskell
+    ```haskell,clash group=troubleshooting
     -- Bubble sort for 1 iteration
     sortV xs = map fst sorted :< (snd (last sorted))
      where
@@ -117,7 +123,7 @@ A list of often encountered errors and their solutions:
 
     In this case, adding `lazyV` on `zipWith`s second argument:
 
-    ``` haskell
+    ```haskell,clash group=troubleshooting
     sortVL xs = map fst sorted :< (snd (last sorted))
      where
        lefts  = head xs :> map snd (init sorted)
@@ -127,7 +133,7 @@ A list of often encountered errors and their solutions:
 
     Results in a successful computation:
 
-    ```
-    clashi> sortVL (4 :> 1 :> 2 :> 3 :> Nil)
+    ```haskell,clash group=troubleshooting
+    >>> sortVL (4 :> 1 :> 2 :> 3 :> Nil)
     1 :> 2 :> 3 :> 4 :> Nil
     ```

@@ -14,7 +14,14 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
 
         As demonstrated in this definition of a function that calculates the n'th Fibbonacci number:
 
-        ``` haskell
+        ```haskell,clash group=limitations hidden
+        module LimitationExamples where
+
+        import Clash.Prelude
+        import qualified Data.List as L
+        ```
+
+        ```haskell,clash group=limitations
         fibR 0 = 0
         fibR 1 = 1
         fibR n = fibR (n-1) + fibR (n-2)
@@ -22,9 +29,10 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
 
         To get the first 10 numbers, we do the following:
 
-        ```
-        >>> import qualified Data.List as L
-        >>> L.map fibR [0..9]
+        ```haskell,clash group=limitations
+        firstTenFibs = L.map fibR [0..9]
+
+        >>> firstTenFibs
         [0,1,1,2,3,5,8,13,21,34]
         ```
 
@@ -40,7 +48,7 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
 
         As demonstrated in this definition of a function that calculates the n'th Fibbonaci number on the n'th clock cycle:
 
-        ``` haskell
+        ```haskell,clash group=limitations
         fibS :: SystemClockResetEnable => Signal System (Unsigned 64)
         fibS = r
             where r = register 0 r + register 0 (register 1 r)
@@ -48,7 +56,7 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
 
         To get the first 10 numbers, we do the following:
 
-        ```
+        ```haskell,clash group=limitations
         >>> sampleN @System 11 fibS
         [0,0,1,1,2,3,5,8,13,21,34]
         ```
@@ -59,7 +67,7 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
         Note that not all recursively defined values result in a feedback loop.
         An example that uses recursively defined values which does not result in a feedback loop is the following function that performs one iteration of bubble sort:
 
-        ``` haskell
+        ```haskell,clash group=limitations
         sortV xs = map fst sorted :< (snd (last sorted))
           where
             lefts  = head xs :> map snd (init sorted)
@@ -67,6 +75,9 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
             sorted = zipWith compareAndSwap (lazyV lefts) rights
 
         compareAndSwap a b = if a < b then (a,b) else (b,a)
+
+        >>> sortV (4 :> 1 :> 2 :> 3 :> Nil)
+        1 :> 2 :> 3 :> 4 :> Nil
         ```
 
         Where we can clearly see that `lefts` and `sorted` are defined in terms of each other.
@@ -79,13 +90,16 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
 
         Such definitions would e.g. be:
 
-        ``` haskell
+        ```haskell,clash group=limitations
         mapV :: (a -> b) -> Vec n a -> Vec n b
         mapV _ Nil         = Nil
         mapV f (Cons x xs) = Cons (f x) (mapV f xs)
 
         topEntity :: Vec 4 Int -> Vec 4 Int
         topEntity = mapV (+1)
+
+        >>> topEntity (1 :> 2 :> 3 :> 4 :> Nil)
+        2 :> 3 :> 4 :> 5 :> Nil
         ```
 
         Where one can imagine that a compiler can unroll the definition of `mapV` four times, knowing that the `topEntity` function applies `mapV` to a `Vec` of length 4.
@@ -112,11 +126,15 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
     You can still use your own GADTs, as long as they can be removed through static analysis.
     For example, the following case will be optimized away and is therefore fine to use:
 
-    ``` haskell
+    ```haskell,clash group=limitations
+    x :: Char
     x =
       case resetKind @System of
         SAsynchronous -> 'a'
         SSynchronous -> 'b'
+
+    >>> x == 'a' || x == 'b'
+    True
     ```
 
 * __Floating point types__
@@ -172,17 +190,23 @@ Here is a list of Haskell features for which the Clash compiler has only _limite
       Consequently, you should use `Integer` with due diligence; be especially careful when using `fromIntegral` as it does a conversion via `Integer`.
       For example:
 
-      ``` haskell
-      signedToUnsigned :: Signed 128 -> Unsigned 128
-      signedToUnsigned = fromIntegral
+      ```haskell,clash group=limitations
+      signedToUnsignedViaIntegral :: Signed 128 -> Unsigned 128
+      signedToUnsignedViaIntegral = fromIntegral
+
+      >>> signedToUnsignedViaIntegral 1
+      1
       ```
 
       can either lose the top 64 or 96 bits depending on whether `Integer` is represented by 64 or 32 bits.
       Instead, when doing such conversions, you should use `bitCoerce`:
 
-      ``` haskell
-      signedToUnsigned :: Signed 128 -> Unsigned 128
-      signedToUnsigned = bitCoerce
+      ```haskell,clash group=limitations
+      signedToUnsignedViaBitCoerce :: Signed 128 -> Unsigned 128
+      signedToUnsignedViaBitCoerce = bitCoerce
+
+      >>> signedToUnsignedViaBitCoerce 1
+      1
       ```
 
 * __Side-effects: `IO`, `ST`, etc.__
